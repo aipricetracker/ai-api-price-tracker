@@ -1,31 +1,51 @@
-# AI API Price Tracker — PROJECT_SPEC
+# PROJECT_SPEC.md
 
-## 1. プロジェクト概要
+## Project Name
 
-AI API Price Tracker は、主要な **AI API provider の価格変更を監視するサイト**。
+AI API Price Tracker
 
-自動で価格情報を収集し、履歴を保存し、静的サイトとして公開する。
-
-主な表示内容
-
-* 現在の価格
-* 価格履歴
-* provider比較
-
-目標
-
-* 自動運用
-* 低コスト
-* シンプル構成
 
 ---
 
-# 2. システム構成
+## Project Overview
+
+AI API Price Tracker は、主要な AI API provider の価格情報を監視し、
+価格変更履歴を保存し、静的サイトとして公開するプロジェクトです。
+
+主な目的:
+
+- AI API の価格を長期的に追跡する
+- provider 間の価格比較を可能にする
+- 価格変更履歴を公開する
+
+このプロジェクトは **低コスト・自動運用・シンプル構成**を重視します。
+
+
+---
+
+## Core Principles
+
+- ランタイムで AI API は使用しない
+- AI は開発支援（Codex）のみで使用する
+- 静的サイトとして公開する
+- インフラコストを最小化する
+- 履歴データの整合性を最優先する
+
+
+---
+
+## System Architecture
+
+システム構成:
 
 ```
 Cloudflare Worker (collector)
         ↓
-pricing-history.json 更新
+pricing snapshot 取得
+        ↓
+current-pricing.json 更新
+        ↓
+差分がある場合のみ pricing-history.json に追記
         ↓
 GitHub commit
         ↓
@@ -33,199 +53,262 @@ Astro build
         ↓
 Cloudflare Pages deploy
         ↓
-公開サイト
+Public website
 ```
+
+特徴:
+
+- 静的サイト中心
+- database 不使用
+- JSON データを Git 管理
+
 
 ---
 
-# 3. 技術スタック
+## Technology Stack
 
-Frontend
+Frontend / Site
 
-* Astro
-* Static HTML
+- Astro
 
 Infrastructure
 
-* Cloudflare Pages
-* Cloudflare Workers
-* GitHub
+- Cloudflare Workers
+- Cloudflare Pages
 
-Data
+Repository
 
-* JSON
+- GitHub
+
+Data Storage
+
+- JSON files (Git managed)
+
 
 ---
 
-# 4. リポジトリ構成
+## Repository Policy
+
+- public repository
+- single repository 構成
+- secret 情報は repository に保存しない
+
+
+---
+
+## Repository Structure
+
+想定ディレクトリ構成:
 
 ```
-ai-api-price-tracker/
+repo root
 │
-├ worker/        # collector
-├ site/          # Astro site
-├ data/
-│   ├ providers.json
-│   └ pricing-history.json
+├─ worker/                 # Cloudflare Worker
 │
-├ PROJECT_SPEC.md
-└ README.md
+├─ site/                   # Astro static site
+│
+├─ data/
+│   ├─ current-pricing.json
+│   └─ pricing-history.json
+│
+├─ AGENTS.md
+├─ AI_CONTEXT.md
+├─ PROJECT_SPEC.md
+├─ .aiignore
+│
+└─ .codex/
+    └─ rules/
 ```
+
 
 ---
 
-# 5. 初期 provider
+## Data Model
+
+価格データは JSON で管理します。
 
 ```
-OpenAI
-Anthropic
-Groq
-Replicate
-Together AI
+data/current-pricing.json
+data/pricing-history.json
 ```
 
-選定理由
+### current-pricing.json
 
-* APIドキュメントが整備
-* 価格情報が安定
-* AI APIエコシステムをカバー
+最新の pricing snapshot を保持します。
+
+用途:
+
+- 現在価格の表示
+- provider / model の最新価格
+
+特徴:
+
+- Worker により更新される
+- 上書き更新される
+- 履歴は保持しない
+
 
 ---
 
-# 6. データ構造
+### pricing-history.json
 
-価格履歴は **append-only**。
+価格変更イベントの履歴を保持します。
 
-例
+用途:
 
-```
-{
-  "provider": "openai",
-  "model": "gpt-4.2",
-  "input_price": 8,
-  "output_price": 24,
-  "currency": "USD",
-  "date": "2026-03-09",
-  "source": "URL"
-}
-```
+- 価格変更履歴表示
+- 長期価格追跡
 
-ルール
+特徴:
 
-* 履歴削除なし
-* 変更時のみ追加
+- append-only
+- 過去履歴を削除しない
+- 過去履歴を変更しない
+- 価格変更があった場合のみ追加
+
 
 ---
 
-# 7. URL設計
+## Provider List
 
-言語プレフィックス
+初期対象 provider:
+
+- OpenAI
+- Anthropic
+- Groq
+- Replicate
+- Together AI
+
+
+---
+
+## Provider Slug Rules
+
+provider slug は以下のルールに従う:
+
+- lowercase
+- hyphen-separated
+
+例:
+
+```
+openai
+anthropic
+together-ai
+```
+
+
+---
+
+## URL Design
+
+多言語対応:
 
 ```
 /en/
 /ja/
 ```
 
-例
-
-Provider
+provider ページ:
 
 ```
-/en/providers/openai
-/ja/providers/openai
+/providers/{provider-slug}
 ```
 
-Pricing history
+履歴ページ:
 
 ```
-/en/providers/openai/history
+/providers/{provider-slug}/history
 ```
 
-Pricing changes
+比較ページ:
 
 ```
-/en/pricing-changes
+/compare/openai-vs-anthropic
 ```
 
-Comparison
-
-```
-/en/compare/openai-vs-anthropic
-```
-
-slugルール
-
-* lowercase
-* hyphen-separated
 
 ---
 
-# 8. デプロイフロー
+## Worker Responsibilities
 
-1. Worker cron 実行
-2. pricing取得
-3. 差分検出
-4. pricing-history.json 更新
-5. GitHub commit
-6. Pages build
-7. Astro static生成
-8. サイト更新
+Worker (collector) の役割:
 
----
+- provider pricing 情報取得
+- pricing 正規化
+- 最新 snapshot 作成
+- 差分検出
+- current-pricing.json 更新
+- pricing-history.json append
+- GitHub commit
 
-# 9. セキュリティ
+Worker は **cron による定期実行**を想定します。
 
-ルール
-
-* API key は repo に保存しない
-* Cloudflare Secrets 使用
-* `.env` は commitしない
-
-全サービス
-
-```
-2FA 必須
-```
 
 ---
 
-# 10. コスト方針
+## Data Integrity Rules
 
-基本
+履歴データはこのプロジェクトの最重要資産です。
 
-```
-無料枠で運用
-```
+禁止事項:
 
-使用サービス
+- pricing-history.json の履歴削除
+- pricing-history.json の履歴編集
+- retroactive modification
 
-* Cloudflare Workers Free
-* Cloudflare Pages Free
-* GitHub Free
-
-独自ドメインと広告は後から追加。
 
 ---
 
-# 11. 将来拡張
+## Cost Strategy
 
-可能な機能
+このプロジェクトは **低コスト運用**を前提とします。
 
-* provider追加
-* price comparison強化
-* price history chart
-* API limit tracking
-* 週次レポート
-* 多言語追加
+避ける構成:
+
+- database
+- server hosting
+- paid API services
+
 
 ---
 
-# 12. 開発方針
+## Security Policy
 
-原則
+- `.env` は commit しない
+- API keys は secrets 管理
+- GitHub / Cloudflare は専用アカウント
+- 2FA 必須
 
-* シンプル構成
-* static優先
-* コスト最小
 
-AI（Codex）は **開発支援のみ**で使用。
+---
+
+## Development Environment
+
+AI 主導開発を前提とします。
+
+作業環境:
+
+```
+~/ai-workspace/
+```
+
+AI Agent は以下を参照します:
+
+```
+AGENTS.md
+AI_CONTEXT.md
+.codex/rules/
+```
+
+
+---
+
+## Development Principles
+
+AI Agent は以下を優先します:
+
+1. シンプルな実装
+2. 自動運用
+3. 低コスト
+4. 変更に強い設計

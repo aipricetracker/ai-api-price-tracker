@@ -1,0 +1,49 @@
+# dependencies
+node_modules
+.pnpm-store
+.npm
+yarn
+yarn-cache
+
+# build output
+dist
+build
+.out
+.cache
+coverage
+
+# framework output
+.next
+.nuxt
+.svelte-kit
+.vercel
+.netlify
+
+# logs
+*.log
+logs
+
+# editor
+.vscode
+.idea
+*.swp
+*.swo
+
+# system
+.DS_Store
+
+# environment
+.env
+.env*
+
+# binary assets
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.webp
+*.mp4
+*.mov
+*.zip
+*.tar
+*.gz
