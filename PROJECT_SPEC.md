@@ -132,6 +132,14 @@ data/current-pricing.json
 data/pricing-history.json
 ```
 
+スキーマ方針:
+
+- `current-pricing.json`
+  - `provider -> model -> record` の最新 snapshot マップ
+- `pricing-history.json`
+  - 価格変更イベントの配列
+- 両方で可能な限り同じ `PricingRecord` 構造を使う
+
 ### current-pricing.json
 
 最新の pricing snapshot を保持します。
@@ -285,6 +293,17 @@ Worker (collector) の役割:
 - GitHub commit
 
 Worker は **cron による定期実行**を想定します。
+
+Worker の責務分割方針:
+
+- `index.ts`
+  - orchestration
+- `pricing.ts`
+  - validation / diff / record update
+- `storage.ts`
+  - persistence abstraction
+
+PoC では in-memory storage を使い、後で file-based 実装へ差し替えられる構成とします。
 
 
 ---

@@ -125,6 +125,14 @@ data/current-pricing.json
 data/pricing-history.json
 ```
 
+スキーマ方針:
+
+- `current-pricing.json`
+  - `provider -> model -> record` の最新 snapshot マップ
+- `pricing-history.json`
+  - 価格変更イベントの配列
+- 両方で可能な限り同じ `PricingRecord` 構造を使う
+
 ### current-pricing.json
 
 最新の正規化済み pricing 状態を保持します。  
@@ -223,6 +231,20 @@ validation を行う自然な段階:
 1. provider データを正規化した直後
 2. 差分判定の前
 3. JSON 保存の直前
+
+
+## Worker Module Policy
+
+Worker は責務を以下に分離します。
+
+- `index.ts`
+  - orchestration のみ担当
+- `pricing.ts`
+  - validation / diff / record update ロジックを担当
+- `storage.ts`
+  - current/history の読み書き抽象を担当
+
+PoC 段階では in-memory store を使い、将来的に file-based 実装へ差し替え可能な構成を維持します。
 
 
 ## Provider List
