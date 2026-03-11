@@ -134,14 +134,21 @@ data/pricing-history.json
 
 ```json
 {
-  "provider": "openai",
-  "model": "gpt-4.1",
-  "pricing": {
-    "input": 0.00001,
-    "output": 0.00003
-  },
-  "effective_date": "2025-01-01",
-  "recorded_at": "2025-01-01T00:00:00Z"
+  "openai": {
+    "gpt-4.1": {
+      "provider": "openai",
+      "model": "gpt-4.1",
+      "pricing": {
+        "input": 0.00001,
+        "output": 0.00003
+      },
+      "currency": "USD",
+      "unit": "1K tokens",
+      "source_url": "https://openai.com/api/pricing/",
+      "effective_date": "2025-01-01",
+      "recorded_at": "2025-01-01T00:00:00Z"
+    }
+  }
 }
 ```
 
@@ -153,16 +160,21 @@ data/pricing-history.json
 基本イメージ：
 
 ```json
-{
-  "provider": "openai",
-  "model": "gpt-4.1",
-  "pricing": {
-    "input": 0.00001,
-    "output": 0.00003
-  },
-  "effective_date": "2025-01-01",
-  "recorded_at": "2025-01-01T00:00:00Z"
-}
+[
+  {
+    "provider": "openai",
+    "model": "gpt-4.1",
+    "pricing": {
+      "input": 0.00001,
+      "output": 0.00003
+    },
+    "currency": "USD",
+    "unit": "1K tokens",
+    "source_url": "https://openai.com/api/pricing/",
+    "effective_date": "2025-01-01",
+    "recorded_at": "2025-01-01T00:00:00Z"
+  }
+]
 ```
 
 重要ルール：
@@ -170,6 +182,47 @@ data/pricing-history.json
 - append-only
 - 既存履歴を削除しない
 - 価格変更があった場合のみ新規レコード追加
+
+
+## Effective Date Policy
+
+`effective_date` は、その価格が provider 上で有効になったと解釈できる日付を表します。
+
+- provider が適用日を明示している場合:
+  - 明示された日付を `effective_date` とする
+- provider が適用日を明示していない場合:
+  - その価格を初めて観測した UTC 日付を `effective_date` とする
+
+`recorded_at` は Worker がその価格を観測した UTC timestamp を表します。
+
+重要ルール:
+
+- `effective_date` は価格変更判定には使用しない
+- 価格変更判定は pricing / currency / unit の差分で行う
+- `pricing-history.json` に保存した `effective_date` は後から書き換えない
+
+
+## Validation Policy
+
+型定義は広めに許容し、保存前 validation を重視します。
+
+保存前に最低限確認する項目:
+
+- `provider`
+- `model`
+- `pricing`
+- `pricing.input` または `pricing.output`
+- `currency`
+- `unit`
+- `source_url`
+- `effective_date`
+- `recorded_at`
+
+validation を行う自然な段階:
+
+1. provider データを正規化した直後
+2. 差分判定の前
+3. JSON 保存の直前
 
 
 ## Provider List

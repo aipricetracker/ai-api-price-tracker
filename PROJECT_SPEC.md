@@ -147,6 +147,28 @@ data/pricing-history.json
 - 上書き更新される
 - 履歴は保持しない
 
+基本イメージ:
+
+```json
+{
+  "openai": {
+    "gpt-4.1": {
+      "provider": "openai",
+      "model": "gpt-4.1",
+      "pricing": {
+        "input": 0.00001,
+        "output": 0.00003
+      },
+      "currency": "USD",
+      "unit": "1K tokens",
+      "source_url": "https://openai.com/api/pricing/",
+      "effective_date": "2025-01-01",
+      "recorded_at": "2025-01-01T00:00:00Z"
+    }
+  }
+}
+```
+
 
 ---
 
@@ -165,6 +187,26 @@ data/pricing-history.json
 - 過去履歴を削除しない
 - 過去履歴を変更しない
 - 価格変更があった場合のみ追加
+
+基本イメージ:
+
+```json
+[
+  {
+    "provider": "openai",
+    "model": "gpt-4.1",
+    "pricing": {
+      "input": 0.00001,
+      "output": 0.00003
+    },
+    "currency": "USD",
+    "unit": "1K tokens",
+    "source_url": "https://openai.com/api/pricing/",
+    "effective_date": "2025-01-01",
+    "recorded_at": "2025-01-01T00:00:00Z"
+  }
+]
+```
 
 
 ---
@@ -256,6 +298,50 @@ Worker は **cron による定期実行**を想定します。
 - pricing-history.json の履歴削除
 - pricing-history.json の履歴編集
 - retroactive modification
+
+
+---
+
+## Effective Date Policy
+
+`effective_date` は、その価格が provider 上で有効になったと解釈できる日付を表します。
+
+- provider が適用日を明示している場合:
+  - その明示日を採用する
+- provider が適用日を明示していない場合:
+  - その価格を初めて観測した UTC 日付を採用する
+
+`recorded_at` は Worker が価格を観測した UTC timestamp を表します。
+
+差分判定ルール:
+
+- `hasPricingChanged()` は `effective_date` を比較対象にしない
+- pricing / currency / unit の差分のみを履歴追加条件とする
+
+
+---
+
+## Validation Policy
+
+PoC では、型による厳格制約より保存前 validation を優先します。
+
+保存前の最低限チェック項目:
+
+- `provider`
+- `model`
+- `pricing`
+- `pricing.input` または `pricing.output`
+- `currency`
+- `unit`
+- `source_url`
+- `effective_date`
+- `recorded_at`
+
+validation の主な実施段階:
+
+1. normalize 後
+2. diff 判定前
+3. 保存直前
 
 
 ---
