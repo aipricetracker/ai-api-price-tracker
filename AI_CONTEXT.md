@@ -244,7 +244,14 @@ Worker は責務を以下に分離します。
 - `storage.ts`
   - current/history の読み書き抽象を担当
 
-PoC 段階では in-memory store を使い、将来的に file-based 実装へ差し替え可能な構成を維持します。
+PoC 段階では以下を使い分けます。
+
+- Worker 本体
+  - storage abstraction を通じて current/history を扱う
+- ローカル確認
+  - file-based store を使って `data/current-pricing.json` と `data/pricing-history.json` の更新を確認する
+
+この構成により、storage 実装は差し替え可能な状態を維持します。
 
 
 ## Provider List

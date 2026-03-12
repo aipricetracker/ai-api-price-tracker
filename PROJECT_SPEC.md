@@ -303,7 +303,8 @@ Worker の責務分割方針:
 - `storage.ts`
   - persistence abstraction
 
-PoC では in-memory storage を使い、後で file-based 実装へ差し替えられる構成とします。
+PoC では storage abstraction を維持しつつ、ローカル確認では file-based storage を使って
+`data/current-pricing.json` と `data/pricing-history.json` の更新を確認できる構成とします。
 
 
 ---
