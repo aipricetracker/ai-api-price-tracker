@@ -3,11 +3,13 @@ import {
   validatePricingRecord,
   updateCurrentPricing,
 } from "./pricing";
-import { createDummyOpenAiRecord, createInitialPricingData } from "./fixtures";
-import { createInMemoryPricingStore } from "./storage";
+import { createDummyOpenAiRecord } from "./fixtures";
+import { createFilePricingStore, createNodeFilePricingStoreIO } from "./storage";
 import type { CurrentPricing, PricingHistory, PricingRecord } from "./types";
 
-export interface Env {}
+export interface Env {
+  DATA_DIR?: string;
+}
 
 export default {
   async fetch(request: Request, _env: Env, _ctx: ExecutionContext): Promise<Response> {
@@ -17,12 +19,12 @@ export default {
       return Response.json({ status: "ok", service: "collector" });
     }
 
-    const result = await runCollector();
+    const result = await runCollector(_env);
     return Response.json(result, { status: result.ok ? 200 : 400 });
   },
 
   async scheduled(_event: ScheduledEvent, _env: Env, _ctx: ExecutionContext): Promise<void> {
-    const result = await runCollector();
+    const result = await runCollector(_env);
 
     if (!result.ok) {
       console.error("collector run failed", result.errors);
@@ -50,8 +52,20 @@ type CollectorResult =
       errors: string[];
     };
 
-async function runCollector(): Promise<CollectorResult> {
-  const store = createInMemoryPricingStore(createInitialPricingData());
+async function runCollector(env: Env): Promise<CollectorResult> {
+  const dataDir = env.DATA_DIR;
+
+  if (!dataDir) {
+    return {
+      ok: false,
+      errors: ["DATA_DIR is required"],
+    };
+  }
+
+  const store = createFilePricingStore(createNodeFilePricingStoreIO(), {
+    currentPath: `${dataDir}/current-pricing.json`,
+    historyPath: `${dataDir}/pricing-history.json`,
+  });
   const current = await store.getCurrent();
 
   const record = createDummyOpenAiRecord();

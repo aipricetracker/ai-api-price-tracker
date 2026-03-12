@@ -48,13 +48,13 @@ export function createFilePricingStore(
   paths: FilePricingStorePaths,
 ): PricingStore {
   async function readCurrent(): Promise<CurrentPricing> {
-    const content = await io.readText(paths.currentPath);
-    return JSON.parse(content) as CurrentPricing;
+    const content = await readJsonText(io, paths.currentPath);
+    return parseJsonContent(content, {});
   }
 
   async function readHistory(): Promise<PricingHistory> {
-    const content = await io.readText(paths.historyPath);
-    return JSON.parse(content) as PricingHistory;
+    const content = await readJsonText(io, paths.historyPath);
+    return parseJsonContent(content, []);
   }
 
   return {
@@ -80,4 +80,52 @@ export function createFilePricingStore(
 
 function serializeJson(value: CurrentPricing | PricingHistory): string {
   return `${JSON.stringify(value, null, 2)}\n`;
+}
+
+export function createNodeFilePricingStoreIO(): FilePricingStoreIO {
+  return {
+    async readText(path: string): Promise<string> {
+      const fs = await importNodeFs();
+      return fs.readFile(path, "utf8");
+    },
+
+    async writeText(path: string, content: string): Promise<void> {
+      const fs = await importNodeFs();
+      await fs.writeFile(path, content, "utf8");
+    },
+  };
+}
+
+async function readJsonText(io: FilePricingStoreIO, path: string): Promise<string> {
+  try {
+    return await io.readText(path);
+  } catch (error) {
+    if (isFileNotFoundError(error)) {
+      return "";
+    }
+
+    throw error;
+  }
+}
+
+function parseJsonContent<T>(content: string, fallback: T): T {
+  if (content.trim().length === 0) {
+    return fallback;
+  }
+
+  return JSON.parse(content) as T;
+}
+
+function isFileNotFoundError(error: unknown): boolean {
+  return typeof error === "object" && error !== null && "code" in error && error.code === "ENOENT";
+}
+
+interface NodeFsPromisesModule {
+  readFile(path: string, encoding: string): Promise<string>;
+  writeFile(path: string, content: string, encoding: string): Promise<void>;
+}
+
+async function importNodeFs(): Promise<NodeFsPromisesModule> {
+  // @ts-expect-error Local PoC only: runtime Node module for file-based storage.
+  return import("node:fs/promises");
 }

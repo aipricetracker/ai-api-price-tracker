@@ -4,11 +4,13 @@
   "type": "module",
   "scripts": {
     "dev": "wrangler dev",
-    "deploy": "wrangler deploy"
+    "deploy": "wrangler deploy",
+    "smoke:file-store": "tsx scripts/file-store-smoke.ts"
   },
   "devDependencies": {
+    "@cloudflare/workers-types": "^4.20260303.0",
+    "tsx": "^4.20.5",
     "typescript": "^5.9.2",
-    "wrangler": "^4.35.0",
-    "@cloudflare/workers-types": "^4.20260303.0"
+    "wrangler": "^4.35.0"
   }
 }

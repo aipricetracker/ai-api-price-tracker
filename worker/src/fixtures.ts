@@ -73,13 +73,36 @@ export function createInitialPricingData(): PricingStoreData {
 export function createDummyOpenAiRecord(): PricingRecord {
   const recordedAt = new Date().toISOString();
 
-  return {
-    provider: "openai",
-    model: "gpt-4.1",
+  return createOpenAiRecord({
     pricing: {
       input: 0.00001,
       output: 0.00003,
     },
+    recordedAt,
+  });
+}
+
+export function createChangedOpenAiRecord(recordedAt: string): PricingRecord {
+  return createOpenAiRecord({
+    pricing: {
+      input: 0.00002,
+      output: 0.00003,
+    },
+    recordedAt,
+  });
+}
+
+function createOpenAiRecord({
+  pricing,
+  recordedAt,
+}: {
+  pricing: PricingRecord["pricing"];
+  recordedAt: string;
+}): PricingRecord {
+  return {
+    provider: "openai",
+    model: "gpt-4.1",
+    pricing,
     currency: "USD",
     unit: "1K tokens",
     source_url: "https://openai.com/api/pricing/",

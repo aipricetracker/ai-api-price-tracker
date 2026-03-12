@@ -2,6 +2,12 @@
   "name": "ai-api-price-tracker-worker",
   "main": "src/index.ts",
   "compatibility_date": "2026-03-11",
+  "compatibility_flags": [
+    "nodejs_compat"
+  ],
+  "vars": {
+    "DATA_DIR": "/Users/shioya/ai-workspace/ai-api-price-tracker/data"
+  },
   "triggers": {
     "crons": [
       "0 * * * *"
