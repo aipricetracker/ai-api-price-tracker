@@ -145,13 +145,14 @@ data/pricing-history.json
   "openai": {
     "gpt-4.1": {
       "provider": "openai",
-      "model": "gpt-4.1",
+      "model": "gpt-5.4",
       "pricing": {
-        "input": 0.00001,
-        "output": 0.00003
+        "input": 2.5,
+        "cached_input": 0.25,
+        "output": 15
       },
       "currency": "USD",
-      "unit": "1K tokens",
+      "unit": "1M tokens",
       "source_url": "https://openai.com/api/pricing/",
       "effective_date": "2025-01-01",
       "recorded_at": "2025-01-01T00:00:00Z"
@@ -171,13 +172,14 @@ data/pricing-history.json
 [
   {
     "provider": "openai",
-    "model": "gpt-4.1",
+    "model": "gpt-5.4",
     "pricing": {
-      "input": 0.00001,
-      "output": 0.00003
+      "input": 2.5,
+      "cached_input": 0.25,
+      "output": 15
     },
     "currency": "USD",
-    "unit": "1K tokens",
+    "unit": "1M tokens",
     "source_url": "https://openai.com/api/pricing/",
     "effective_date": "2025-01-01",
     "recorded_at": "2025-01-01T00:00:00Z"
@@ -243,6 +245,8 @@ Worker は責務を以下に分離します。
   - validation / diff / record update ロジックを担当
 - `storage.ts`
   - current/history の読み書き抽象を担当
+- `providers/{provider}/`
+  - provider 固有の fetch / parse / normalize を担当
 
 PoC 段階では以下を使い分けます。
 
@@ -250,6 +254,8 @@ PoC 段階では以下を使い分けます。
   - storage abstraction を通じて current/history を扱う
 - ローカル確認
   - file-based store を使って `data/current-pricing.json` と `data/pricing-history.json` の更新を確認する
+- parser 検証
+  - provider ごとに fixture HTML と unit test を持ち、DOM 変更で静かに壊れないようにする
 
 この構成により、storage 実装は差し替え可能な状態を維持します。
 

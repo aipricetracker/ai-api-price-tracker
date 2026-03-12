@@ -162,13 +162,14 @@ data/pricing-history.json
   "openai": {
     "gpt-4.1": {
       "provider": "openai",
-      "model": "gpt-4.1",
+      "model": "gpt-5.4",
       "pricing": {
-        "input": 0.00001,
-        "output": 0.00003
+        "input": 2.5,
+        "cached_input": 0.25,
+        "output": 15
       },
       "currency": "USD",
-      "unit": "1K tokens",
+      "unit": "1M tokens",
       "source_url": "https://openai.com/api/pricing/",
       "effective_date": "2025-01-01",
       "recorded_at": "2025-01-01T00:00:00Z"
@@ -202,13 +203,14 @@ data/pricing-history.json
 [
   {
     "provider": "openai",
-    "model": "gpt-4.1",
+    "model": "gpt-5.4",
     "pricing": {
-      "input": 0.00001,
-      "output": 0.00003
+      "input": 2.5,
+      "cached_input": 0.25,
+      "output": 15
     },
     "currency": "USD",
-    "unit": "1K tokens",
+    "unit": "1M tokens",
     "source_url": "https://openai.com/api/pricing/",
     "effective_date": "2025-01-01",
     "recorded_at": "2025-01-01T00:00:00Z"
@@ -302,9 +304,14 @@ Worker の責務分割方針:
   - validation / diff / record update
 - `storage.ts`
   - persistence abstraction
+- `providers/{provider}/`
+  - provider-specific fetch / parse / normalize
 
 PoC では storage abstraction を維持しつつ、ローカル確認では file-based storage を使って
 `data/current-pricing.json` と `data/pricing-history.json` の更新を確認できる構成とします。
+
+また、provider parser は fixture HTML と unit test を持ち、
+pricing page の DOM 変更で静かに壊れないようにします。
 
 
 ---
