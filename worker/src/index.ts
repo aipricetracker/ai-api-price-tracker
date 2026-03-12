@@ -1,8 +1,9 @@
 import {
   hasPricingChanged,
   validatePricingRecord,
+  updateCurrentPricing,
 } from "./pricing";
-import { appendPricingHistory, updateCurrentPricing } from "./pricing";
+import { createDummyOpenAiRecord, createInitialPricingData } from "./fixtures";
 import { createInMemoryPricingStore } from "./storage";
 import type { CurrentPricing, PricingHistory, PricingRecord } from "./types";
 
@@ -50,7 +51,7 @@ type CollectorResult =
     };
 
 async function runCollector(): Promise<CollectorResult> {
-  const store = createInMemoryPricingStore();
+  const store = createInMemoryPricingStore(createInitialPricingData());
   const current = await store.getCurrent();
 
   const record = createDummyOpenAiRecord();
@@ -82,26 +83,4 @@ async function runCollector(): Promise<CollectorResult> {
     current: nextCurrent,
     history: nextHistory,
   };
-}
-
-function createDummyOpenAiRecord(): PricingRecord {
-  const recordedAt = new Date().toISOString();
-
-  return {
-    provider: "openai",
-    model: "gpt-4.1",
-    pricing: {
-      input: 0.00001,
-      output: 0.00003,
-    },
-    currency: "USD",
-    unit: "1K tokens",
-    source_url: "https://openai.com/api/pricing/",
-    effective_date: toUtcDate(recordedAt),
-    recorded_at: recordedAt,
-  };
-}
-
-function toUtcDate(timestamp: string): string {
-  return timestamp.slice(0, 10);
 }

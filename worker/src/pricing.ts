@@ -91,10 +91,6 @@ export function updateCurrentPricing(current: CurrentPricing, record: PricingRec
   };
 }
 
-export function appendPricingHistory(history: PricingHistory, record: PricingRecord): PricingHistory {
-  return [...history, record];
-}
-
 function isSamePricing(left: Pricing, right: Pricing): boolean {
   const keys = new Set([...Object.keys(left), ...Object.keys(right)]);
 
