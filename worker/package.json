@@ -5,7 +5,9 @@
   "scripts": {
     "dev": "wrangler dev",
     "deploy": "wrangler deploy",
-    "smoke:file-store": "tsx scripts/file-store-smoke.ts"
+    "smoke:file-store": "tsx scripts/file-store-smoke.ts",
+    "smoke:openai-real-fetch": "tsx scripts/openai-real-fetch-smoke.ts",
+    "test": "node --import tsx --test tests/**/*.test.mjs"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20260303.0",

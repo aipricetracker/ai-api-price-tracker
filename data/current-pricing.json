@@ -1,17 +1,32 @@
 {
   "openai": {
-    "gpt-4.1": {
+    "gpt-5.4": {
       "provider": "openai",
-      "model": "gpt-4.1",
+      "model": "gpt-5.4",
       "pricing": {
-        "input": 0.00002,
-        "output": 0.00003
+        "input": 2.5,
+        "cached_input": 0.25,
+        "output": 15
       },
       "currency": "USD",
-      "unit": "1K tokens",
+      "unit": "1M tokens",
       "source_url": "https://openai.com/api/pricing/",
-      "effective_date": "2026-03-13",
-      "recorded_at": "2026-03-13T00:00:00Z"
+      "effective_date": "2026-03-12",
+      "recorded_at": "2026-03-12T16:42:00.017Z"
+    },
+    "gpt-5-mini": {
+      "provider": "openai",
+      "model": "gpt-5-mini",
+      "pricing": {
+        "input": 0.25,
+        "cached_input": 0.025,
+        "output": 2
+      },
+      "currency": "USD",
+      "unit": "1M tokens",
+      "source_url": "https://openai.com/api/pricing/",
+      "effective_date": "2026-03-12",
+      "recorded_at": "2026-03-12T16:42:00.017Z"
     }
   },
   "anthropic": {

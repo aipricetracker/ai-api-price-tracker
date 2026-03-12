@@ -1,9 +1,9 @@
 import {
   hasPricingChanged,
+  replaceProviderPricing,
   validatePricingRecord,
-  updateCurrentPricing,
 } from "./pricing";
-import { createDummyOpenAiRecord } from "./fixtures";
+import { collectOpenAiTextModelPricing } from "./providers/openai";
 import { createFilePricingStore, createNodeFilePricingStoreIO } from "./storage";
 import type { CurrentPricing, PricingHistory, PricingRecord } from "./types";
 
@@ -34,7 +34,8 @@ export default {
     console.log("collector run completed", {
       currentProviders: Object.keys(result.current).length,
       historyCount: result.history.length,
-      changed: result.changed,
+      changedCount: result.changedCount,
+      recordCount: result.recordCount,
     });
   },
 };
@@ -42,8 +43,9 @@ export default {
 type CollectorResult =
   | {
       ok: true;
-      changed: boolean;
-      record: PricingRecord;
+      changedCount: number;
+      recordCount: number;
+      records: PricingRecord[];
       current: CurrentPricing;
       history: PricingHistory;
     }
@@ -62,39 +64,62 @@ async function runCollector(env: Env): Promise<CollectorResult> {
     };
   }
 
-  const store = createFilePricingStore(createNodeFilePricingStoreIO(), {
-    currentPath: `${dataDir}/current-pricing.json`,
-    historyPath: `${dataDir}/pricing-history.json`,
-  });
-  const current = await store.getCurrent();
+  try {
+    const store = createFilePricingStore(createNodeFilePricingStoreIO(), {
+      currentPath: `${dataDir}/current-pricing.json`,
+      historyPath: `${dataDir}/pricing-history.json`,
+    });
+    const current = await store.getCurrent();
+    const records = await collectOpenAiTextModelPricing();
+    const validationErrors = validatePricingRecords(records);
 
-  const record = createDummyOpenAiRecord();
-  const validation = validatePricingRecord(record);
+    if (validationErrors.length > 0) {
+      return {
+        ok: false,
+        errors: validationErrors,
+      };
+    }
 
-  if (!validation.success) {
+    const previousProviderPricing = current.openai ?? {};
+    const changedRecords = records.filter((record) =>
+      hasPricingChanged(previousProviderPricing[record.model], record),
+    );
+    const nextCurrent = replaceProviderPricing(current, "openai", records);
+
+    await store.saveCurrent(nextCurrent);
+
+    for (const record of changedRecords) {
+      await store.appendHistory(record);
+    }
+
+    const nextHistory = await store.getHistory();
+
+    return {
+      ok: true,
+      changedCount: changedRecords.length,
+      recordCount: records.length,
+      records,
+      current: nextCurrent,
+      history: nextHistory,
+    };
+  } catch (error) {
     return {
       ok: false,
-      errors: validation.errors,
+      errors: [error instanceof Error ? error.message : "collector run failed"],
     };
   }
+}
 
-  const previous = current[record.provider]?.[record.model];
-  const changed = hasPricingChanged(previous, record);
-  const nextCurrent = updateCurrentPricing(current, record);
+function validatePricingRecords(records: PricingRecord[]): string[] {
+  const errors: string[] = [];
 
-  await store.saveCurrent(nextCurrent);
+  for (const record of records) {
+    const validation = validatePricingRecord(record);
 
-  if (changed) {
-    await store.appendHistory(record);
+    if (!validation.success) {
+      errors.push(...validation.errors.map((error) => `${record.provider}/${record.model}: ${error}`));
+    }
   }
 
-  const nextHistory = await store.getHistory();
-
-  return {
-    ok: true,
-    changed,
-    record,
-    current: nextCurrent,
-    history: nextHistory,
-  };
+  return errors;
 }

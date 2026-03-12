@@ -91,6 +91,19 @@ export function updateCurrentPricing(current: CurrentPricing, record: PricingRec
   };
 }
 
+export function replaceProviderPricing(
+  current: CurrentPricing,
+  provider: string,
+  records: PricingRecord[],
+): CurrentPricing {
+  const nextProviderPricing = Object.fromEntries(records.map((record) => [record.model, record]));
+
+  return {
+    ...current,
+    [provider]: nextProviderPricing,
+  };
+}
+
 function isSamePricing(left: Pricing, right: Pricing): boolean {
   const keys = new Set([...Object.keys(left), ...Object.keys(right)]);
 
