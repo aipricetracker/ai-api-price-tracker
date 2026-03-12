@@ -3,6 +3,7 @@ import {
   replaceProviderPricing,
   validatePricingRecord,
 } from "./pricing";
+import { collectAnthropicTextModelPricing } from "./providers/anthropic";
 import { collectOpenAiTextModelPricing } from "./providers/openai";
 import { createFilePricingStore, createNodeFilePricingStoreIO } from "./storage";
 import type { CurrentPricing, PricingHistory, PricingRecord } from "./types";
@@ -54,6 +55,11 @@ type CollectorResult =
       errors: string[];
     };
 
+interface ProviderCollector {
+  provider: string;
+  collect: () => Promise<PricingRecord[]>;
+}
+
 async function runCollector(env: Env): Promise<CollectorResult> {
   const dataDir = env.DATA_DIR;
 
@@ -69,22 +75,30 @@ async function runCollector(env: Env): Promise<CollectorResult> {
       currentPath: `${dataDir}/current-pricing.json`,
       historyPath: `${dataDir}/pricing-history.json`,
     });
-    const current = await store.getCurrent();
-    const records = await collectOpenAiTextModelPricing();
-    const validationErrors = validatePricingRecords(records);
+    let nextCurrent = await store.getCurrent();
+    const allRecords: PricingRecord[] = [];
+    const changedRecords: PricingRecord[] = [];
 
-    if (validationErrors.length > 0) {
-      return {
-        ok: false,
-        errors: validationErrors,
-      };
+    for (const collector of providerCollectors()) {
+      const records = await collector.collect();
+      const validationErrors = validatePricingRecords(records);
+
+      if (validationErrors.length > 0) {
+        return {
+          ok: false,
+          errors: validationErrors,
+        };
+      }
+
+      const previousProviderPricing = nextCurrent[collector.provider] ?? {};
+      const providerChangedRecords = records.filter((record) =>
+        hasPricingChanged(previousProviderPricing[record.model], record),
+      );
+
+      nextCurrent = replaceProviderPricing(nextCurrent, collector.provider, records);
+      allRecords.push(...records);
+      changedRecords.push(...providerChangedRecords);
     }
-
-    const previousProviderPricing = current.openai ?? {};
-    const changedRecords = records.filter((record) =>
-      hasPricingChanged(previousProviderPricing[record.model], record),
-    );
-    const nextCurrent = replaceProviderPricing(current, "openai", records);
 
     await store.saveCurrent(nextCurrent);
 
@@ -97,8 +111,8 @@ async function runCollector(env: Env): Promise<CollectorResult> {
     return {
       ok: true,
       changedCount: changedRecords.length,
-      recordCount: records.length,
-      records,
+      recordCount: allRecords.length,
+      records: allRecords,
       current: nextCurrent,
       history: nextHistory,
     };
@@ -122,4 +136,17 @@ function validatePricingRecords(records: PricingRecord[]): string[] {
   }
 
   return errors;
+}
+
+function providerCollectors(): ProviderCollector[] {
+  return [
+    {
+      provider: "openai",
+      collect: () => collectOpenAiTextModelPricing(),
+    },
+    {
+      provider: "anthropic",
+      collect: () => collectAnthropicTextModelPricing(),
+    },
+  ];
 }
