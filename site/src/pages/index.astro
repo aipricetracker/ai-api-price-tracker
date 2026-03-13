@@ -14,13 +14,7 @@ const title = "AI API Pricing Snapshot";
 
 <BaseLayout title={title} description="Static pricing views generated from current-pricing.json and pricing-history.json.">
   <section class="card">
-    <p class="eyebrow">Overview</p>
-    <p>Static Astro site built directly from the repository JSON data.</p>
-    <ul>
-      <li>{providers.length} providers in the current snapshot</li>
-      <li>Provider detail pages expose current input / cached_input / output prices</li>
-      <li>Model detail pages expose pricing history with changed fields</li>
-    </ul>
+    <p>Track pricing changes across major AI API providers.</p>
   </section>
 
   <section class="card">
@@ -138,5 +132,11 @@ const title = "AI API Pricing Snapshot";
         ))}
       </tbody>
     </table>
+  </section>
+
+  <section class="card">
+    <p class="eyebrow">About this site</p>
+    <p>This site tracks pricing changes across major AI API providers.</p>
+    <p>Data is collected into an append-only history and rendered as a static Astro site.</p>
   </section>
 </BaseLayout>
