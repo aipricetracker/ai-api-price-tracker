@@ -1,6 +1,6 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
-import { getProviderOverviewList } from "../../lib/data";
+import { formatDateShort, getProviderOverviewList } from "../../lib/data";
 
 const providers = await getProviderOverviewList();
 ---
@@ -8,7 +8,8 @@ const providers = await getProviderOverviewList();
 <BaseLayout title="Providers" description="Provider-level view of current AI API pricing data.">
   <section class="card">
     <p class="eyebrow">Provider Index</p>
-    <p class="muted">Each provider page shows the current model snapshot derived from <code>data/current-pricing.json</code>.</p>
+    <p class="muted">This table summarizes the current provider landscape derived from <code>data/current-pricing.json</code>.</p>
+    <p class="muted">Columns: Models = number of tracked models | Total Changes = total number of pricing change events recorded in <code>pricing-history.json</code> | Latest Change = most recent recorded change for the provider</p>
   </section>
 
   <section class="card">
@@ -16,8 +17,10 @@ const providers = await getProviderOverviewList();
       <thead>
         <tr>
           <th>Provider</th>
-          <th>Model Count</th>
           <th>Models</th>
+          <th>Total Changes</th>
+          <th>Latest Change</th>
+          <th>Detail</th>
         </tr>
       </thead>
       <tbody>
@@ -26,8 +29,12 @@ const providers = await getProviderOverviewList();
             <td data-label="Provider">
               <a href={`/providers/${provider.provider}`}>{provider.provider}</a>
             </td>
-            <td data-label="Model Count">{provider.modelCount}</td>
-            <td data-label="Models">{provider.models.join(", ")}</td>
+            <td data-label="Models">{provider.modelCount}</td>
+            <td data-label="Total Changes">{provider.recentChangeCount}</td>
+            <td data-label="Latest Change">{formatDateShort(provider.latestUpdate)}</td>
+            <td data-label="Detail">
+              <a href={`/providers/${provider.provider}`}>View provider</a>
+            </td>
           </tr>
         ))}
       </tbody>

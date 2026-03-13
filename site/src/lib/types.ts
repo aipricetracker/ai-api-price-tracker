@@ -26,6 +26,8 @@ export interface ProviderOverview {
   modelCount: number;
   models: string[];
   cachedInputNote?: string;
+  latestUpdate?: string;
+  recentChangeCount: number;
 }
 
 export interface ProviderModelSummary extends PricingRecord {

@@ -24,16 +24,25 @@ const POC_HISTORY_SIGNATURES = new Set([
 
 export async function getProviderOverviewList(): Promise<ProviderOverview[]> {
   const current = await readCurrentPricing();
+  const history = await readPricingHistory();
+  const visibleHistory = history.filter((record) => !isHiddenPocRecord(record));
+  const changeEventCounts = countProviderChangeEvents(visibleHistory);
 
   return Object.entries(current)
     .map(([provider, models]) => {
       const modelNames = Object.keys(models).sort();
+      const providerHistory = visibleHistory.filter((record) => record.provider === provider);
+      const latestUpdate = providerHistory
+        .map((record) => record.recorded_at)
+        .sort((left, right) => right.localeCompare(left))[0];
 
       return {
         provider,
         modelCount: modelNames.length,
         models: modelNames,
         cachedInputNote: PROVIDER_NOTES[provider],
+        latestUpdate,
+        recentChangeCount: changeEventCounts.get(provider) ?? 0,
       };
     })
     .sort((left, right) => left.provider.localeCompare(right.provider));
@@ -124,6 +133,14 @@ export function formatRecentChangeDate(recordedAt: string, effectiveDate: string
   return `Recorded ${recordedLabel} | Effective ${formatDateLabel(effectiveDate)}`;
 }
 
+export function formatDateShort(value: string | undefined): string {
+  if (!value) {
+    return "-";
+  }
+
+  return formatDateLabel(value);
+}
+
 async function readCurrentPricing(): Promise<CurrentPricing> {
   return readJsonFile<CurrentPricing>(CURRENT_PRICING_PATH, {});
 }
@@ -178,6 +195,35 @@ function buildHistoryEntries(records: PricingRecord[]): HistoryEntry[] {
     fieldDiffs: getFieldDiffs(records[index - 1], record),
     isHiddenPocRecord: false,
   }));
+}
+
+function countProviderChangeEvents(records: PricingRecord[]): Map<string, number> {
+  const groupedRecords = new Map<string, PricingRecord[]>();
+
+  for (const record of records) {
+    const key = `${record.provider}:${record.model}`;
+    const modelHistory = groupedRecords.get(key) ?? [];
+    modelHistory.push(record);
+    groupedRecords.set(key, modelHistory);
+  }
+
+  const counts = new Map<string, number>();
+
+  for (const modelHistory of groupedRecords.values()) {
+    const entries = buildHistoryEntries(
+      modelHistory.sort((left, right) => left.recorded_at.localeCompare(right.recorded_at)),
+    );
+
+    for (const entry of entries) {
+      if (entry.changedFields.includes("initial_record")) {
+        continue;
+      }
+
+      counts.set(entry.record.provider, (counts.get(entry.record.provider) ?? 0) + 1);
+    }
+  }
+
+  return counts;
 }
 
 function getFieldDiffs(previous: PricingRecord | undefined, next: PricingRecord): HistoryFieldDiff[] {
