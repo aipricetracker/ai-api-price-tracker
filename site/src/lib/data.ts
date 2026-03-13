@@ -58,12 +58,29 @@ export async function getModelHistory(provider: string, model: string): Promise<
     .filter((record) => !isHiddenPocRecord(record))
     .sort((left, right) => left.recorded_at.localeCompare(right.recorded_at));
 
-  return visibleHistory.map((record, index) => ({
-    record,
-    changedFields: getChangedFields(visibleHistory[index - 1], record),
-    fieldDiffs: getFieldDiffs(visibleHistory[index - 1], record),
-    isHiddenPocRecord: false,
-  }));
+  return buildHistoryEntries(visibleHistory);
+}
+
+export async function getRecentChanges(limit = 8): Promise<HistoryEntry[]> {
+  const history = await readPricingHistory();
+  const visibleHistory = history.filter((record) => !isHiddenPocRecord(record));
+  const recordsByModel = new Map<string, PricingRecord[]>();
+
+  for (const record of visibleHistory) {
+    const key = `${record.provider}:${record.model}`;
+    const modelHistory = recordsByModel.get(key) ?? [];
+    modelHistory.push(record);
+    recordsByModel.set(key, modelHistory);
+  }
+
+  const entries = [...recordsByModel.values()].flatMap((records) =>
+    buildHistoryEntries(records.sort((left, right) => left.recorded_at.localeCompare(right.recorded_at))),
+  );
+
+  return entries
+    .filter((entry) => !entry.changedFields.includes("initial_record"))
+    .sort((left, right) => right.record.recorded_at.localeCompare(left.record.recorded_at))
+    .slice(0, limit);
 }
 
 export async function getProviderSlugs(): Promise<string[]> {
@@ -87,6 +104,24 @@ export function formatPrice(value: number | undefined): string {
   }
 
   return `${trimTrailingZeros(value)} USD`;
+}
+
+export function summarizeChangedFields(changedFields: string[]): string {
+  const labels = changedFields
+    .map((field) => toChangedFieldSummary(field))
+    .filter((label, index, values) => label !== null && values.indexOf(label) === index);
+
+  return labels.length > 0 ? labels.join(" / ") : "Pricing changed";
+}
+
+export function formatRecentChangeDate(recordedAt: string, effectiveDate: string): string {
+  const recordedLabel = formatDateLabel(recordedAt);
+
+  if (recordedAt.slice(0, 10) === effectiveDate) {
+    return `Recorded ${recordedLabel}`;
+  }
+
+  return `Recorded ${recordedLabel} | Effective ${formatDateLabel(effectiveDate)}`;
 }
 
 async function readCurrentPricing(): Promise<CurrentPricing> {
@@ -134,6 +169,15 @@ function getChangedFields(previous: PricingRecord | undefined, next: PricingReco
   }
 
   return changedFields.length > 0 ? changedFields : ["no_price_change"];
+}
+
+function buildHistoryEntries(records: PricingRecord[]): HistoryEntry[] {
+  return records.map((record, index) => ({
+    record,
+    changedFields: getChangedFields(records[index - 1], record),
+    fieldDiffs: getFieldDiffs(records[index - 1], record),
+    isHiddenPocRecord: false,
+  }));
 }
 
 function getFieldDiffs(previous: PricingRecord | undefined, next: PricingRecord): HistoryFieldDiff[] {
@@ -225,4 +269,42 @@ function formatChangeRate(previous: number | undefined, next: number | undefined
   const sign = rate > 0 ? "+" : "";
 
   return `${sign}${trimTrailingZeros(rate)}%`;
+}
+
+function toChangedFieldSummary(field: string): string | null {
+  if (field === "pricing.input") {
+    return "Input price changed";
+  }
+
+  if (field === "pricing.cached_input") {
+    return "Cached input price changed";
+  }
+
+  if (field === "pricing.output") {
+    return "Output price changed";
+  }
+
+  if (field === "currency") {
+    return "Currency changed";
+  }
+
+  if (field === "unit") {
+    return "Unit changed";
+  }
+
+  return null;
+}
+
+function formatDateLabel(value: string): string {
+  const date = new Date(value);
+
+  if (Number.isNaN(date.getTime())) {
+    return value;
+  }
+
+  return new Intl.DateTimeFormat("en-US", {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+  }).format(date);
 }

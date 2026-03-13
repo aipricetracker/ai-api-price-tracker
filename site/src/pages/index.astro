@@ -1,8 +1,14 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
-import { getProviderOverviewList } from "../lib/data";
+import {
+  formatRecentChangeDate,
+  getProviderOverviewList,
+  getRecentChanges,
+  summarizeChangedFields,
+} from "../lib/data";
 
 const providers = await getProviderOverviewList();
+const recentChanges = await getRecentChanges();
 const title = "AI API Pricing Snapshot";
 ---
 
@@ -15,6 +21,101 @@ const title = "AI API Pricing Snapshot";
       <li>Provider detail pages expose current input / cached_input / output prices</li>
       <li>Model detail pages expose pricing history with changed fields</li>
     </ul>
+  </section>
+
+  <section class="card">
+    <style>
+      .recent-list {
+        display: grid;
+        gap: 14px;
+      }
+
+      .recent-item {
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        padding: 16px;
+        background: rgba(255, 253, 248, 0.8);
+      }
+
+      .recent-head {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px 16px;
+        align-items: baseline;
+        justify-content: space-between;
+        margin-bottom: 10px;
+      }
+
+      .recent-title {
+        margin: 0;
+      }
+
+      .recent-meta {
+        margin: 0 0 12px;
+        color: var(--muted);
+      }
+
+      .recent-summary {
+        margin: 0 0 12px;
+        font-weight: 600;
+      }
+
+      .recent-diffs {
+        display: grid;
+        gap: 10px;
+      }
+
+      .recent-diff {
+        padding: 12px 14px;
+        border-radius: 14px;
+        border: 1px solid color-mix(in srgb, var(--accent) 18%, var(--line));
+        background: color-mix(in srgb, var(--accent-soft) 42%, white);
+      }
+
+      .recent-diff-label {
+        margin: 0 0 4px;
+        font-size: 0.8rem;
+        color: var(--muted);
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+      }
+
+      .recent-diff-value {
+        margin: 0;
+      }
+
+      .recent-diff-rate {
+        margin: 6px 0 0;
+        color: var(--accent);
+        font-size: 0.92rem;
+      }
+    </style>
+    <p class="eyebrow">Recent Changes</p>
+    <p class="muted">Latest visible pricing changes from the append-only history log. PoC seed records are excluded here.</p>
+    <div class="recent-list">
+      {recentChanges.map((entry) => (
+        <article class="recent-item">
+          <div class="recent-head">
+            <h2 class="recent-title">
+              <a href={`/providers/${entry.record.provider}/${entry.record.model}`}>
+                {entry.record.provider} / {entry.record.model}
+              </a>
+            </h2>
+          </div>
+          <p class="recent-summary">{summarizeChangedFields(entry.changedFields)}</p>
+          <p class="recent-meta">{formatRecentChangeDate(entry.record.recorded_at, entry.record.effective_date)}</p>
+          <div class="recent-diffs">
+            {entry.fieldDiffs.map((diff) => (
+              <div class="recent-diff">
+                <p class="recent-diff-label">{diff.label}</p>
+                <p class="recent-diff-value">{diff.before} → {diff.after}</p>
+                {diff.changeRate && <p class="recent-diff-rate">{diff.changeRate}</p>}
+              </div>
+            ))}
+          </div>
+        </article>
+      ))}
+    </div>
   </section>
 
   <section class="card">
