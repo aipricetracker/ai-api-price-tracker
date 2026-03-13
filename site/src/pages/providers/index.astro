@@ -1,39 +1,40 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import { formatDateShort, getProviderOverviewList } from "../../lib/data";
+import { text } from "../../lib/ui-text";
 
 const providers = await getProviderOverviewList();
 ---
 
-<BaseLayout title="Providers" description="Provider-level view of current AI API pricing data.">
+<BaseLayout title={text.providers} description={text.providersMetaDescription}>
   <section class="card">
-    <p class="eyebrow">Provider Index</p>
-    <p class="muted">This table summarizes the current provider landscape derived from <code>data/current-pricing.json</code>.</p>
-    <p class="muted">Columns: Models = number of tracked models | Total Changes = total number of pricing change events recorded in <code>pricing-history.json</code> | Latest Change = most recent recorded change for the provider</p>
+    <p class="eyebrow">{text.providerIndex}</p>
+    <p class="muted">{text.providerIndexDescription}</p>
+    <p class="muted">{text.providerIndexColumnsDescription}</p>
   </section>
 
   <section class="card">
     <table>
       <thead>
         <tr>
-          <th>Provider</th>
-          <th>Models</th>
-          <th>Total Changes</th>
-          <th>Latest Change</th>
-          <th>Detail</th>
+          <th>{text.providerColumn}</th>
+          <th>{text.modelsColumn}</th>
+          <th>{text.totalChangesColumn}</th>
+          <th>{text.latestChangeColumn}</th>
+          <th>{text.detailColumn}</th>
         </tr>
       </thead>
       <tbody>
         {providers.map((provider) => (
           <tr>
-            <td data-label="Provider">
+            <td data-label={text.providerDataLabel}>
               <a href={`/providers/${provider.provider}`}>{provider.provider}</a>
             </td>
-            <td data-label="Models">{provider.modelCount}</td>
-            <td data-label="Total Changes">{provider.recentChangeCount}</td>
-            <td data-label="Latest Change">{formatDateShort(provider.latestUpdate)}</td>
-            <td data-label="Detail">
-              <a href={`/providers/${provider.provider}`}>View provider</a>
+            <td data-label={text.modelsDataLabel}>{provider.modelCount}</td>
+            <td data-label={text.totalChangesDataLabel}>{provider.recentChangeCount}</td>
+            <td data-label={text.latestChangeDataLabel}>{formatDateShort(provider.latestUpdate)}</td>
+            <td data-label={text.detailDataLabel}>
+              <a href={`/providers/${provider.provider}`}>{text.viewProvider}</a>
             </td>
           </tr>
         ))}

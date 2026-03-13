@@ -5,11 +5,12 @@ import {
   getAllChanges,
   summarizeChangedFields,
 } from "../lib/data";
+import { text } from "../lib/ui-text";
 
 const changes = await getAllChanges();
 ---
 
-<BaseLayout title="Changes" description="Full list of AI API pricing change events.">
+<BaseLayout title={text.changesPageTitle} description={text.changesMetaDescription}>
   <section class="card">
     <style>
       .changes-list {
@@ -77,8 +78,8 @@ const changes = await getAllChanges();
         font-size: 0.92rem;
       }
     </style>
-    <p class="eyebrow">All Change Events</p>
-    <p class="muted">Newest change events first. Initial observation records are excluded from this view.</p>
+    <p class="eyebrow">{text.allChangeEvents}</p>
+    <p class="muted">{text.changesPageDescription}</p>
     <div class="changes-list">
       {changes.map((entry) => (
         <article class="change-item">

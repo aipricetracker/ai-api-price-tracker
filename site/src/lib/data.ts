@@ -8,13 +8,14 @@ import type {
   ProviderModelSummary,
   ProviderOverview,
 } from "./types";
+import { DEFAULT_LOCALE } from "./locale";
+import { text } from "./ui-text";
 
 const CURRENT_PRICING_PATH = new URL("../../../data/current-pricing.json", import.meta.url);
 const PRICING_HISTORY_PATH = new URL("../../../data/pricing-history.json", import.meta.url);
 
 const PROVIDER_NOTES: Record<string, string | undefined> = {
-  anthropic:
-    "Anthropic の cached_input は Prompt caching Read price の近似マッピングです。",
+  anthropic: text.cachedInputNoteAnthropic,
 };
 
 const POC_HISTORY_SIGNATURES = new Set([
@@ -110,17 +111,17 @@ export function summarizeChangedFields(changedFields: string[]): string {
     .map((field) => toChangedFieldSummary(field))
     .filter((label, index, values) => label !== null && values.indexOf(label) === index);
 
-  return labels.length > 0 ? labels.join(" / ") : "Pricing changed";
+  return labels.length > 0 ? labels.join(" / ") : text.pricingChangedFallback;
 }
 
 export function formatRecentChangeDate(recordedAt: string, effectiveDate: string): string {
   const recordedLabel = formatDateLabel(recordedAt);
 
   if (recordedAt.slice(0, 10) === effectiveDate) {
-    return `Recorded ${recordedLabel}`;
+    return `${text.recordedPrefix} ${recordedLabel}`;
   }
 
-  return `Recorded ${recordedLabel} | Effective ${formatDateLabel(effectiveDate)}`;
+  return `${text.recordedPrefix} ${recordedLabel} | ${text.effectivePrefix} ${formatDateLabel(effectiveDate)}`;
 }
 
 export function formatDateShort(value: string | undefined): string {
@@ -240,9 +241,9 @@ function getFieldDiffs(previous: PricingRecord | undefined, next: PricingRecord)
     return [
       {
         field: "initial_record",
-        label: "Initial record",
+        label: text.initialRecordLabel,
         before: "-",
-        after: "First visible record",
+        after: text.firstVisibleRecordLabel,
       },
     ];
   }
@@ -264,7 +265,7 @@ function getFieldDiffs(previous: PricingRecord | undefined, next: PricingRecord)
   if (previous.currency !== next.currency) {
     diffs.push({
       field: "currency",
-      label: "Currency",
+      label: text.currencyLabel,
       before: previous.currency,
       after: next.currency,
     });
@@ -273,7 +274,7 @@ function getFieldDiffs(previous: PricingRecord | undefined, next: PricingRecord)
   if (previous.unit !== next.unit) {
     diffs.push({
       field: "unit",
-      label: "Unit",
+      label: text.unitLabel,
       before: previous.unit,
       after: next.unit,
     });
@@ -297,15 +298,15 @@ function trimTrailingZeros(value: number): string {
 
 function toFieldLabel(field: string): string {
   if (field === "input") {
-    return "Input";
+    return text.inputColumn;
   }
 
   if (field === "cached_input") {
-    return "Cached input";
+    return text.cachedInputColumn;
   }
 
   if (field === "output") {
-    return "Output";
+    return text.outputColumn;
   }
 
   return field;
@@ -328,23 +329,23 @@ function formatChangeRate(previous: number | undefined, next: number | undefined
 
 function toChangedFieldSummary(field: string): string | null {
   if (field === "pricing.input") {
-    return "Input price changed";
+    return text.inputPriceChanged;
   }
 
   if (field === "pricing.cached_input") {
-    return "Cached input price changed";
+    return text.cachedInputPriceChanged;
   }
 
   if (field === "pricing.output") {
-    return "Output price changed";
+    return text.outputPriceChanged;
   }
 
   if (field === "currency") {
-    return "Currency changed";
+    return text.currencyChanged;
   }
 
   if (field === "unit") {
-    return "Unit changed";
+    return text.unitChanged;
   }
 
   return null;
@@ -357,7 +358,7 @@ function formatDateLabel(value: string): string {
     return value;
   }
 
-  return new Intl.DateTimeFormat("en-US", {
+  return new Intl.DateTimeFormat(DEFAULT_LOCALE, {
     year: "numeric",
     month: "short",
     day: "numeric",

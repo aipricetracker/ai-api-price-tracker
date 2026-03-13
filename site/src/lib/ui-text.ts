@@ -1,0 +1,88 @@
+export const text = {
+  siteName: "AI API Price Tracker",
+  home: "Home",
+  changes: "Changes",
+  defaultMetaDescription: "Static pricing tracker for AI API models.",
+  homepageMetaDescription:
+    "Static pricing views generated from current-pricing.json and pricing-history.json.",
+
+  heroTitle: "AI API Pricing Snapshot",
+  heroSubtitle: "Track pricing changes across major AI API providers.",
+
+  recentChanges: "Recent Changes",
+  recentChangesDescription:
+    "Latest visible pricing changes from the append-only history log. PoC seed records are excluded here.",
+  pricingChangedFallback: "Pricing changed",
+  recordedPrefix: "Recorded",
+  effectivePrefix: "Effective",
+  viewAllChanges: "View all changes →",
+
+  providers: "Providers",
+  providersMetaDescription: "Provider-level view of current AI API pricing data.",
+  providerIndex: "Provider Index",
+  providerIndexDescription:
+    "This table summarizes the current provider landscape derived from data/current-pricing.json.",
+  providerIndexColumnsDescription:
+    "Columns: Models = number of tracked models | Total Changes = total number of pricing change events recorded in pricing-history.json | Latest Change = most recent recorded change for the provider",
+  providerColumn: "Provider",
+  modelsColumn: "Models",
+  totalChangesColumn: "Total Changes",
+  latestChangeColumn: "Latest Change",
+  detailColumn: "Detail",
+  viewProvider: "View provider",
+  pricingTitleSuffix: "Pricing",
+
+  aboutTitle: "About this site",
+  aboutDescription:
+    "This site tracks pricing changes across major AI API providers. Data is collected into an append-only history and rendered as a static Astro site.",
+  footerText: "Static pricing tracker built from append-only change history.",
+
+  changesPageTitle: "AI API Price Changes",
+  changesMetaDescription: "Full list of AI API pricing change events.",
+  allChangeEvents: "All Change Events",
+  changesPageDescription:
+    "Newest change events first. Initial observation records are excluded from this view.",
+
+  currentSnapshot: "Current Snapshot",
+  currentSnapshotMetaDescriptionPrefix: "Current pricing snapshot for",
+  modelDetail: "Model Detail",
+  pricingHistory: "Pricing History",
+  forConnector: "for",
+  historyTitleSuffix: "History",
+  historyView: "View history",
+  currentSnapshotCountSuffix: "models in the current snapshot.",
+  cachedInputNoteAnthropic:
+    "Anthropic の cached_input は Prompt caching Read price の近似マッピングです。",
+  pricingHistoryDescription:
+    "PoC seed records are temporarily hidden in the UI to avoid noise while keeping the underlying history append-only.",
+  recordedAt: "Recorded at",
+  effectiveDate: "Effective date",
+  changedFields: "Changed fields",
+  currentInput: "Current input",
+  currentCachedInput: "Current cached input",
+  currentOutput: "Current output",
+  providerDataLabel: "Provider",
+  modelsDataLabel: "Models",
+  totalChangesDataLabel: "Total Changes",
+  latestChangeDataLabel: "Latest Change",
+  detailDataLabel: "Detail",
+  modelDataLabel: "Model",
+  inputDataLabel: "Input",
+  cachedInputDataLabel: "Cached input",
+  outputDataLabel: "Output",
+  historyDataLabel: "History",
+  modelColumn: "Model",
+  inputColumn: "Input",
+  cachedInputColumn: "Cached input",
+  outputColumn: "Output",
+  historyColumn: "History",
+  initialRecordLabel: "Initial record",
+  firstVisibleRecordLabel: "First visible record",
+  currencyLabel: "Currency",
+  unitLabel: "Unit",
+  inputPriceChanged: "Input price changed",
+  cachedInputPriceChanged: "Cached input price changed",
+  outputPriceChanged: "Output price changed",
+  currencyChanged: "Currency changed",
+  unitChanged: "Unit changed",
+} as const;

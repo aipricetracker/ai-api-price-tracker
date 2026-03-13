@@ -1,6 +1,7 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import { formatPrice, getProviderModelList, getProviderSlugs } from "../../lib/data";
+import { text } from "../../lib/ui-text";
 
 export async function getStaticPaths() {
   const providers = await getProviderSlugs();
@@ -17,10 +18,13 @@ if (models.length < 1) {
 const cachedInputNote = models.find((model) => model.cachedInputNote)?.cachedInputNote;
 ---
 
-<BaseLayout title={`${provider} models`} description={`Current pricing snapshot for ${provider}.`}>
+<BaseLayout
+  title={`${provider} ${text.pricingTitleSuffix}`}
+  description={`${text.currentSnapshotMetaDescriptionPrefix} ${provider}.`}
+>
   <section class="card">
-    <p class="eyebrow">Current Snapshot</p>
-    <p class="muted">{models.length} models in the current snapshot.</p>
+    <p class="eyebrow">{text.currentSnapshot}</p>
+    <p class="muted">{models.length} {text.currentSnapshotCountSuffix}</p>
     {cachedInputNote && <p class="note">{cachedInputNote}</p>}
   </section>
 
@@ -28,22 +32,22 @@ const cachedInputNote = models.find((model) => model.cachedInputNote)?.cachedInp
     <table>
       <thead>
         <tr>
-          <th>Model</th>
-          <th>Input</th>
-          <th>Cached input</th>
-          <th>Output</th>
-          <th>History</th>
+          <th>{text.modelColumn}</th>
+          <th>{text.inputColumn}</th>
+          <th>{text.cachedInputColumn}</th>
+          <th>{text.outputColumn}</th>
+          <th>{text.historyColumn}</th>
         </tr>
       </thead>
       <tbody>
         {models.map((model) => (
           <tr>
-            <td data-label="Model">{model.model}</td>
-            <td data-label="Input">{formatPrice(model.pricing.input)}</td>
-            <td data-label="Cached input">{formatPrice(model.pricing.cached_input)}</td>
-            <td data-label="Output">{formatPrice(model.pricing.output)}</td>
-            <td data-label="History">
-              <a href={`/providers/${provider}/${model.model}`}>View history</a>
+            <td data-label={text.modelDataLabel}>{model.model}</td>
+            <td data-label={text.inputDataLabel}>{formatPrice(model.pricing.input)}</td>
+            <td data-label={text.cachedInputDataLabel}>{formatPrice(model.pricing.cached_input)}</td>
+            <td data-label={text.outputDataLabel}>{formatPrice(model.pricing.output)}</td>
+            <td data-label={text.historyDataLabel}>
+              <a href={`/providers/${provider}/${model.model}`}>{text.historyView}</a>
             </td>
           </tr>
         ))}

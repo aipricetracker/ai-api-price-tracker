@@ -1,13 +1,16 @@
 ---
+import { DEFAULT_LANG } from "../lib/locale";
+import { text } from "../lib/ui-text";
+
 interface Props {
   title: string;
   description?: string;
 }
 
-const { title, description = "Static pricing tracker for AI API models." } = Astro.props;
+const { title, description = text.defaultMetaDescription } = Astro.props;
 ---
 
-<html lang="en">
+<html lang={DEFAULT_LANG}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -65,6 +68,14 @@ const { title, description = "Static pricing tracker for AI API models." } = Ast
       main {
         display: grid;
         gap: 16px;
+      }
+
+      footer {
+        margin-top: 28px;
+        padding-top: 18px;
+        border-top: 1px solid var(--line);
+        color: var(--muted);
+        font-size: 0.92rem;
       }
 
       .card {
@@ -155,17 +166,21 @@ const { title, description = "Static pricing tracker for AI API models." } = Ast
     <div class="shell">
       <header>
         <div>
-          <p class="eyebrow">AI API Price Tracker</p>
+          <p class="eyebrow">{text.siteName}</p>
           <h1>{title}</h1>
         </div>
         <nav>
-          <a href="/">Home</a>
-          <a href="/providers">Providers</a>
+          <a href="/">{text.home}</a>
+          <a href="/changes">{text.changes}</a>
+          <a href="/providers">{text.providers}</a>
         </nav>
       </header>
       <main>
         <slot />
       </main>
+      <footer>
+        <p>{text.footerText}</p>
+      </footer>
     </div>
   </body>
 </html>

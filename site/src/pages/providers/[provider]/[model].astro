@@ -1,6 +1,7 @@
 ---
 import BaseLayout from "../../../layouts/BaseLayout.astro";
 import { formatPrice, getCurrentModel, getModelHistory, getProviderModelSlugs, getProviderSlugs } from "../../../lib/data";
+import { text } from "../../../lib/ui-text";
 
 export async function getStaticPaths() {
   const providers = await getProviderSlugs();
@@ -28,14 +29,17 @@ if (!currentRecord) {
 const history = await getModelHistory(provider, model);
 ---
 
-<BaseLayout title={`${model} history`} description={`Pricing history for ${provider}/${model}.`}>
+<BaseLayout
+  title={`${model} ${text.historyTitleSuffix}`}
+  description={`${text.pricingHistory} ${text.forConnector} ${provider}/${model}.`}
+>
   <section class="card">
-    <p class="eyebrow">Model Detail</p>
-    <p><strong>Provider:</strong> {provider}</p>
-    <p><strong>Model:</strong> {model}</p>
-    <p><strong>Current input:</strong> {formatPrice(currentRecord.pricing.input)}</p>
-    <p><strong>Current cached input:</strong> {formatPrice(currentRecord.pricing.cached_input)}</p>
-    <p><strong>Current output:</strong> {formatPrice(currentRecord.pricing.output)}</p>
+    <p class="eyebrow">{text.modelDetail}</p>
+    <p><strong>{text.providerColumn}:</strong> {provider}</p>
+    <p><strong>{text.modelColumn}:</strong> {model}</p>
+    <p><strong>{text.currentInput}:</strong> {formatPrice(currentRecord.pricing.input)}</p>
+    <p><strong>{text.currentCachedInput}:</strong> {formatPrice(currentRecord.pricing.cached_input)}</p>
+    <p><strong>{text.currentOutput}:</strong> {formatPrice(currentRecord.pricing.output)}</p>
     {currentRecord.cachedInputNote && <p class="note">{currentRecord.cachedInputNote}</p>}
   </section>
 
@@ -90,15 +94,15 @@ const history = await getModelHistory(provider, model);
         font-size: 0.92rem;
       }
     </style>
-    <p class="eyebrow">Pricing History</p>
-    <p class="muted">PoC seed records are temporarily hidden in the UI to avoid noise while keeping the underlying history append-only.</p>
+    <p class="eyebrow">{text.pricingHistory}</p>
+    <p class="muted">{text.pricingHistoryDescription}</p>
     <div class="history-list">
       {history.map((entry) => (
         <article class="history-item">
           <div class="history-meta">
-            <div><strong>Recorded at:</strong> {entry.record.recorded_at}</div>
-            <div><strong>Effective date:</strong> {entry.record.effective_date}</div>
-            <div><strong>Changed fields:</strong> {entry.changedFields.join(", ")}</div>
+            <div><strong>{text.recordedAt}:</strong> {entry.record.recorded_at}</div>
+            <div><strong>{text.effectiveDate}:</strong> {entry.record.effective_date}</div>
+            <div><strong>{text.changedFields}:</strong> {entry.changedFields.join(", ")}</div>
           </div>
 
           <div class="diff-list">

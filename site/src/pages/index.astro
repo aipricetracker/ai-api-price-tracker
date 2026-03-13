@@ -6,15 +6,16 @@ import {
   getRecentChanges,
   summarizeChangedFields,
 } from "../lib/data";
+import { text } from "../lib/ui-text";
 
 const providers = await getProviderOverviewList();
 const recentChanges = await getRecentChanges(3);
-const title = "AI API Pricing Snapshot";
+const title = text.heroTitle;
 ---
 
-<BaseLayout title={title} description="Static pricing views generated from current-pricing.json and pricing-history.json.">
+<BaseLayout title={title} description={text.homepageMetaDescription}>
   <section class="card">
-    <p>Track pricing changes across major AI API providers.</p>
+    <p>{text.heroSubtitle}</p>
   </section>
 
   <section class="card">
@@ -84,8 +85,8 @@ const title = "AI API Pricing Snapshot";
         font-size: 0.92rem;
       }
     </style>
-    <p class="eyebrow">Recent Changes</p>
-    <p class="muted">Latest visible pricing changes from the append-only history log. PoC seed records are excluded here.</p>
+    <p class="eyebrow">{text.recentChanges}</p>
+    <p class="muted">{text.recentChangesDescription}</p>
     <div class="recent-list">
       {recentChanges.map((entry) => (
         <article class="recent-item">
@@ -110,25 +111,25 @@ const title = "AI API Pricing Snapshot";
         </article>
       ))}
     </div>
-    <p><a href="/changes">View all changes →</a></p>
+    <p><a href="/changes">{text.viewAllChanges}</a></p>
   </section>
 
   <section class="card">
-    <p class="eyebrow">Providers</p>
+    <p class="eyebrow">{text.providers}</p>
     <table>
       <thead>
         <tr>
-          <th>Provider</th>
-          <th>Models</th>
+          <th>{text.providerColumn}</th>
+          <th>{text.modelsColumn}</th>
         </tr>
       </thead>
       <tbody>
         {providers.map((provider) => (
           <tr>
-            <td data-label="Provider">
+            <td data-label={text.providerDataLabel}>
               <a href={`/providers/${provider.provider}`}>{provider.provider}</a>
             </td>
-            <td data-label="Models">{provider.modelCount}</td>
+            <td data-label={text.modelsDataLabel}>{provider.modelCount}</td>
           </tr>
         ))}
       </tbody>
@@ -136,8 +137,7 @@ const title = "AI API Pricing Snapshot";
   </section>
 
   <section class="card">
-    <p class="eyebrow">About this site</p>
-    <p>This site tracks pricing changes across major AI API providers.</p>
-    <p>Data is collected into an append-only history and rendered as a static Astro site.</p>
+    <p class="eyebrow">{text.aboutTitle}</p>
+    <p>{text.aboutDescription}</p>
   </section>
 </BaseLayout>
