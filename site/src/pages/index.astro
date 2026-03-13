@@ -1,17 +1,41 @@
 ---
-const title = "AI API Price Tracker";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import { getProviderOverviewList } from "../lib/data";
+
+const providers = await getProviderOverviewList();
+const title = "AI API Pricing Snapshot";
 ---
 
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>{title}</title>
-  </head>
-  <body>
-    <main>
-      <h1>{title}</h1>
-      <p>Static site PoC for AI API pricing data.</p>
-    </main>
-  </body>
-</html>
+<BaseLayout title={title} description="Static pricing views generated from current-pricing.json and pricing-history.json.">
+  <section class="card">
+    <p class="eyebrow">Overview</p>
+    <p>Static Astro site built directly from the repository JSON data.</p>
+    <ul>
+      <li>{providers.length} providers in the current snapshot</li>
+      <li>Provider detail pages expose current input / cached_input / output prices</li>
+      <li>Model detail pages expose pricing history with changed fields</li>
+    </ul>
+  </section>
+
+  <section class="card">
+    <p class="eyebrow">Providers</p>
+    <table>
+      <thead>
+        <tr>
+          <th>Provider</th>
+          <th>Models</th>
+        </tr>
+      </thead>
+      <tbody>
+        {providers.map((provider) => (
+          <tr>
+            <td data-label="Provider">
+              <a href={`/providers/${provider.provider}`}>{provider.provider}</a>
+            </td>
+            <td data-label="Models">{provider.modelCount}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </section>
+</BaseLayout>

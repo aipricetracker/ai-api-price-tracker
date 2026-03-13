@@ -1,0 +1,53 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { formatPrice, getProviderModelList, getProviderSlugs } from "../../lib/data";
+
+export async function getStaticPaths() {
+  const providers = await getProviderSlugs();
+  return providers.map((provider) => ({ params: { provider } }));
+}
+
+const provider = Astro.params.provider ?? "";
+const models = await getProviderModelList(provider);
+
+if (models.length < 1) {
+  return Astro.redirect("/providers");
+}
+
+const cachedInputNote = models.find((model) => model.cachedInputNote)?.cachedInputNote;
+---
+
+<BaseLayout title={`${provider} models`} description={`Current pricing snapshot for ${provider}.`}>
+  <section class="card">
+    <p class="eyebrow">Current Snapshot</p>
+    <p class="muted">{models.length} models in the current snapshot.</p>
+    {cachedInputNote && <p class="note">{cachedInputNote}</p>}
+  </section>
+
+  <section class="card">
+    <table>
+      <thead>
+        <tr>
+          <th>Model</th>
+          <th>Input</th>
+          <th>Cached input</th>
+          <th>Output</th>
+          <th>History</th>
+        </tr>
+      </thead>
+      <tbody>
+        {models.map((model) => (
+          <tr>
+            <td data-label="Model">{model.model}</td>
+            <td data-label="Input">{formatPrice(model.pricing.input)}</td>
+            <td data-label="Cached input">{formatPrice(model.pricing.cached_input)}</td>
+            <td data-label="Output">{formatPrice(model.pricing.output)}</td>
+            <td data-label="History">
+              <a href={`/providers/${provider}/${model.model}`}>View history</a>
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </section>
+</BaseLayout>

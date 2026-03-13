@@ -191,5 +191,19 @@
     "source_url": "https://claude.com/pricing",
     "effective_date": "2026-03-12",
     "recorded_at": "2026-03-12T17:01:21.146Z"
+  },
+  {
+    "provider": "openai",
+    "model": "gpt-5-mini",
+    "pricing": {
+      "input": 0.3,
+      "output": 2,
+      "cached_input": 0.025
+    },
+    "currency": "USD",
+    "unit": "1M tokens",
+    "source_url": "https://openai.com/api/pricing/",
+    "effective_date": "2026-03-14",
+    "recorded_at": "2026-03-14T01:12:00.000Z"
   }
 ]

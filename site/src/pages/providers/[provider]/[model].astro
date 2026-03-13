@@ -1,0 +1,117 @@
+---
+import BaseLayout from "../../../layouts/BaseLayout.astro";
+import { formatPrice, getCurrentModel, getModelHistory, getProviderModelSlugs, getProviderSlugs } from "../../../lib/data";
+
+export async function getStaticPaths() {
+  const providers = await getProviderSlugs();
+  const paths = [];
+
+  for (const provider of providers) {
+    const models = await getProviderModelSlugs(provider);
+
+    for (const model of models) {
+      paths.push({ params: { provider, model } });
+    }
+  }
+
+  return paths;
+}
+
+const provider = Astro.params.provider ?? "";
+const model = Astro.params.model ?? "";
+const currentRecord = await getCurrentModel(provider, model);
+
+if (!currentRecord) {
+  return Astro.redirect("/providers");
+}
+
+const history = await getModelHistory(provider, model);
+---
+
+<BaseLayout title={`${model} history`} description={`Pricing history for ${provider}/${model}.`}>
+  <section class="card">
+    <p class="eyebrow">Model Detail</p>
+    <p><strong>Provider:</strong> {provider}</p>
+    <p><strong>Model:</strong> {model}</p>
+    <p><strong>Current input:</strong> {formatPrice(currentRecord.pricing.input)}</p>
+    <p><strong>Current cached input:</strong> {formatPrice(currentRecord.pricing.cached_input)}</p>
+    <p><strong>Current output:</strong> {formatPrice(currentRecord.pricing.output)}</p>
+    {currentRecord.cachedInputNote && <p class="note">{currentRecord.cachedInputNote}</p>}
+  </section>
+
+  <section class="card">
+    <style>
+      .history-list {
+        display: grid;
+        gap: 16px;
+      }
+
+      .history-item {
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        padding: 16px;
+        background: rgba(255, 253, 248, 0.78);
+      }
+
+      .history-meta {
+        display: grid;
+        gap: 4px;
+        margin-bottom: 14px;
+      }
+
+      .diff-list {
+        display: grid;
+        gap: 12px;
+      }
+
+      .diff-item {
+        padding: 12px 14px;
+        border-radius: 14px;
+        border: 1px solid color-mix(in srgb, var(--accent) 18%, var(--line));
+        background: color-mix(in srgb, var(--accent-soft) 42%, white);
+      }
+
+      .diff-label {
+        margin: 0 0 4px;
+        font-size: 0.8rem;
+        color: var(--muted);
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+      }
+
+      .diff-value {
+        margin: 0;
+        font-size: 1.05rem;
+      }
+
+      .diff-rate {
+        margin: 6px 0 0;
+        color: var(--accent);
+        font-size: 0.92rem;
+      }
+    </style>
+    <p class="eyebrow">Pricing History</p>
+    <p class="muted">PoC seed records are temporarily hidden in the UI to avoid noise while keeping the underlying history append-only.</p>
+    <div class="history-list">
+      {history.map((entry) => (
+        <article class="history-item">
+          <div class="history-meta">
+            <div><strong>Recorded at:</strong> {entry.record.recorded_at}</div>
+            <div><strong>Effective date:</strong> {entry.record.effective_date}</div>
+            <div><strong>Changed fields:</strong> {entry.changedFields.join(", ")}</div>
+          </div>
+
+          <div class="diff-list">
+            {entry.fieldDiffs.map((diff) => (
+              <div class="diff-item">
+                <p class="diff-label">{diff.label}</p>
+                <p class="diff-value">{diff.before} → {diff.after}</p>
+                {diff.changeRate && <p class="diff-rate">{diff.changeRate}</p>}
+              </div>
+            ))}
+          </div>
+        </article>
+      ))}
+    </div>
+  </section>
+</BaseLayout>

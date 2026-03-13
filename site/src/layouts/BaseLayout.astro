@@ -1,0 +1,171 @@
+---
+interface Props {
+  title: string;
+  description?: string;
+}
+
+const { title, description = "Static pricing tracker for AI API models." } = Astro.props;
+---
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <style>
+      :root {
+        color-scheme: light;
+        --bg: #f6f4ee;
+        --panel: #fffdf8;
+        --ink: #1c1a16;
+        --muted: #6d665b;
+        --line: #d8d0c4;
+        --accent: #1f6d52;
+        --accent-soft: #dff0e8;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        font-family: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", serif;
+        background:
+          radial-gradient(circle at top left, #f3ead0 0, transparent 32%),
+          linear-gradient(180deg, #f9f5eb 0%, var(--bg) 100%);
+        color: var(--ink);
+      }
+
+      a {
+        color: var(--accent);
+      }
+
+      .shell {
+        width: min(1040px, calc(100% - 32px));
+        margin: 0 auto;
+        padding: 32px 0 56px;
+      }
+
+      header {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px 20px;
+        align-items: baseline;
+        justify-content: space-between;
+        margin-bottom: 24px;
+      }
+
+      nav {
+        display: flex;
+        gap: 14px;
+      }
+
+      main {
+        display: grid;
+        gap: 16px;
+      }
+
+      .card {
+        background: color-mix(in srgb, var(--panel) 92%, white);
+        border: 1px solid var(--line);
+        border-radius: 18px;
+        padding: 20px;
+        box-shadow: 0 10px 30px rgba(28, 26, 22, 0.05);
+      }
+
+      .eyebrow {
+        margin: 0 0 8px;
+        color: var(--muted);
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        font-size: 0.78rem;
+      }
+
+      h1,
+      h2,
+      h3,
+      p {
+        margin-top: 0;
+      }
+
+      ul {
+        margin: 0;
+        padding-left: 18px;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+
+      th,
+      td {
+        padding: 10px 8px;
+        text-align: left;
+        border-bottom: 1px solid var(--line);
+        vertical-align: top;
+      }
+
+      .note {
+        padding: 12px 14px;
+        border-radius: 14px;
+        background: var(--accent-soft);
+      }
+
+      .muted {
+        color: var(--muted);
+      }
+
+      @media (max-width: 720px) {
+        .shell {
+          width: min(100% - 24px, 1040px);
+          padding-top: 24px;
+        }
+
+        table,
+        thead,
+        tbody,
+        th,
+        td,
+        tr {
+          display: block;
+        }
+
+        thead {
+          display: none;
+        }
+
+        td {
+          padding: 8px 0;
+        }
+
+        td::before {
+          content: attr(data-label);
+          display: block;
+          font-size: 0.8rem;
+          color: var(--muted);
+          margin-bottom: 2px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="shell">
+      <header>
+        <div>
+          <p class="eyebrow">AI API Price Tracker</p>
+          <h1>{title}</h1>
+        </div>
+        <nav>
+          <a href="/">Home</a>
+          <a href="/providers">Providers</a>
+        </nav>
+      </header>
+      <main>
+        <slot />
+      </main>
+    </div>
+  </body>
+</html>

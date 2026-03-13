@@ -1,0 +1,36 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { getProviderOverviewList } from "../../lib/data";
+
+const providers = await getProviderOverviewList();
+---
+
+<BaseLayout title="Providers" description="Provider-level view of current AI API pricing data.">
+  <section class="card">
+    <p class="eyebrow">Provider Index</p>
+    <p class="muted">Each provider page shows the current model snapshot derived from <code>data/current-pricing.json</code>.</p>
+  </section>
+
+  <section class="card">
+    <table>
+      <thead>
+        <tr>
+          <th>Provider</th>
+          <th>Model Count</th>
+          <th>Models</th>
+        </tr>
+      </thead>
+      <tbody>
+        {providers.map((provider) => (
+          <tr>
+            <td data-label="Provider">
+              <a href={`/providers/${provider.provider}`}>{provider.provider}</a>
+            </td>
+            <td data-label="Model Count">{provider.modelCount}</td>
+            <td data-label="Models">{provider.models.join(", ")}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </section>
+</BaseLayout>
