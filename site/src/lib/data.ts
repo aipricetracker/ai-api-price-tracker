@@ -71,25 +71,15 @@ export async function getModelHistory(provider: string, model: string): Promise<
 }
 
 export async function getRecentChanges(limit = 8): Promise<HistoryEntry[]> {
+  const entries = await getAllChanges();
+  return entries.slice(0, limit);
+}
+
+export async function getAllChanges(): Promise<HistoryEntry[]> {
   const history = await readPricingHistory();
   const visibleHistory = history.filter((record) => !isHiddenPocRecord(record));
-  const recordsByModel = new Map<string, PricingRecord[]>();
 
-  for (const record of visibleHistory) {
-    const key = `${record.provider}:${record.model}`;
-    const modelHistory = recordsByModel.get(key) ?? [];
-    modelHistory.push(record);
-    recordsByModel.set(key, modelHistory);
-  }
-
-  const entries = [...recordsByModel.values()].flatMap((records) =>
-    buildHistoryEntries(records.sort((left, right) => left.recorded_at.localeCompare(right.recorded_at))),
-  );
-
-  return entries
-    .filter((entry) => !entry.changedFields.includes("initial_record"))
-    .sort((left, right) => right.record.recorded_at.localeCompare(left.record.recorded_at))
-    .slice(0, limit);
+  return buildChangeEntriesForDisplay(visibleHistory);
 }
 
 export async function getProviderSlugs(): Promise<string[]> {
@@ -224,6 +214,25 @@ function countProviderChangeEvents(records: PricingRecord[]): Map<string, number
   }
 
   return counts;
+}
+
+function buildChangeEntriesForDisplay(records: PricingRecord[]): HistoryEntry[] {
+  const recordsByModel = new Map<string, PricingRecord[]>();
+
+  for (const record of records) {
+    const key = `${record.provider}:${record.model}`;
+    const modelHistory = recordsByModel.get(key) ?? [];
+    modelHistory.push(record);
+    recordsByModel.set(key, modelHistory);
+  }
+
+  const entries = [...recordsByModel.values()].flatMap((modelHistory) =>
+    buildHistoryEntries(modelHistory.sort((left, right) => left.recorded_at.localeCompare(right.recorded_at))),
+  );
+
+  return entries
+    .filter((entry) => !entry.changedFields.includes("initial_record"))
+    .sort((left, right) => right.record.recorded_at.localeCompare(left.record.recorded_at));
 }
 
 function getFieldDiffs(previous: PricingRecord | undefined, next: PricingRecord): HistoryFieldDiff[] {

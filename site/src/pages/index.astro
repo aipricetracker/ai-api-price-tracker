@@ -8,7 +8,7 @@ import {
 } from "../lib/data";
 
 const providers = await getProviderOverviewList();
-const recentChanges = await getRecentChanges();
+const recentChanges = await getRecentChanges(3);
 const title = "AI API Pricing Snapshot";
 ---
 
@@ -110,6 +110,7 @@ const title = "AI API Pricing Snapshot";
         </article>
       ))}
     </div>
+    <p><a href="/changes">View all changes →</a></p>
   </section>
 
   <section class="card">

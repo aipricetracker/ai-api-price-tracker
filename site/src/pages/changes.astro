@@ -1,0 +1,107 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import {
+  formatRecentChangeDate,
+  getAllChanges,
+  summarizeChangedFields,
+} from "../lib/data";
+
+const changes = await getAllChanges();
+---
+
+<BaseLayout title="Changes" description="Full list of AI API pricing change events.">
+  <section class="card">
+    <style>
+      .changes-list {
+        display: grid;
+        gap: 14px;
+      }
+
+      .change-item {
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        padding: 16px;
+        background: rgba(255, 253, 248, 0.8);
+      }
+
+      .change-head {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px 16px;
+        align-items: baseline;
+        justify-content: space-between;
+        margin-bottom: 10px;
+      }
+
+      .change-title {
+        margin: 0;
+      }
+
+      .change-meta {
+        margin: 0 0 12px;
+        color: var(--muted);
+      }
+
+      .change-summary {
+        margin: 0 0 12px;
+        font-weight: 600;
+      }
+
+      .change-diffs {
+        display: grid;
+        gap: 10px;
+      }
+
+      .change-diff {
+        padding: 12px 14px;
+        border-radius: 14px;
+        border: 1px solid color-mix(in srgb, var(--accent) 18%, var(--line));
+        background: color-mix(in srgb, var(--accent-soft) 42%, white);
+      }
+
+      .change-diff-label {
+        margin: 0 0 4px;
+        font-size: 0.8rem;
+        color: var(--muted);
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+      }
+
+      .change-diff-value {
+        margin: 0;
+      }
+
+      .change-diff-rate {
+        margin: 6px 0 0;
+        color: var(--accent);
+        font-size: 0.92rem;
+      }
+    </style>
+    <p class="eyebrow">All Change Events</p>
+    <p class="muted">Newest change events first. Initial observation records are excluded from this view.</p>
+    <div class="changes-list">
+      {changes.map((entry) => (
+        <article class="change-item">
+          <div class="change-head">
+            <h2 class="change-title">
+              <a href={`/providers/${entry.record.provider}/${entry.record.model}`}>
+                {entry.record.provider} / {entry.record.model}
+              </a>
+            </h2>
+          </div>
+          <p class="change-summary">{summarizeChangedFields(entry.changedFields)}</p>
+          <p class="change-meta">{formatRecentChangeDate(entry.record.recorded_at, entry.record.effective_date)}</p>
+          <div class="change-diffs">
+            {entry.fieldDiffs.map((diff) => (
+              <div class="change-diff">
+                <p class="change-diff-label">{diff.label}</p>
+                <p class="change-diff-value">{diff.before} → {diff.after}</p>
+                {diff.changeRate && <p class="change-diff-rate">{diff.changeRate}</p>}
+              </div>
+            ))}
+          </div>
+        </article>
+      ))}
+    </div>
+  </section>
+</BaseLayout>
