@@ -85,8 +85,22 @@ Astro により静的サイトを生成します。
 - 現在価格
 - 価格履歴
 - provider 比較
+- recent changes 一覧
 
 サイトは **完全静的**です。
+
+`site/` では責務を以下に分離します。
+
+- `src/layouts/`
+  - 共通 `BaseLayout`
+- `src/lib/data.ts`
+  - JSON 読み込みと UI 向け selector / formatter
+- `src/lib/ui-text.ts`
+  - UI 文言定義
+- `src/lib/locale.ts`
+  - デフォルト `lang` / `locale`
+- `src/pages/`
+  - 静的ページ本体
 
 
 ## Repository Structure
@@ -299,10 +313,16 @@ provider ページ：
 /providers/{provider-slug}
 ```
 
-履歴ページ：
+model 履歴ページ：
 
 ```text
-/providers/{provider-slug}/history
+/providers/{provider-slug}/{model-slug}
+```
+
+変更一覧ページ：
+
+```text
+/changes
 ```
 
 比較ページ：

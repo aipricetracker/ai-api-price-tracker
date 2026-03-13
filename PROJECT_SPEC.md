@@ -106,6 +106,10 @@ repo root
 ├─ worker/                 # Cloudflare Worker
 │
 ├─ site/                   # Astro static site
+│   └─ src/
+│       ├─ layouts/        # BaseLayout
+│       ├─ lib/            # UI selectors / text / locale
+│       └─ pages/          # static pages
 │
 ├─ data/
 │   ├─ current-pricing.json
@@ -267,10 +271,16 @@ provider ページ:
 /providers/{provider-slug}
 ```
 
-履歴ページ:
+model 履歴ページ:
 
 ```
-/providers/{provider-slug}/history
+/providers/{provider-slug}/{model-slug}
+```
+
+変更一覧ページ:
+
+```
+/changes
 ```
 
 比較ページ:
