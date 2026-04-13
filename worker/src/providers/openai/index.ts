@@ -61,7 +61,11 @@ async function fetchOpenAiPricingPage(): Promise<string> {
         throw new Error("openai pricing fetch hit Cloudflare challenge");
       }
 
-      if (!html.includes("Flagship models") || !html.includes("Our APIs")) {
+      if (!html.includes("Flagship models")) {
+        throw new Error("openai pricing page structure not found");
+      }
+
+      if (!hasKnownFlagshipBoundary(html)) {
         throw new Error("openai pricing page structure not found");
       }
 
@@ -77,9 +81,9 @@ async function fetchOpenAiPricingPage(): Promise<string> {
 export function parseOpenAiTextModelPricing(html: string, recordedAt: string): OpenAiParseResult {
   const flagshipSectionDetectionCount = countOccurrences(html, "Flagship models");
   const flagshipSectionStart = html.indexOf("Flagship models");
-  const ourApisStart = html.indexOf("Our APIs");
+  const flagshipSectionEnd = findFlagshipSectionEnd(html, flagshipSectionStart);
 
-  if (flagshipSectionStart < 0 || ourApisStart < 0 || flagshipSectionStart >= ourApisStart) {
+  if (flagshipSectionStart < 0 || flagshipSectionEnd < 0 || flagshipSectionStart >= flagshipSectionEnd) {
     return {
       records: [],
       debug: {
@@ -91,12 +95,12 @@ export function parseOpenAiTextModelPricing(html: string, recordedAt: string): O
     };
   }
 
-  const flagshipSection = html.slice(flagshipSectionStart, ourApisStart);
+  const flagshipSection = html.slice(flagshipSectionStart, flagshipSectionEnd);
   const records: PricingRecord[] = [];
   let rawModelEntryCount = 0;
 
   const cardPattern =
-    /<h2 class="text-h4">([^<]+)<\/h2>[\s\S]*?<h3 class="text-p2 !text-balance font-semibold">([^<]+)<\/h3>([\s\S]*?)(?=<\/div><\/div><div class="border border-primary-12|<\/section>)/g;
+    /<h2 class="text-h4">([^<]+)<\/h2>[\s\S]*?<h3 class="[^"]*text-p2[^"]*font-semibold[^"]*">([^<]+)<\/h3>([\s\S]*?)(?=<\/div><\/div><div class="border border-primary-12|<\/section>)/g;
   const cardMatches = [...flagshipSection.matchAll(cardPattern)];
 
   for (const match of cardMatches) {
@@ -140,7 +144,7 @@ export function parseOpenAiTextModelPricing(html: string, recordedAt: string): O
 
 function parsePricingBlock(cardHtml: string): Pricing {
   const pricing: Pricing = {};
-  const pricePattern = /<span>(Input|Cached input|Output):<br\/>\$([0-9.]+)\s*\/\s*1M tokens<\/span>/g;
+  const pricePattern = /<span[^>]*>(Input|Cached input|Output):<br\/>\$([0-9.]+)\s*\/\s*1M tokens<\/span>/g;
 
   for (const match of cardHtml.matchAll(pricePattern)) {
     const label = match[1];
@@ -164,6 +168,27 @@ function parsePricingBlock(cardHtml: string): Pricing {
 
 function toModelSlug(modelName: string): string {
   return modelName.toLowerCase().replace(/\s+/g, "-");
+}
+
+function findFlagshipSectionEnd(html: string, flagshipSectionStart: number): number {
+  if (flagshipSectionStart < 0) {
+    return -1;
+  }
+
+  const endCandidates = [
+    html.indexOf("Our APIs", flagshipSectionStart),
+    html.indexOf("Batch API", flagshipSectionStart),
+    html.indexOf("Priority processing", flagshipSectionStart),
+    html.indexOf("Built-in tools", flagshipSectionStart),
+  ].filter((index) => index > flagshipSectionStart);
+
+  return endCandidates.length > 0 ? Math.min(...endCandidates) : -1;
+}
+
+function hasKnownFlagshipBoundary(html: string): boolean {
+  return ["Our APIs", "Batch API", "Priority processing", "Built-in tools"].some((marker) =>
+    html.includes(marker),
+  );
 }
 
 function countOccurrences(value: string, search: string): number {
