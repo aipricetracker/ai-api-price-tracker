@@ -12,7 +12,7 @@
       "unit": "1M tokens",
       "source_url": "https://openai.com/api/pricing/",
       "effective_date": "2026-04-13",
-      "recorded_at": "2026-04-13T18:29:57.087Z"
+      "recorded_at": "2026-04-13T18:37:19.374Z"
     },
     "gpt-5.4-mini": {
       "provider": "openai",
@@ -26,7 +26,7 @@
       "unit": "1M tokens",
       "source_url": "https://openai.com/api/pricing/",
       "effective_date": "2026-04-13",
-      "recorded_at": "2026-04-13T18:29:57.087Z"
+      "recorded_at": "2026-04-13T18:37:19.374Z"
     },
     "gpt-5.4-nano": {
       "provider": "openai",
@@ -40,7 +40,7 @@
       "unit": "1M tokens",
       "source_url": "https://openai.com/api/pricing/",
       "effective_date": "2026-04-13",
-      "recorded_at": "2026-04-13T18:29:57.087Z"
+      "recorded_at": "2026-04-13T18:37:19.374Z"
     }
   },
   "anthropic": {
@@ -56,7 +56,7 @@
       "unit": "1M tokens",
       "source_url": "https://claude.com/pricing",
       "effective_date": "2026-04-13",
-      "recorded_at": "2026-04-13T18:29:57.490Z"
+      "recorded_at": "2026-04-13T18:37:19.860Z"
     },
     "claude-sonnet-4.6": {
       "provider": "anthropic",
@@ -70,7 +70,7 @@
       "unit": "1M tokens",
       "source_url": "https://claude.com/pricing",
       "effective_date": "2026-04-13",
-      "recorded_at": "2026-04-13T18:29:57.490Z"
+      "recorded_at": "2026-04-13T18:37:19.860Z"
     },
     "claude-haiku-4.5": {
       "provider": "anthropic",
@@ -84,7 +84,7 @@
       "unit": "1M tokens",
       "source_url": "https://claude.com/pricing",
       "effective_date": "2026-04-13",
-      "recorded_at": "2026-04-13T18:29:57.490Z"
+      "recorded_at": "2026-04-13T18:37:19.860Z"
     },
     "claude-sonnet-4.5": {
       "provider": "anthropic",
@@ -98,7 +98,7 @@
       "unit": "1M tokens",
       "source_url": "https://claude.com/pricing",
       "effective_date": "2026-04-13",
-      "recorded_at": "2026-04-13T18:29:57.490Z"
+      "recorded_at": "2026-04-13T18:37:19.860Z"
     },
     "claude-opus-4.5": {
       "provider": "anthropic",
@@ -112,7 +112,7 @@
       "unit": "1M tokens",
       "source_url": "https://claude.com/pricing",
       "effective_date": "2026-04-13",
-      "recorded_at": "2026-04-13T18:29:57.490Z"
+      "recorded_at": "2026-04-13T18:37:19.860Z"
     },
     "claude-opus-4.1": {
       "provider": "anthropic",
@@ -126,7 +126,7 @@
       "unit": "1M tokens",
       "source_url": "https://claude.com/pricing",
       "effective_date": "2026-04-13",
-      "recorded_at": "2026-04-13T18:29:57.490Z"
+      "recorded_at": "2026-04-13T18:37:19.860Z"
     },
     "claude-sonnet-4": {
       "provider": "anthropic",
@@ -140,7 +140,7 @@
       "unit": "1M tokens",
       "source_url": "https://claude.com/pricing",
       "effective_date": "2026-04-13",
-      "recorded_at": "2026-04-13T18:29:57.490Z"
+      "recorded_at": "2026-04-13T18:37:19.860Z"
     },
     "claude-opus-4": {
       "provider": "anthropic",
@@ -154,7 +154,7 @@
       "unit": "1M tokens",
       "source_url": "https://claude.com/pricing",
       "effective_date": "2026-04-13",
-      "recorded_at": "2026-04-13T18:29:57.490Z"
+      "recorded_at": "2026-04-13T18:37:19.860Z"
     },
     "claude-haiku-3": {
       "provider": "anthropic",
@@ -168,7 +168,7 @@
       "unit": "1M tokens",
       "source_url": "https://claude.com/pricing",
       "effective_date": "2026-04-13",
-      "recorded_at": "2026-04-13T18:29:57.490Z"
+      "recorded_at": "2026-04-13T18:37:19.860Z"
     }
   }
 }
