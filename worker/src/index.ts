@@ -1,5 +1,6 @@
 import {
   hasPricingChanged,
+  hasProviderPricingChanged,
   replaceProviderPricing,
   validatePricingRecord,
 } from "./pricing";
@@ -94,8 +95,12 @@ export async function runCollector(env: Env): Promise<CollectorResult> {
       const providerChangedRecords = records.filter((record) =>
         hasPricingChanged(previousProviderPricing[record.model], record),
       );
+      const providerSnapshotChanged = hasProviderPricingChanged(previousProviderPricing, records);
 
-      nextCurrent = replaceProviderPricing(nextCurrent, collector.provider, records);
+      if (providerSnapshotChanged) {
+        nextCurrent = replaceProviderPricing(nextCurrent, collector.provider, records);
+      }
+
       allRecords.push(...records);
       changedRecords.push(...providerChangedRecords);
     }

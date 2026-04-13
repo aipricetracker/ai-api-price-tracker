@@ -104,6 +104,27 @@ export function replaceProviderPricing(
   };
 }
 
+export function hasProviderPricingChanged(
+  previousProviderPricing: CurrentPricing[string] | undefined,
+  nextRecords: PricingRecord[],
+): boolean {
+  const previous = previousProviderPricing ?? {};
+  const nextModels = new Set(nextRecords.map((record) => record.model));
+  const previousModels = new Set(Object.keys(previous));
+
+  if (previousModels.size !== nextModels.size) {
+    return true;
+  }
+
+  for (const model of previousModels) {
+    if (!nextModels.has(model)) {
+      return true;
+    }
+  }
+
+  return nextRecords.some((record) => hasPricingChanged(previous[record.model], record));
+}
+
 function isSamePricing(left: Pricing, right: Pricing): boolean {
   const keys = new Set([...Object.keys(left), ...Object.keys(right)]);
 
