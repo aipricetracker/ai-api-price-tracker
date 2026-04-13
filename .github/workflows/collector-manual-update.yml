@@ -26,7 +26,7 @@ jobs:
           exit 1
 
       - name: Setup Node.js
-        uses: actions/setup-node@8f152de45cc31bc9d716420f1ac7c0c7993907ec
+        uses: actions/setup-node@v4.4.0
         with:
           node-version: 22
           cache: npm
