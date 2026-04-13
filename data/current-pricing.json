@@ -11,22 +11,36 @@
       "currency": "USD",
       "unit": "1M tokens",
       "source_url": "https://openai.com/api/pricing/",
-      "effective_date": "2026-03-12",
-      "recorded_at": "2026-03-12T16:42:00.017Z"
+      "effective_date": "2026-04-13",
+      "recorded_at": "2026-04-13T18:29:57.087Z"
     },
-    "gpt-5-mini": {
+    "gpt-5.4-mini": {
       "provider": "openai",
-      "model": "gpt-5-mini",
+      "model": "gpt-5.4-mini",
       "pricing": {
-        "input": 0.25,
-        "cached_input": 0.025,
-        "output": 2
+        "input": 0.75,
+        "cached_input": 0.075,
+        "output": 4.5
       },
       "currency": "USD",
       "unit": "1M tokens",
       "source_url": "https://openai.com/api/pricing/",
-      "effective_date": "2026-03-12",
-      "recorded_at": "2026-03-12T16:42:00.017Z"
+      "effective_date": "2026-04-13",
+      "recorded_at": "2026-04-13T18:29:57.087Z"
+    },
+    "gpt-5.4-nano": {
+      "provider": "openai",
+      "model": "gpt-5.4-nano",
+      "pricing": {
+        "input": 0.2,
+        "cached_input": 0.02,
+        "output": 1.25
+      },
+      "currency": "USD",
+      "unit": "1M tokens",
+      "source_url": "https://openai.com/api/pricing/",
+      "effective_date": "2026-04-13",
+      "recorded_at": "2026-04-13T18:29:57.087Z"
     }
   },
   "anthropic": {
@@ -41,8 +55,8 @@
       "currency": "USD",
       "unit": "1M tokens",
       "source_url": "https://claude.com/pricing",
-      "effective_date": "2026-03-12",
-      "recorded_at": "2026-03-12T17:01:21.146Z"
+      "effective_date": "2026-04-13",
+      "recorded_at": "2026-04-13T18:29:57.490Z"
     },
     "claude-sonnet-4.6": {
       "provider": "anthropic",
@@ -55,8 +69,8 @@
       "currency": "USD",
       "unit": "1M tokens",
       "source_url": "https://claude.com/pricing",
-      "effective_date": "2026-03-12",
-      "recorded_at": "2026-03-12T17:01:21.146Z"
+      "effective_date": "2026-04-13",
+      "recorded_at": "2026-04-13T18:29:57.490Z"
     },
     "claude-haiku-4.5": {
       "provider": "anthropic",
@@ -69,8 +83,8 @@
       "currency": "USD",
       "unit": "1M tokens",
       "source_url": "https://claude.com/pricing",
-      "effective_date": "2026-03-12",
-      "recorded_at": "2026-03-12T17:01:21.146Z"
+      "effective_date": "2026-04-13",
+      "recorded_at": "2026-04-13T18:29:57.490Z"
     },
     "claude-sonnet-4.5": {
       "provider": "anthropic",
@@ -83,8 +97,8 @@
       "currency": "USD",
       "unit": "1M tokens",
       "source_url": "https://claude.com/pricing",
-      "effective_date": "2026-03-12",
-      "recorded_at": "2026-03-12T17:01:21.146Z"
+      "effective_date": "2026-04-13",
+      "recorded_at": "2026-04-13T18:29:57.490Z"
     },
     "claude-opus-4.5": {
       "provider": "anthropic",
@@ -97,8 +111,8 @@
       "currency": "USD",
       "unit": "1M tokens",
       "source_url": "https://claude.com/pricing",
-      "effective_date": "2026-03-12",
-      "recorded_at": "2026-03-12T17:01:21.146Z"
+      "effective_date": "2026-04-13",
+      "recorded_at": "2026-04-13T18:29:57.490Z"
     },
     "claude-opus-4.1": {
       "provider": "anthropic",
@@ -111,8 +125,8 @@
       "currency": "USD",
       "unit": "1M tokens",
       "source_url": "https://claude.com/pricing",
-      "effective_date": "2026-03-12",
-      "recorded_at": "2026-03-12T17:01:21.146Z"
+      "effective_date": "2026-04-13",
+      "recorded_at": "2026-04-13T18:29:57.490Z"
     },
     "claude-sonnet-4": {
       "provider": "anthropic",
@@ -125,8 +139,8 @@
       "currency": "USD",
       "unit": "1M tokens",
       "source_url": "https://claude.com/pricing",
-      "effective_date": "2026-03-12",
-      "recorded_at": "2026-03-12T17:01:21.146Z"
+      "effective_date": "2026-04-13",
+      "recorded_at": "2026-04-13T18:29:57.490Z"
     },
     "claude-opus-4": {
       "provider": "anthropic",
@@ -139,8 +153,8 @@
       "currency": "USD",
       "unit": "1M tokens",
       "source_url": "https://claude.com/pricing",
-      "effective_date": "2026-03-12",
-      "recorded_at": "2026-03-12T17:01:21.146Z"
+      "effective_date": "2026-04-13",
+      "recorded_at": "2026-04-13T18:29:57.490Z"
     },
     "claude-haiku-3": {
       "provider": "anthropic",
@@ -153,8 +167,8 @@
       "currency": "USD",
       "unit": "1M tokens",
       "source_url": "https://claude.com/pricing",
-      "effective_date": "2026-03-12",
-      "recorded_at": "2026-03-12T17:01:21.146Z"
+      "effective_date": "2026-04-13",
+      "recorded_at": "2026-04-13T18:29:57.490Z"
     }
   }
 }

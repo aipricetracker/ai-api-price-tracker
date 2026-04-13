@@ -205,5 +205,33 @@
     "source_url": "https://openai.com/api/pricing/",
     "effective_date": "2026-03-14",
     "recorded_at": "2026-03-14T01:12:00.000Z"
+  },
+  {
+    "provider": "openai",
+    "model": "gpt-5.4-mini",
+    "pricing": {
+      "input": 0.75,
+      "cached_input": 0.075,
+      "output": 4.5
+    },
+    "currency": "USD",
+    "unit": "1M tokens",
+    "source_url": "https://openai.com/api/pricing/",
+    "effective_date": "2026-04-13",
+    "recorded_at": "2026-04-13T18:29:57.087Z"
+  },
+  {
+    "provider": "openai",
+    "model": "gpt-5.4-nano",
+    "pricing": {
+      "input": 0.2,
+      "cached_input": 0.02,
+      "output": 1.25
+    },
+    "currency": "USD",
+    "unit": "1M tokens",
+    "source_url": "https://openai.com/api/pricing/",
+    "effective_date": "2026-04-13",
+    "recorded_at": "2026-04-13T18:29:57.087Z"
   }
 ]
