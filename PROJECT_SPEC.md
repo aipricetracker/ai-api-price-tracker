@@ -319,6 +319,9 @@ source 選定と運用判断は `docs/provider-source-policy.md` に従います
 unattended に近い v1 では、collector 実行ホストとして GitHub Actions runner を採用し、
 GitHub repository 上の `data/` を正本として更新します。
 
+また、`workflow_dispatch` の manual run により、
+差分あり時のみ `data/` を commit / push し、差分なし時は skip する挙動を確認済みです。
+
 Worker の責務分割方針:
 
 - `index.ts`

@@ -99,6 +99,9 @@ collector の実行ホストは Cloudflare Worker 本番 runtime ではなく
 GitHub Actions runner を採用し、GitHub repository を正本として更新します。
 詳細は `docs/collector-production-flow-v1.md` を参照します。
 
+現時点では `workflow_dispatch` による manual run が成功しており、
+差分あり run では `data/` の commit / push、差分なし run では no-op skip が確認済みです。
+
 
 ### Static Site
 

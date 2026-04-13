@@ -176,6 +176,17 @@ v1 では **GitHub repository を正本**とし、
 - まず manual run で挙動を確認する
 - manual run が安定してから schedule を検討する
 
+### 現時点の確認済み挙動
+
+manual run により、以下は確認済みです。
+
+- collector job は GitHub Actions 上で成功する
+- 差分がある run では `github-actions[bot]` により `data/` 更新 commit が作成される
+- `data/current-pricing.json` と `data/pricing-history.json` は同じ workflow 経路で更新可能
+- 差分がない run では `commit / push` job は skip される
+- `recorded_at` だけの no-op current 更新は commit しないよう修正済み
+- Node 20 deprecation warning は、workflow action version 更新により解消済み
+
 ### v1 の権限分離
 
 最初の Actions 実装では、job を 2 つに分けます。
@@ -230,6 +241,11 @@ v1 の更新フローは以下を想定します。
 10. 差分がある場合のみ commit を作る
 11. `main` へ push する
 12. GitHub 上の更新を起点に Astro build / deploy が走る
+
+補足:
+
+- 差分なしの場合、`commit / push` job は実行しない
+- `recorded_at` だけが変わる no-op 更新では commit を作らない
 
 ### 重要な更新単位
 
