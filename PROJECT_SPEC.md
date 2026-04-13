@@ -21,6 +21,7 @@ AI API Price Tracker は、主要な AI API provider の価格情報を監視し
 このプロジェクトは **低コスト・自動運用・シンプル構成**を重視します。
 
 source 選定と collector 運用判断の基準は `docs/provider-source-policy.md` を参照します。
+collector 本番更新フロー v1 は `docs/collector-production-flow-v1.md` を参照します。
 
 
 ---
@@ -41,7 +42,7 @@ source 選定と collector 運用判断の基準は `docs/provider-source-policy
 システム構成:
 
 ```
-Cloudflare Worker (collector)
+GitHub Actions runner (collector v1 host)
         ↓
 pricing snapshot 取得
         ↓
@@ -57,6 +58,12 @@ Cloudflare Pages deploy
         ↓
 Public website
 ```
+
+補足:
+
+- `worker/` は collector ロジックの実装場所
+- v1 の実行ホストは GitHub Actions runner
+- 起動はまず `workflow_dispatch` の手動実行のみ
 
 特徴:
 
@@ -308,6 +315,9 @@ Worker (collector) の役割:
 
 Worker は **cron による定期実行**を想定します。
 source 選定と運用判断は `docs/provider-source-policy.md` に従います。
+
+unattended に近い v1 では、collector 実行ホストとして GitHub Actions runner を採用し、
+GitHub repository 上の `data/` を正本として更新します。
 
 Worker の責務分割方針:
 

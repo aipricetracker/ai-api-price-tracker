@@ -26,6 +26,10 @@ source 選定と取得運用の判断基準は以下を参照します。
   - HTML scraping の制約
   - provider ごとの source review / caution 判定
   - unattended 本番運用前の再確認条件
+- `docs/collector-production-flow-v1.md`
+  - collector 本番更新フロー v1
+  - GitHub を正本とする更新単位
+  - 失敗時の扱い
 
 
 ## Tech Stack
@@ -53,7 +57,7 @@ source 選定と取得運用の判断基準は以下を参照します。
 システムは以下の構成で動作します。
 
 ```text
-Cloudflare Worker (collector)
+GitHub Actions runner (collector v1 host)
         ↓
 最新 pricing snapshot を取得・正規化
         ↓
@@ -70,6 +74,12 @@ Cloudflare Pages deploy
 Public website
 ```
 
+補足:
+
+- `worker/` は collector ロジックの実装場所を表す
+- unattended に近い v1 では、実行ホストは Cloudflare Worker runtime ではなく GitHub Actions runner を使う
+- 起動方法はまず `workflow_dispatch` の手動実行のみとする
+
 ### Worker (collector)
 
 役割
@@ -83,6 +93,11 @@ Public website
 
 Worker は **定期実行（cron）**を想定しています。
 source 選定と運用判断は `docs/provider-source-policy.md` に従います。
+
+unattended に近い v1 運用では、
+collector の実行ホストは Cloudflare Worker 本番 runtime ではなく
+GitHub Actions runner を採用し、GitHub repository を正本として更新します。
+詳細は `docs/collector-production-flow-v1.md` を参照します。
 
 
 ### Static Site

@@ -41,7 +41,7 @@ export default {
   },
 };
 
-type CollectorResult =
+export type CollectorResult =
   | {
       ok: true;
       changedCount: number;
@@ -60,7 +60,7 @@ interface ProviderCollector {
   collect: () => Promise<PricingRecord[]>;
 }
 
-async function runCollector(env: Env): Promise<CollectorResult> {
+export async function runCollector(env: Env): Promise<CollectorResult> {
   const dataDir = env.DATA_DIR;
 
   if (!dataDir) {

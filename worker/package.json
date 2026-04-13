@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "wrangler dev",
     "deploy": "wrangler deploy",
+    "run:collector": "tsx src/cli.ts",
     "smoke:file-store": "tsx scripts/file-store-smoke.ts",
     "smoke:openai-real-fetch": "tsx scripts/openai-real-fetch-smoke.ts",
     "smoke:anthropic-real-fetch": "tsx scripts/anthropic-real-fetch-smoke.ts",
