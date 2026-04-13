@@ -3,6 +3,7 @@
 このリポジトリで作業する AI Agent は、まず次のファイルを読んでください。
 
 1. `AI_CONTEXT.md`
+2. `docs/provider-source-policy.md`
 
 その後、以下のルールとワークフローに従ってください。
 
@@ -16,6 +17,10 @@
 ## Project Specification
 
 - `PROJECT_SPEC.md`
+
+## Operational Policy
+
+- `docs/provider-source-policy.md`
 
 ## Agent Principles
 

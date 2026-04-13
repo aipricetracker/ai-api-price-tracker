@@ -58,6 +58,7 @@ Public website
 Worker は **cron による定期実行**を想定しています。
 
 Worker は **データ収集と履歴更新のみを担当**します。
+取得元 source の選定と運用判断は `docs/provider-source-policy.md` に従います。
 
 
 ---

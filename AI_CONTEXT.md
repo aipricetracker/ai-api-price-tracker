@@ -19,6 +19,14 @@ AI API Price Tracker は、主要な AI API provider の価格情報を監視し
 - AI は開発支援（Codex）のみで使用する
 - サイトは静的生成する
 
+source 選定と取得運用の判断基準は以下を参照します。
+
+- `docs/provider-source-policy.md`
+  - source の優先順位
+  - HTML scraping の制約
+  - provider ごとの source review / caution 判定
+  - unattended 本番運用前の再確認条件
+
 
 ## Tech Stack
 
@@ -74,6 +82,7 @@ Public website
 - GitHub に commit する
 
 Worker は **定期実行（cron）**を想定しています。
+source 選定と運用判断は `docs/provider-source-policy.md` に従います。
 
 
 ### Static Site
@@ -261,6 +270,8 @@ Worker は責務を以下に分離します。
   - current/history の読み書き抽象を担当
 - `providers/{provider}/`
   - provider 固有の fetch / parse / normalize を担当
+
+provider 実装の source review と fetch 運用判断は `docs/provider-source-policy.md` を前提にします。
 
 PoC 段階では以下を使い分けます。
 

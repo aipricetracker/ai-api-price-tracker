@@ -20,6 +20,8 @@ AI API Price Tracker は、主要な AI API provider の価格情報を監視し
 
 このプロジェクトは **低コスト・自動運用・シンプル構成**を重視します。
 
+source 選定と collector 運用判断の基準は `docs/provider-source-policy.md` を参照します。
+
 
 ---
 
@@ -305,6 +307,7 @@ Worker (collector) の役割:
 - GitHub commit
 
 Worker は **cron による定期実行**を想定します。
+source 選定と運用判断は `docs/provider-source-policy.md` に従います。
 
 Worker の責務分割方針:
 
