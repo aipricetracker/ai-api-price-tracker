@@ -8,6 +8,30 @@ export const text = {
 
   heroTitle: "AI API Pricing Snapshot",
   heroSubtitle: "Track pricing changes across major AI API providers.",
+  homeKicker: "The AI API Archive",
+  homeLead:
+    "A quiet record of pricing shifts across major AI API providers, built for checking what changed and where to look next.",
+  homeRecentChangesLink: "Open the full change log",
+  homeProvidersLead: "Use providers as the first index for comparison, update activity, and model-level drill-down.",
+  homeAboutLead:
+    "A static record for tracking AI API pricing changes without turning the site into a dashboard.",
+  homeAboutSummaries: [
+    {
+      icon: "current",
+      title: "Current snapshot",
+      body: "Provider and model pricing are published from the latest normalized snapshot.",
+    },
+    {
+      icon: "history",
+      title: "Append-only history",
+      body: "Pricing changes are preserved as a chronological record instead of being rewritten.",
+    },
+    {
+      icon: "static",
+      title: "Static archive",
+      body: "The site stays simple, readable, and deployable as generated Astro pages.",
+    },
+  ],
 
   recentChanges: "Recent Changes",
   recentChangesDescription:
@@ -35,7 +59,10 @@ export const text = {
   aboutTitle: "About this site",
   aboutDescription:
     "This site tracks pricing changes across major AI API providers. Data is collected into an append-only history and rendered as a static Astro site.",
+  aboutDescriptionShort:
+    "Current snapshots and append-only history are published as a static site so changes stay legible over time.",
   footerText: "Static pricing tracker built from append-only change history.",
+  footerCopyright: "© 2026 AI API Price Tracker",
 
   changesPageTitle: "AI API Price Changes",
   changesMetaDescription: "Full list of AI API pricing change events.",

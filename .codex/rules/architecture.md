@@ -138,6 +138,7 @@ Astro
 - 比較ページ生成
 - 履歴ページ生成
 - recent changes ページ生成
+- 共通 layout / component / UI text helper を使い、ページごとの責務を分離する
 
 サイトは **完全静的**です。
 
@@ -152,6 +153,14 @@ repo root
 ├─ worker/
 │
 ├─ site/
+│   └─ src/
+│       ├─ layouts/
+│       ├─ components/
+│       ├─ lib/
+│       └─ pages/
+│
+├─ DESIGN.md
+├─ SITE_SCORE.md
 │
 ├─ data/
 │   ├─ current-pricing.json

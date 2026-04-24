@@ -17,6 +17,8 @@
 - 参考カンプをそのまま写経しない。検索 UI や marketing 的セクション構成は本サイトに不要であり、データ閲覧体験を優先して再解釈する。
 - 「新聞風」に寄せるために情報が読みにくくなるのは避ける。データ比較、更新確認、導線把握は常に優先する。
 - UI は背景演出に埋没させず、リンク、表、更新情報、注記は明確に操作対象・判断材料として立たせる。
+- Home の収束で得た実装上の基準は、紙面感を「背景の雰囲気」ではなく、罫線、余白、見出し、行構造、フッターまで含めた編集的な骨格として扱うこと。
+- 見た目の判断は実ブラウザ表示を優先する。CSS 定義があることと、実際に画面で効いていることを分けて確認する。
 - 禁止方向:
   - generic SaaS の白地カード + 青紫アクセント + 丸すぎる UI
   - marketing LP 的な誇張、過度なキャッチコピー、意味の薄い飾りブロック
@@ -39,6 +41,8 @@
 - 赤系 accent は editorial な差し色であり、warning 専用色としては扱わない。更新や差分の強調に使ってよいが、意味を色だけに背負わせない。
 - change direction や状態差は、色だけでなく語、位置、記号、数値の並びでも判別できるようにする。
 - 補助背景色は限定利用とし、全面カード塗りよりも note、caveat、summary band のような意味のある箇所に使う。
+- 赤系 accent は、列見出し、metadata、控えめな線画アイコン、主要な小ボタンに使うとよい。広い面積で使う場合は CTA に限定し、周辺の余白で熱量を下げる。
+- footer や section の太い罫線は ink color を使い、補助罫線は muted line color を使う。二重線は太線と細線の間隔を十分に空け、1本に見えないようにする。
 - 禁止方向:
   - 明るすぎるブランドカラーの連発
   - 黒一色で押し切って重くなりすぎること
@@ -62,6 +66,9 @@
   - Metadata: 日付、provider、unit、effective date などの補助情報
 - 字間は見出し系とラベル系で役割を分ける。ラベルはやや広め、本文は詰めすぎない。
 - 強調は太字とサイズ差を中心に行い、色や装飾文字に頼りすぎない。
+- Home の Hero 題字は強くしてよいが、tracking は詰めすぎない。大見出しは紙面の題字として扱い、周辺の kicker / lead / metadata は小さく静かに置く。
+- section heading は巨大化させない。節の始まりを示す役割として、上部罫線、適度な top padding、短い title、静かな lead で成立させる。
+- button text は UI として読める文章にする。原則として全文 uppercase にせず、本文と近いサイズで扱う。
 - 禁止方向:
   - すべてを同じ調子で大きく見せること
   - UI ラベルまで display typography に寄せること
@@ -80,6 +87,8 @@
 - navigation は主張しすぎないが、現在地と主要導線は明快にする。
   - header nav は冷静
   - page 内導線は必要箇所だけ少し強める
+- header は独立した sticky bar として扱う。ロゴは左、navigation は右に置き、bar 自体の高さを抑える。header 下の余白は header ではなく続く section 側で持つ。
+- footer は全ページ共通の紙面末尾として扱う。中央揃えで logo / subpage links / copyright を置き、上下の罫線で静かに閉じる。装飾しすぎず、本文から少し距離を置く。
 - 検索、フィルタ、ソート、ナビゲーションなどの操作部品は、紙面演出よりも操作の明瞭さを優先する。触れるもの、現在地、選択中、無効状態は見誤らせない。
 - 区切り線は重要な造形要素とする。
   - section の開始
@@ -90,12 +99,15 @@
 - change summary は human-readable に保ち、raw field 名を前面に出さない。
 - before / after / rate の見せ方は、実務 UI として即読できることを優先する。
 - interactive 要素は editorial UI に寄せても、hover/focus/current の反応は明確に出す。
+- 独立したテキストリンクは、主要導線であれば button component に置き換える。基本形は四角、赤ベタ、白抜き文字。hover / focus では背景を抜き、赤い border と赤文字で状態を示す。
+- 小さな icon / illustration は線画で使う。意味を補助する程度の具体性を持たせるが、イラスト主導にしない。色は accent 系に抑え、各カラム内で icon / heading / body の開始位置を CSS で揃える。
 - 将来 search/filter を入れる場合も、管理画面風ではなく index viewer の延長として扱う。
 - 禁止方向:
   - pill badge の乱用
   - KPI dashboard 風の metric card 群
   - 何でも bordered card に閉じ込めること
   - CTA button を marketing 的に大きくしすぎること
+  - アイコンを装飾だけで置き、意味や整列を曖昧にすること
 
 ## Layout Principles
 
@@ -113,6 +125,10 @@
   - 表と注記の扱い
   - metadata の温度感
 - 全ページは、header / page title / lead / main data block / supplementary note or navigation の共通フレームを持ってよい。密度や順序は変えても、骨格の親和性は維持する。
+- section 間の距離は、要素側の margin ではなく親 layout の gap や section 側の padding で管理する。header や footer の余白に混ぜない。
+- full-width の罫線を使う場合は、content width の線と viewport 全幅の線を明確に使い分ける。header 下罫線や footer 罫線は viewport 端まで貫いてよい。
+- 比較リストは、行ごとに同じ label を繰り返すより、列見出しを 1 回だけ置いて行データを並べる。provider / model / date / count のような比較軸は、表として読める整列を優先する。
+- summary block は、本文を長くするより短い lead と 3 つ程度の要点で支えるとよい。要点は同じ grid grammar で揃え、テキスト量で位置を合わせない。
 - ページごとに変えてよいもの:
   - 主役となる section の大きさ
   - table と prose の比率

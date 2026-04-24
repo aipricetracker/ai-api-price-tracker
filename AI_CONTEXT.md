@@ -31,6 +31,15 @@ source 選定と取得運用の判断基準は以下を参照します。
   - GitHub を正本とする更新単位
   - 失敗時の扱い
 
+site のデザイン収束や UI 表現の判断基準は以下を参照します。
+
+- `DESIGN.md`
+  - visual theme / color / typography / component styling / layout principles
+  - 古い英字新聞風、エディトリアル寄り、データアーカイブ風の審美ルール
+- `SITE_SCORE.md`
+  - Home / Changes / Providers / Model History の構成譜
+  - ページごとの強弱、反復、変奏、下層ページへの展開方針
+
 
 ## Tech Stack
 
@@ -120,6 +129,9 @@ Astro により静的サイトを生成します。
 
 - `src/layouts/`
   - 共通 `BaseLayout`
+- `src/components/`
+  - 共通 UI component
+  - `SectionHeading` / `ButtonLink` / `SummaryIcon` など、Home で確定した紙面文法を下層へ展開するための部品
 - `src/lib/data.ts`
   - JSON 読み込みと UI 向け selector / formatter
 - `src/lib/ui-text.ts`
@@ -140,6 +152,9 @@ repo root
 ├─ worker/            # Cloudflare Worker
 │
 ├─ site/              # Astro site
+│
+├─ DESIGN.md          # site design principles
+├─ SITE_SCORE.md      # site-level visual score
 │
 ├─ data/
 │   ├─ current-pricing.json

@@ -25,6 +25,13 @@
   - providers / history への入口
 - Home は情報を全部載せる場所ではない。全体の読み筋を作る場所と考える。
 - Hero は marketing の宣伝欄ではなく、紙面の題字 + brief lead に近い扱いにする。
+- Home の確定文法は以下を基準にする。
+  - sticky header の直下に、紙面の題字として Hero を置く
+  - Hero 内には brief lead と、`Discover / Compare / Monitor / Archive` のような小さな情報帯を含める
+  - Hero の下は Recent Changes を最初の実データとして見せる
+  - Providers は比較の入口として、列見出しを持つ静かな一覧にする
+  - About は長文説明ではなく、短い lead と 3 つ程度の summary block で補足する
+- Home では「見出し」「データ行」「導線」「補足」を同じ強さにしない。Hero と recent changes を主役にし、Providers と About は入口と補助に留める。
 
 ### Changes
 
@@ -41,6 +48,7 @@
 - 比較軸は曖昧にせず、読み手が provider 間で並べて見られることを重視する。監視対象数、更新活発度、最新更新のような軸が自然に読める構図が望ましい。
 - このページは Changes より静かでよい。イベントよりも一覧性を優先する。
 - 役割は「どこを見るべきか」を選ばせることなので、過剰な演出より整然さが重要である。
+- Home 上の Providers preview でも、provider ごとの label を反復しすぎない。列見出しを 1 回置き、各行は provider 名と比較値に集中させる。
 
 ### Model History
 
@@ -60,6 +68,8 @@
 - 強く見せる対象は毎ページ 1 つに絞る。同じページ内で複数の主役を作らない。
 - 高級感は大きな余白と太い見出しで出し、装飾量では出さない。
 - accent は「読んでほしい節目」にだけ打つ。常時点灯させない。
+- Footer は全ページで最も静かな共通要素にする。logo / subpage links / copyright は中央で閉じ、罫線は紙面の終端を示すために使う。
+- CTA は強くしすぎない。独立導線は button として明確にするが、marketing CTA のような大きさや丸みには寄せない。
 
 ## Rhythm of List and Detail
 
@@ -68,6 +78,8 @@
   - 規則的な区切り
   - 比較しやすい列構造
   - 次ページへ渡す素直な導線
+- Home の Recent Changes は、Changes ページの簡易版ではなく「最新の実データへの入口」である。1件でも複数件でも、recorded date / item title / summary / diff が同じリズムで読めることを優先する。
+- page 内の独立導線は、テキストリンクとして浮かせず、再利用可能な button grammar に乗せる。
 - 詳細ページは「たどる」ためのテンポを持たせる。
   - 現在値の要約
   - 変更履歴の時系列
@@ -88,6 +100,8 @@
 - prose は table の前後で役割を変える。
   - 前: 何を見る面かを短く示す
   - 後: caveat や補足に限定する
+- section heading は共通 component として扱う。見出し直上の罫線、title、lead の位置関係を揃え、ページごとの差は密度と後続ブロックで出す。
+- 補足説明を置く場合は、長い 2 カラム prose よりも、短い lead と summary block の方が Home には合う。下層ページでは必要に応じて caveat / note に変奏する。
 
 ## Navigation Temperature
 
@@ -97,6 +111,8 @@
 - current page の表示は必要だが、強すぎるハイライトは不要である。
 - パンくずや戻り導線を入れる場合も、管理画面風ではなく編集面の案内として見せる。
 - 回遊導線は控えめでよいが、途切れさせない。一覧から詳細へ、詳細から比較や変更一覧へ静かに戻れることを優先する。
+- Header は常時の目次、Footer は読み終わり後の目次として扱う。Header は左 logo / 右 nav、Footer は中央 logo / links / copyright で役割を分ける。
+- Header / Footer の罫線は共通フレームとして効く。header 下部と footer 上部は viewport 全幅に貫く線で、ページ本文の content-width 線とは区別する。
 
 ## Repetition and Variation
 
@@ -107,12 +123,15 @@
   - metadata の温度
   - price / diff / date の表示規則
   - section の切り方
+  - button link の形と hover/focus の反応
+  - footer の閉じ方
 - 変奏させるべきもの:
   - 各ページの主役の大きさ
   - 一覧の密度
   - lead 文の長さ
   - summary と detail の比率
   - hero 的導入の有無
+  - summary block の有無と密度
 - 反復は統一感のため、変奏はページごとの役割差のために使う。どちらか一方に寄せすぎない。
 
 ## Shared Grammar vs Page-Specific Moves
@@ -123,6 +142,9 @@
   - muted paper + ink + restrained accent の色役割
   - 区切り線と余白による節分け
   - データを先に見せ、説明は後ろに置く姿勢
+  - common header / footer
+  - section heading component
+  - button link component
 - ページごとに変える部分:
   - Home は題字と導入の強さを持たせる
   - Changes は event の連打で rhythm を作る
@@ -133,8 +155,9 @@
 ## Current Implementation Gap
 
 - 現状の `site/` は必要情報は揃っているが、ページ群を横断する「紙面文法」がまだ薄い。
-- `Recent Changes` と `Changes` は類似 UI の重複があり、同じ反復が続いて見えやすい。
-- `Providers` は情報整理としては成立しているが、比較面としての格がまだ弱い。
+- Home は、Hero / Recent Changes / Providers / About / Footer の基本文法が概ね収束した。
+- `Recent Changes` と `Changes` は、Home 側で確定した event row grammar を基準にしつつ、Changes ページでは密度を上げる必要がある。
+- `Providers` は、Home preview で確定した列見出し + provider row の比較文法を、Providers ページ本体へ展開する余地がある。
 - `Model History` は詳細情報を読めるが、archive 面としての静かな重心と履歴のテンポがまだ十分に整理されていない。
-- 今後の実装では、新機能を足すより先に、各ページの主役と静かな補助線を明確にすることを優先する。
-- 収束順としては、まず Home と全ページ共通文法を整え、その後に Changes / Providers の一覧面を揃え、最後に Model History の詳細面を詰めるのが自然である。
+- 今後の実装では、新機能を足すより先に、Home で確定した共通文法を下層ページへ段階的に移すことを優先する。
+- 次の収束順としては、Changes の event list、Providers の比較一覧、Model History の詳細面という順が自然である。
