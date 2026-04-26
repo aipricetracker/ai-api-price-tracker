@@ -40,6 +40,8 @@
 - 主役は change event の連なりであり、各 event が「何がどう変わったか」をすぐ読めることを重視する。
 - このページでは prose を増やしすぎず、summary と diff の反復でテンポを作る。
 - Home より密度を上げてよいが、同じカード反復に見えて単調にならないよう、見出し・日付・差分の階層を明確に分ける。
+- page の導入は、header 内 title ではなく本文先頭の page intro で行う。`h1 + short lead` を置き、その下に section heading と event list を続ける。
+- event row は Home の Recent Changes と同じ grammar を使い、Changes では件数増加に耐えるよう card ではなく行反復として扱う。
 
 ### Providers
 
@@ -101,6 +103,7 @@
   - 前: 何を見る面かを短く示す
   - 後: caveat や補足に限定する
 - section heading は共通 component として扱う。見出し直上の罫線、title、lead の位置関係を揃え、ページごとの差は密度と後続ブロックで出す。
+- page intro も共通 component として扱う。下層ページでは、header から独立した本文先頭の導入として再利用する。
 - 補足説明を置く場合は、長い 2 カラム prose よりも、短い lead と summary block の方が Home には合う。下層ページでは必要に応じて caveat / note に変奏する。
 
 ## Navigation Temperature
@@ -144,6 +147,7 @@
   - データを先に見せ、説明は後ろに置く姿勢
   - common header / footer
   - section heading component
+  - page intro component
   - button link component
 - ページごとに変える部分:
   - Home は題字と導入の強さを持たせる
@@ -156,7 +160,7 @@
 
 - 現状の `site/` は必要情報は揃っているが、ページ群を横断する「紙面文法」がまだ薄い。
 - Home は、Hero / Recent Changes / Providers / About / Footer の基本文法が概ね収束した。
-- `Recent Changes` と `Changes` は、Home 側で確定した event row grammar を基準にしつつ、Changes ページでは密度を上げる必要がある。
+- `Changes` は、page intro と event row grammar の first pass が入った。次は密度、複数件表示時のテンポ、diff の強弱を詰める段階である。
 - `Providers` は、Home preview で確定した列見出し + provider row の比較文法を、Providers ページ本体へ展開する余地がある。
 - `Model History` は詳細情報を読めるが、archive 面としての静かな重心と履歴のテンポがまだ十分に整理されていない。
 - 今後の実装では、新機能を足すより先に、Home で確定した共通文法を下層ページへ段階的に移すことを優先する。

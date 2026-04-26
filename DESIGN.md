@@ -68,6 +68,8 @@
 - 強調は太字とサイズ差を中心に行い、色や装飾文字に頼りすぎない。
 - Home の Hero 題字は強くしてよいが、tracking は詰めすぎない。大見出しは紙面の題字として扱い、周辺の kicker / lead / metadata は小さく静かに置く。
 - section heading は巨大化させない。節の始まりを示す役割として、上部罫線、適度な top padding、短い title、静かな lead で成立させる。
+- 下層ページの page title は Home の Hero とは別物として扱う。header の中で大きく叫ばせず、本文先頭の `h1 + short lead` として置く。
+- page intro の `h1` は Hero より明確に小さくする。下層ページでは記録面への導入が目的であり、branding の題字ではない。
 - button text は UI として読める文章にする。原則として全文 uppercase にせず、本文と近いサイズで扱う。
 - 禁止方向:
   - すべてを同じ調子で大きく見せること
@@ -101,6 +103,7 @@
 - interactive 要素は editorial UI に寄せても、hover/focus/current の反応は明確に出す。
 - 独立したテキストリンクは、主要導線であれば button component に置き換える。基本形は四角、赤ベタ、白抜き文字。hover / focus では背景を抜き、赤い border と赤文字で状態を示す。
 - 小さな icon / illustration は線画で使う。意味を補助する程度の具体性を持たせるが、イラスト主導にしない。色は accent 系に抑え、各カラム内で icon / heading / body の開始位置を CSS で揃える。
+- change event list は card で囲わず、row と罫線で読む。左に metadata / title / summary、右に diff を置く二段構えを基本形としてよい。
 - 将来 search/filter を入れる場合も、管理画面風ではなく index viewer の延長として扱う。
 - 禁止方向:
   - pill badge の乱用

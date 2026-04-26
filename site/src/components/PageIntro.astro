@@ -1,0 +1,37 @@
+---
+interface Props {
+  title: string;
+  lead?: string;
+}
+
+const { title, lead } = Astro.props;
+---
+
+<section class="page-intro">
+  <h1 class="page-intro-title">{title}</h1>
+  {lead && <p class="page-intro-lead">{lead}</p>}
+</section>
+
+<style>
+  .page-intro {
+    display: grid;
+    gap: 24px;
+    padding: 40px 0 10px;
+  }
+
+  .page-intro-title {
+    margin: 0;
+    max-width: 10ch;
+    font-size: clamp(2rem, 5vw, 3.5rem);
+    line-height: 0.9;
+    letter-spacing: 0;
+  }
+
+  .page-intro-lead {
+    margin: 0;
+    max-width: 40rem;
+    color: var(--muted);
+    font-size: clamp(1rem, 1.7vw, 1.18rem);
+    line-height: 1.5;
+  }
+</style>

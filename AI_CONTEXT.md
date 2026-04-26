@@ -131,7 +131,7 @@ Astro により静的サイトを生成します。
   - 共通 `BaseLayout`
 - `src/components/`
   - 共通 UI component
-  - `SectionHeading` / `ButtonLink` / `SummaryIcon` など、Home で確定した紙面文法を下層へ展開するための部品
+  - `SectionHeading` / `PageIntro` / `ButtonLink` / `SummaryIcon` など、Home と `/changes` で確定した紙面文法を下層へ展開するための部品
 - `src/lib/data.ts`
   - JSON 読み込みと UI 向け selector / formatter
 - `src/lib/ui-text.ts`
