@@ -102,6 +102,7 @@
 - before / after / rate の見せ方は、実務 UI として即読できることを優先する。
 - interactive 要素は editorial UI に寄せても、hover/focus/current の反応は明確に出す。
 - 独立したテキストリンクは、主要導線であれば button component に置き換える。基本形は四角、赤ベタ、白抜き文字。hover / focus では背景を抜き、赤い border と赤文字で状態を示す。
+- ただし、比較リストや event row の内部に置く導線は button にしない。密な一覧内では、赤文字の text link を基本形とし、必要なら小さな矢印 icon を付けて次の階層への移動を示す。
 - 小さな icon / illustration は線画で使う。意味を補助する程度の具体性を持たせるが、イラスト主導にしない。色は accent 系に抑え、各カラム内で icon / heading / body の開始位置を CSS で揃える。
 - change event list は card で囲わず、row と罫線で読む。左に metadata / title / summary、右に diff を置く二段構えを基本形としてよい。
 - 将来 search/filter を入れる場合も、管理画面風ではなく index viewer の延長として扱う。
@@ -131,6 +132,7 @@
 - section 間の距離は、要素側の margin ではなく親 layout の gap や section 側の padding で管理する。header や footer の余白に混ぜない。
 - full-width の罫線を使う場合は、content width の線と viewport 全幅の線を明確に使い分ける。header 下罫線や footer 罫線は viewport 端まで貫いてよい。
 - 比較リストは、行ごとに同じ label を繰り返すより、列見出しを 1 回だけ置いて行データを並べる。provider / model / date / count のような比較軸は、表として読める整列を優先する。
+- 比較リストでは、列見出しと値の開始位置を厳密に揃える。CTA 列を含めて各 row が同じ grid track を共有し、header row と data row で列幅が変わらないようにする。
 - summary block は、本文を長くするより短い lead と 3 つ程度の要点で支えるとよい。要点は同じ grid grammar で揃え、テキスト量で位置を合わせない。
 - ページごとに変えてよいもの:
   - 主役となる section の大きさ

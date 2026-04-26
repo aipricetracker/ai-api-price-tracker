@@ -51,6 +51,8 @@
 - このページは Changes より静かでよい。イベントよりも一覧性を優先する。
 - 役割は「どこを見るべきか」を選ばせることなので、過剰な演出より整然さが重要である。
 - Home 上の Providers preview でも、provider ごとの label を反復しすぎない。列見出しを 1 回置き、各行は provider 名と比較値に集中させる。
+- Providers 本体も、header 内 title ではなく page intro から始める。導入は短く、その下に section heading と比較行を続ける。
+- row 内の導線は button にせず、赤文字 + 小さな矢印 icon の text link で静かに次の階層へ渡す。
 
 ### Model History
 
@@ -82,6 +84,7 @@
   - 次ページへ渡す素直な導線
 - Home の Recent Changes は、Changes ページの簡易版ではなく「最新の実データへの入口」である。1件でも複数件でも、recorded date / item title / summary / diff が同じリズムで読めることを優先する。
 - page 内の独立導線は、テキストリンクとして浮かせず、再利用可能な button grammar に乗せる。
+- ただし、一覧 row の内部導線は別扱いにする。比較の走査を壊さないよう、row 内では text link grammar を使う。
 - 詳細ページは「たどる」ためのテンポを持たせる。
   - 現在値の要約
   - 変更履歴の時系列
@@ -145,10 +148,11 @@
   - muted paper + ink + restrained accent の色役割
   - 区切り線と余白による節分け
   - データを先に見せ、説明は後ろに置く姿勢
-  - common header / footer
-  - section heading component
-  - page intro component
-  - button link component
+- common header / footer
+- section heading component
+- page intro component
+- button link component
+- text link component
 - ページごとに変える部分:
   - Home は題字と導入の強さを持たせる
   - Changes は event の連打で rhythm を作る
@@ -161,7 +165,7 @@
 - 現状の `site/` は必要情報は揃っているが、ページ群を横断する「紙面文法」がまだ薄い。
 - Home は、Hero / Recent Changes / Providers / About / Footer の基本文法が概ね収束した。
 - `Changes` は、page intro と event row grammar の first pass が入った。次は密度、複数件表示時のテンポ、diff の強弱を詰める段階である。
-- `Providers` は、Home preview で確定した列見出し + provider row の比較文法を、Providers ページ本体へ展開する余地がある。
+- `Providers` は、page intro と列見出し + provider row の比較文法が本体ページへ展開された。次は provider detail へ同じ低温な比較文法を移す段階である。
 - `Model History` は詳細情報を読めるが、archive 面としての静かな重心と履歴のテンポがまだ十分に整理されていない。
 - 今後の実装では、新機能を足すより先に、Home で確定した共通文法を下層ページへ段階的に移すことを優先する。
-- 次の収束順としては、Changes の event list、Providers の比較一覧、Model History の詳細面という順が自然である。
+- 次の収束順としては、Providers detail、Model History の詳細面という順が自然である。

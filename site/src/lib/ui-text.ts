@@ -43,11 +43,13 @@ export const text = {
 
   providers: "Providers",
   providersMetaDescription: "Provider-level view of current AI API pricing data.",
+  providersPageDescription:
+    "Compare providers by tracked model count, update activity, and the latest visible change.",
   providerIndex: "Provider Index",
   providerIndexDescription:
-    "This table summarizes the current provider landscape derived from data/current-pricing.json.",
+    "Use providers as the first index for comparison, update activity, and model-level drill-down.",
   providerIndexColumnsDescription:
-    "Columns: Models = number of tracked models | Total Changes = total number of pricing change events recorded in pricing-history.json | Latest Change = most recent recorded change for the provider",
+    "Rows are ordered for scanning first, then for choosing where to drill down.",
   providerColumn: "Provider",
   modelsColumn: "Models",
   totalChangesColumn: "Total Changes",
