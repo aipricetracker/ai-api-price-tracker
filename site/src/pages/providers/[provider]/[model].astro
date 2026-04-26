@@ -1,6 +1,16 @@
 ---
 import BaseLayout from "../../../layouts/BaseLayout.astro";
-import { formatPrice, getCurrentModel, getModelHistory, getProviderModelSlugs, getProviderSlugs } from "../../../lib/data";
+import PageIntro from "../../../components/PageIntro.astro";
+import SectionHeading from "../../../components/SectionHeading.astro";
+import {
+  formatPrice,
+  formatRecentChangeDate,
+  getCurrentModel,
+  getModelHistory,
+  getProviderModelSlugs,
+  getProviderSlugs,
+  summarizeChangedFields,
+} from "../../../lib/data";
 import { text } from "../../../lib/ui-text";
 
 export async function getStaticPaths() {
@@ -32,85 +42,64 @@ const history = await getModelHistory(provider, model);
 <BaseLayout
   title={`${model} ${text.historyTitleSuffix}`}
   description={`${text.pricingHistory} ${text.forConnector} ${provider}/${model}.`}
+  headerTitle=""
+  mainGap="56px"
 >
-  <section class="card">
-    <p class="eyebrow">{text.modelDetail}</p>
-    <p><strong>{text.providerColumn}:</strong> {provider}</p>
-    <p><strong>{text.modelColumn}:</strong> {model}</p>
-    <p><strong>{text.currentInput}:</strong> {formatPrice(currentRecord.pricing.input)}</p>
-    <p><strong>{text.currentCachedInput}:</strong> {formatPrice(currentRecord.pricing.cached_input)}</p>
-    <p><strong>{text.currentOutput}:</strong> {formatPrice(currentRecord.pricing.output)}</p>
-    {currentRecord.cachedInputNote && <p class="note">{currentRecord.cachedInputNote}</p>}
+  <PageIntro title={model} lead={`${text.modelPageDescriptionPrefix} ${provider}.`} noWrapTitle={true} />
+
+  <section class="model-page">
+    <SectionHeading title={text.currentSnapshot} lead={`${text.providerColumn}: ${provider}`} />
+
+    <div class="current-grid">
+      <div class="current-cell current-cell-wide">
+        <p class="current-label">{text.modelColumn}</p>
+        <p class="current-value">{model}</p>
+      </div>
+
+      <div class="current-cell">
+        <p class="current-label">{text.inputColumn}</p>
+        <p class="current-value">{formatPrice(currentRecord.pricing.input)}</p>
+      </div>
+
+      <div class="current-cell">
+        <p class="current-label">{text.cachedInputColumn}</p>
+        <p class="current-value">{formatPrice(currentRecord.pricing.cached_input)}</p>
+      </div>
+
+      <div class="current-cell">
+        <p class="current-label">{text.outputColumn}</p>
+        <p class="current-value">{formatPrice(currentRecord.pricing.output)}</p>
+      </div>
+    </div>
+
+    {currentRecord.cachedInputNote && <p class="model-note">{currentRecord.cachedInputNote}</p>}
   </section>
 
-  <section class="card">
-    <style>
-      .history-list {
-        display: grid;
-        gap: 16px;
-      }
+  <section class="model-page">
+    <SectionHeading title={text.pricingHistory} />
 
-      .history-item {
-        border: 1px solid var(--line);
-        border-radius: 16px;
-        padding: 16px;
-        background: rgba(255, 253, 248, 0.78);
-      }
-
-      .history-meta {
-        display: grid;
-        gap: 4px;
-        margin-bottom: 14px;
-      }
-
-      .diff-list {
-        display: grid;
-        gap: 12px;
-      }
-
-      .diff-item {
-        padding: 12px 14px;
-        border-radius: 14px;
-        border: 1px solid color-mix(in srgb, var(--accent) 18%, var(--line));
-        background: color-mix(in srgb, var(--accent-soft) 42%, white);
-      }
-
-      .diff-label {
-        margin: 0 0 4px;
-        font-size: 0.8rem;
-        color: var(--muted);
-        text-transform: uppercase;
-        letter-spacing: 0.04em;
-      }
-
-      .diff-value {
-        margin: 0;
-        font-size: 1.05rem;
-      }
-
-      .diff-rate {
-        margin: 6px 0 0;
-        color: var(--accent);
-        font-size: 0.92rem;
-      }
-    </style>
-    <p class="eyebrow">{text.pricingHistory}</p>
-    <p class="muted">{text.pricingHistoryDescription}</p>
     <div class="history-list">
       {history.map((entry) => (
-        <article class="history-item">
-          <div class="history-meta">
-            <div><strong>{text.recordedAt}:</strong> {entry.record.recorded_at}</div>
-            <div><strong>{text.effectiveDate}:</strong> {entry.record.effective_date}</div>
-            <div><strong>{text.changedFields}:</strong> {entry.changedFields.join(", ")}</div>
+        <article class="history-row">
+          <div class="history-main">
+            <p class="history-meta">
+              {formatRecentChangeDate(entry.record.recorded_at, entry.record.effective_date)}
+            </p>
+            <h2 class="history-title">{summarizeChangedFields(entry.changedFields)}</h2>
+            <p class="history-submeta">
+              <span>{text.recordedAt}: {entry.record.recorded_at.slice(0, 10)}</span>
+              <span>{text.effectiveDate}: {entry.record.effective_date}</span>
+            </p>
           </div>
 
-          <div class="diff-list">
+          <div class="history-diffs">
             {entry.fieldDiffs.map((diff) => (
-              <div class="diff-item">
-                <p class="diff-label">{diff.label}</p>
-                <p class="diff-value">{diff.before} → {diff.after}</p>
-                {diff.changeRate && <p class="diff-rate">{diff.changeRate}</p>}
+              <div class="history-diff">
+                <p class="history-diff-label">{diff.label}</p>
+                <p class="history-diff-value">
+                  {diff.field === "initial_record" ? diff.after : `${diff.before} → ${diff.after}`}
+                </p>
+                {diff.changeRate && <p class="history-diff-rate">{diff.changeRate}</p>}
               </div>
             ))}
           </div>
@@ -119,3 +108,188 @@ const history = await getModelHistory(provider, model);
     </div>
   </section>
 </BaseLayout>
+
+<style>
+  .model-page {
+    display: grid;
+    gap: 20px;
+  }
+
+  .current-grid {
+    display: grid;
+    grid-template-columns: minmax(13rem, 1.2fr) repeat(3, minmax(8rem, 0.72fr));
+    gap: 0;
+    border-top: 1px solid var(--line-strong);
+    border-bottom: 1px solid var(--line);
+  }
+
+  .current-cell {
+    display: grid;
+    gap: 6px;
+    padding: 18px 20px 20px;
+    border-right: 1px solid var(--line);
+  }
+
+  .current-cell:last-child {
+    border-right: 0;
+  }
+
+  .current-cell-wide {
+    padding-left: 0;
+  }
+
+  .current-label {
+    margin: 0;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    font-size: 0.68rem;
+  }
+
+  .current-value {
+    margin: 0;
+    font-size: 1.08rem;
+    line-height: 1.16;
+  }
+
+  .model-note {
+    margin: 0;
+    max-width: 52rem;
+    color: var(--muted);
+    font-size: 0.92rem;
+    line-height: 1.5;
+  }
+
+  .history-list {
+    display: grid;
+    gap: 0;
+  }
+
+  .history-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1.28fr) minmax(0, 1fr);
+    gap: 22px;
+    padding: 22px 0;
+    border-top: 1px solid var(--line-strong);
+  }
+
+  .history-row:last-child {
+    border-bottom: 1px solid var(--line);
+  }
+
+  .history-main {
+    display: grid;
+    gap: 10px;
+  }
+
+  .history-meta {
+    margin: 0;
+    color: var(--accent);
+    font-size: 0.72rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  .history-title {
+    margin: 0;
+    font-size: clamp(1.28rem, 2.4vw, 1.8rem);
+    line-height: 0.98;
+  }
+
+  .history-submeta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 16px;
+    margin: 0;
+    color: var(--muted);
+    font-size: 0.95rem;
+    line-height: 1.45;
+  }
+
+  .history-diffs {
+    display: grid;
+    gap: 14px;
+    padding-left: 40px;
+    border-left: 1px solid color-mix(in srgb, var(--line-strong) 82%, white);
+  }
+
+  .history-diff {
+    display: grid;
+    gap: 6px;
+    padding: 2px 0 10px;
+    border-bottom: 1px solid color-mix(in srgb, var(--line) 76%, white);
+  }
+
+  .history-diff:last-child {
+    padding-bottom: 0;
+    border-bottom: 0;
+  }
+
+  .history-diff-label {
+    margin: 0;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    font-size: 0.72rem;
+  }
+
+  .history-diff-value {
+    margin: 0;
+    font-size: 1.18rem;
+    line-height: 1.08;
+  }
+
+  .history-diff-rate {
+    margin: 0;
+    color: var(--muted);
+    font-size: 0.96rem;
+  }
+
+  @media (max-width: 900px) {
+    .current-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .current-cell {
+      border-right: 0;
+      border-bottom: 1px solid var(--line);
+      padding: 16px 0 18px;
+    }
+
+    .current-cell:nth-last-child(-n + 2) {
+      border-bottom: 0;
+    }
+
+    .current-cell-wide {
+      grid-column: 1 / -1;
+    }
+
+    .history-row {
+      grid-template-columns: 1fr;
+      gap: 18px;
+    }
+
+    .history-diffs {
+      padding-left: 0;
+      border-left: 0;
+    }
+  }
+
+  @media (max-width: 560px) {
+    .current-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .current-cell {
+      border-bottom: 1px solid var(--line);
+    }
+
+    .current-cell:nth-last-child(-n + 2) {
+      border-bottom: 1px solid var(--line);
+    }
+
+    .current-cell:last-child {
+      border-bottom: 0;
+    }
+  }
+</style>

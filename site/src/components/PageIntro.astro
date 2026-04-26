@@ -2,13 +2,19 @@
 interface Props {
   title: string;
   lead?: string;
+  noWrapTitle?: boolean;
 }
 
-const { title, lead } = Astro.props;
+const { title, lead, noWrapTitle = false } = Astro.props;
 ---
 
 <section class="page-intro">
-  <h1 class="page-intro-title">{title}</h1>
+  <h1
+    class="page-intro-title"
+    style={noWrapTitle ? "max-width:none;white-space:nowrap;" : undefined}
+  >
+    {title}
+  </h1>
   {lead && <p class="page-intro-lead">{lead}</p>}
 </section>
 

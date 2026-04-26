@@ -131,7 +131,7 @@ Astro により静的サイトを生成します。
   - 共通 `BaseLayout`
 - `src/components/`
   - 共通 UI component
-  - `SectionHeading` / `PageIntro` / `ButtonLink` / `TextLink` / `SummaryIcon` など、Home / `/changes` / `/providers` で確定した紙面文法を下層へ展開するための部品
+  - `SectionHeading` / `PageIntro` / `ButtonLink` / `TextLink` / `SummaryIcon` など、Home / `/changes` / `/providers` / `provider detail` / `model history` で確定した紙面文法を下層へ展開するための部品
 - `src/lib/data.ts`
   - JSON 読み込みと UI 向け selector / formatter
 - `src/lib/ui-text.ts`
@@ -359,12 +359,16 @@ provider ページ：
 
 - `/providers` index は `PageIntro + SectionHeading + provider comparison rows` を基本文法とする
 - provider ごとの比較軸は列見出しを 1 回だけ置き、row 内の詳細導線は `TextLink` で静かに渡す
+- `/providers/{provider}` detail は `PageIntro + Current Snapshot rows + short caveat` を基本文法とする
 
 model 履歴ページ：
 
 ```text
 /providers/{provider-slug}/{model-slug}
 ```
+
+- `PageIntro + Current Snapshot summary + Pricing History rows` を基本文法とする
+- 開発用の一時説明は visible UI に残さず、ユーザーに必要な注釈だけを短く見せる
 
 変更一覧ページ：
 

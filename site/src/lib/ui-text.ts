@@ -74,6 +74,8 @@ export const text = {
 
   currentSnapshot: "Current Snapshot",
   currentSnapshotMetaDescriptionPrefix: "Current pricing snapshot for",
+  providerPageDescriptionPrefix: "Current pricing snapshot and model-level history for",
+  modelPageDescriptionPrefix: "Current pricing snapshot and recorded change history for",
   modelDetail: "Model Detail",
   pricingHistory: "Pricing History",
   forConnector: "for",
@@ -81,7 +83,7 @@ export const text = {
   historyView: "View history",
   currentSnapshotCountSuffix: "models in the current snapshot.",
   cachedInputNoteAnthropic:
-    "Anthropic の cached_input は Prompt caching Read price の近似マッピングです。",
+    "Cached input is shown as an approximate mapping of Anthropic Prompt caching read pricing.",
   pricingHistoryDescription:
     "PoC seed records are temporarily hidden in the UI to avoid noise while keeping the underlying history append-only.",
   recordedAt: "Recorded at",

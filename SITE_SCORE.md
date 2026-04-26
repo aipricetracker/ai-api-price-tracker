@@ -61,6 +61,8 @@
 - current snapshot の要約は必要だが、主役は history の連なりである。
 - ここでは event の前後関係、差分、effective date / recorded_at の関係が静かに読めることが重要で、Home のような導入性は不要である。
 - 読み順としては、まず現在値を確認し、その後に履歴をたどり、最後に caveat や補足を読む流れが自然である。
+- page は `PageIntro -> Current Snapshot summary -> Pricing History rows` の順で構成する。current summary は導入であり、history rows が主役である。
+- initial record には通常の before/after 記法をそのまま当てない。前値がないことを素直に見せ、不要な記号は足さない。
 
 ## Intensity & Emphasis
 
@@ -166,6 +168,7 @@
 - Home は、Hero / Recent Changes / Providers / About / Footer の基本文法が概ね収束した。
 - `Changes` は、page intro と event row grammar の first pass が入った。次は密度、複数件表示時のテンポ、diff の強弱を詰める段階である。
 - `Providers` は、page intro と列見出し + provider row の比較文法が本体ページへ展開された。次は provider detail へ同じ低温な比較文法を移す段階である。
-- `Model History` は詳細情報を読めるが、archive 面としての静かな重心と履歴のテンポがまだ十分に整理されていない。
+- `Providers detail` は、page intro、current snapshot の比較行、短い caveat、history 導線の文法が概ね収束した。
+- `Model History` は、page intro、current summary、history row の first pass が入った。現行データでは複数の visible history が薄いため、今後は実データ増加後に history 反復の密度を再評価する余地がある。
 - 今後の実装では、新機能を足すより先に、Home で確定した共通文法を下層ページへ段階的に移すことを優先する。
-- 次の収束順としては、Providers detail、Model History の詳細面という順が自然である。
+- 主要ページの first pass は一通り揃ったため、以後は実データ増加に応じた密度調整や、必要な補助導線の refinement を個別に進める段階である。

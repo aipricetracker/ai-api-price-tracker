@@ -105,6 +105,8 @@
 - ただし、比較リストや event row の内部に置く導線は button にしない。密な一覧内では、赤文字の text link を基本形とし、必要なら小さな矢印 icon を付けて次の階層への移動を示す。
 - 小さな icon / illustration は線画で使う。意味を補助する程度の具体性を持たせるが、イラスト主導にしない。色は accent 系に抑え、各カラム内で icon / heading / body の開始位置を CSS で揃える。
 - change event list は card で囲わず、row と罫線で読む。左に metadata / title / summary、右に diff を置く二段構えを基本形としてよい。
+- detail page の current summary も card に戻さない。model / input / cached input / output のような現在値は、summary grid と罫線で静かに見せる。
+- provider / model detail の caveat は残してよいが、開発運用の一時事情をそのまま見せない。ユーザーに必要な注釈だけを短く残す。
 - 将来 search/filter を入れる場合も、管理画面風ではなく index viewer の延長として扱う。
 - 禁止方向:
   - pill badge の乱用
@@ -133,6 +135,7 @@
 - full-width の罫線を使う場合は、content width の線と viewport 全幅の線を明確に使い分ける。header 下罫線や footer 罫線は viewport 端まで貫いてよい。
 - 比較リストは、行ごとに同じ label を繰り返すより、列見出しを 1 回だけ置いて行データを並べる。provider / model / date / count のような比較軸は、表として読める整列を優先する。
 - 比較リストでは、列見出しと値の開始位置を厳密に揃える。CTA 列を含めて各 row が同じ grid track を共有し、header row と data row で列幅が変わらないようにする。
+- responsive で比較リストが折れる場合も、1 カラムへ即座に落とさず、可能な限り 3 カラム、次に 2 カラムで耐える。row 内 padding を足してグループ感を補い、導線は右寄せで閉じる。
 - summary block は、本文を長くするより短い lead と 3 つ程度の要点で支えるとよい。要点は同じ grid grammar で揃え、テキスト量で位置を合わせない。
 - ページごとに変えてよいもの:
   - 主役となる section の大きさ

@@ -1,5 +1,8 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
+import PageIntro from "../../components/PageIntro.astro";
+import SectionHeading from "../../components/SectionHeading.astro";
+import TextLink from "../../components/TextLink.astro";
 import { formatPrice, getProviderModelList, getProviderSlugs } from "../../lib/data";
 import { text } from "../../lib/ui-text";
 
@@ -21,37 +24,191 @@ const cachedInputNote = models.find((model) => model.cachedInputNote)?.cachedInp
 <BaseLayout
   title={`${provider} ${text.pricingTitleSuffix}`}
   description={`${text.currentSnapshotMetaDescriptionPrefix} ${provider}.`}
+  headerTitle=""
+  mainGap="56px"
 >
-  <section class="card">
-    <p class="eyebrow">{text.currentSnapshot}</p>
-    <p class="muted">{models.length} {text.currentSnapshotCountSuffix}</p>
-    {cachedInputNote && <p class="note">{cachedInputNote}</p>}
-  </section>
+  <PageIntro title={provider} lead={`${text.providerPageDescriptionPrefix} ${provider}.`} />
 
-  <section class="card">
-    <table>
-      <thead>
-        <tr>
-          <th>{text.modelColumn}</th>
-          <th>{text.inputColumn}</th>
-          <th>{text.cachedInputColumn}</th>
-          <th>{text.outputColumn}</th>
-          <th>{text.historyColumn}</th>
-        </tr>
-      </thead>
-      <tbody>
-        {models.map((model) => (
-          <tr>
-            <td data-label={text.modelDataLabel}>{model.model}</td>
-            <td data-label={text.inputDataLabel}>{formatPrice(model.pricing.input)}</td>
-            <td data-label={text.cachedInputDataLabel}>{formatPrice(model.pricing.cached_input)}</td>
-            <td data-label={text.outputDataLabel}>{formatPrice(model.pricing.output)}</td>
-            <td data-label={text.historyDataLabel}>
-              <a href={`/providers/${provider}/${model.model}`}>{text.historyView}</a>
-            </td>
-          </tr>
-        ))}
-      </tbody>
-    </table>
+  <section class="provider-page">
+    <SectionHeading
+      title={text.currentSnapshot}
+      lead={`${models.length} ${text.currentSnapshotCountSuffix}`}
+    />
+
+    {cachedInputNote && <p class="provider-note">{cachedInputNote}</p>}
+
+    <div class="model-grid">
+      <div class="model-row model-row-head" aria-hidden="true">
+        <span>{text.modelColumn}</span>
+        <span>{text.inputColumn}</span>
+        <span>{text.cachedInputColumn}</span>
+        <span>{text.outputColumn}</span>
+        <span>{text.historyColumn}</span>
+      </div>
+
+      {models.map((model) => (
+        <article class="model-row">
+          <h2 class="model-name">{model.model}</h2>
+
+          <div class="model-cell">
+            <p class="model-cell-label">{text.inputColumn}</p>
+            <p class="model-cell-value">{formatPrice(model.pricing.input)}</p>
+          </div>
+
+          <div class="model-cell">
+            <p class="model-cell-label">{text.cachedInputColumn}</p>
+            <p class="model-cell-value">{formatPrice(model.pricing.cached_input)}</p>
+          </div>
+
+          <div class="model-cell">
+            <p class="model-cell-label">{text.outputColumn}</p>
+            <p class="model-cell-value">{formatPrice(model.pricing.output)}</p>
+          </div>
+
+          <div class="model-action">
+            <TextLink href={`/providers/${provider}/${model.model}`} arrow={true}>
+              {text.historyView}
+            </TextLink>
+          </div>
+        </article>
+      ))}
+    </div>
   </section>
 </BaseLayout>
+
+<style>
+  .provider-page {
+    display: grid;
+    gap: 20px;
+  }
+
+  .provider-note {
+    margin: 0;
+    max-width: 52rem;
+    color: var(--muted);
+    font-size: 0.92rem;
+    line-height: 1.5;
+  }
+
+  .model-grid {
+    display: grid;
+    gap: 0;
+    border-top: 1px solid var(--line-strong);
+  }
+
+  .model-row {
+    display: grid;
+    grid-template-columns:
+      minmax(13rem, 1.38fr)
+      minmax(7rem, 0.72fr)
+      minmax(8rem, 0.84fr)
+      minmax(7rem, 0.72fr)
+      minmax(8.5rem, 0.8fr);
+    gap: 22px;
+    align-items: center;
+    padding: 22px 0;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .model-row-head {
+    padding: 10px 0 9px;
+    border-bottom-color: var(--line-strong);
+  }
+
+  .model-row-head span {
+    display: block;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    font-size: 0.66rem;
+  }
+
+  .model-name {
+    margin: 0;
+    font-size: clamp(1.18rem, 2.2vw, 1.56rem);
+    line-height: 0.98;
+  }
+
+  .model-cell {
+    display: grid;
+    gap: 5px;
+    justify-items: start;
+  }
+
+  .model-cell-label {
+    display: none;
+    margin: 0;
+    color: var(--muted);
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+  }
+
+  .model-cell-value {
+    margin: 0;
+    font-size: 1.02rem;
+    line-height: 1.12;
+  }
+
+  .model-action {
+    display: flex;
+    justify-content: flex-start;
+  }
+
+  .model-action :global(.text-link) {
+    font-size: 0.88rem;
+  }
+
+  @media (max-width: 860px) {
+    .model-row {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      align-items: start;
+      gap: 12px 18px;
+      padding: 24px 12px;
+    }
+
+    .model-row-head {
+      display: none;
+    }
+
+    .model-name {
+      grid-column: 1 / -1;
+    }
+
+    .model-cell-label {
+      display: block;
+      font-size: 0.66rem;
+    }
+
+    .model-action {
+      grid-column: 1 / -1;
+      justify-content: flex-end;
+      padding-top: 2px;
+    }
+
+    .model-cell {
+      gap: 4px;
+    }
+
+    .model-cell-value {
+      font-size: 0.98rem;
+    }
+  }
+
+  @media (max-width: 560px) {
+    .model-row {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px 16px;
+      padding: 24px 12px;
+    }
+
+    .model-name {
+      grid-column: 1 / -1;
+    }
+
+    .model-action {
+      grid-column: 1 / -1;
+      justify-content: flex-end;
+    }
+  }
+</style>
