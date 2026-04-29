@@ -23,6 +23,53 @@ const POC_HISTORY_SIGNATURES = new Set([
   "anthropic:claude-3-7-sonnet:1K tokens",
 ]);
 
+const DEV_MODEL_HISTORY_FIXTURES: Record<string, PricingRecord[]> = {
+  "openai:gpt-5.4-mini": [
+    {
+      provider: "openai",
+      model: "gpt-5.4-mini",
+      pricing: {
+        input: 0.3,
+        cached_input: 0.03,
+        output: 1.2,
+      },
+      currency: "USD",
+      unit: "1M tokens",
+      source_url: "https://openai.com/api/pricing/",
+      effective_date: "2026-03-18",
+      recorded_at: "2026-03-18T09:00:00Z",
+    },
+    {
+      provider: "openai",
+      model: "gpt-5.4-mini",
+      pricing: {
+        input: 0.35,
+        cached_input: 0.035,
+        output: 1.4,
+      },
+      currency: "USD",
+      unit: "1M tokens",
+      source_url: "https://openai.com/api/pricing/",
+      effective_date: "2026-04-03",
+      recorded_at: "2026-04-03T09:00:00Z",
+    },
+    {
+      provider: "openai",
+      model: "gpt-5.4-mini",
+      pricing: {
+        input: 0.4,
+        cached_input: 0.04,
+        output: 1.6,
+      },
+      currency: "USD",
+      unit: "1M tokens",
+      source_url: "https://openai.com/api/pricing/",
+      effective_date: "2026-04-18",
+      recorded_at: "2026-04-18T09:00:00Z",
+    },
+  ],
+};
+
 export async function getProviderOverviewList(): Promise<ProviderOverview[]> {
   const current = await readCurrentPricing();
   const history = await readPricingHistory();
@@ -68,7 +115,7 @@ export async function getModelHistory(provider: string, model: string): Promise<
     .filter((record) => !isHiddenPocRecord(record))
     .sort((left, right) => left.recorded_at.localeCompare(right.recorded_at));
 
-  return buildHistoryEntries(visibleHistory);
+  return buildHistoryEntries(applyDevHistoryFixture(provider, model, visibleHistory));
 }
 
 export async function getRecentChanges(limit = 8): Promise<HistoryEntry[]> {
@@ -287,6 +334,21 @@ function isHiddenPocRecord(record: PricingRecord): boolean {
   // Temporary UI-only suppression for known PoC seed history.
   // The append-only history file stays untouched; the UI hides legacy sample noise until real history fully replaces it.
   return POC_HISTORY_SIGNATURES.has(`${record.provider}:${record.model}:${record.unit}`);
+}
+
+function applyDevHistoryFixture(provider: string, model: string, records: PricingRecord[]): PricingRecord[] {
+  if (!import.meta.env.DEV) {
+    return records;
+  }
+
+  const key = `${provider}:${model}`;
+  const fixture = DEV_MODEL_HISTORY_FIXTURES[key];
+
+  if (!fixture || records.length > 1) {
+    return records;
+  }
+
+  return fixture;
 }
 
 function trimTrailingZeros(value: number): string {
