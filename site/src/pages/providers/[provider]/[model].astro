@@ -5,38 +5,27 @@ import SectionHeading from "../../../components/SectionHeading.astro";
 import {
   formatPrice,
   formatRecentChangeDate,
-  getCurrentModel,
-  getModelHistory,
-  getProviderModelSlugs,
-  getProviderSlugs,
+  getModelDetail,
+  getModelDetailSlugs,
   summarizeChangedFields,
 } from "../../../lib/data";
 import { text } from "../../../lib/ui-text";
 
 export async function getStaticPaths() {
-  const providers = await getProviderSlugs();
-  const paths = [];
+  const slugs = await getModelDetailSlugs();
 
-  for (const provider of providers) {
-    const models = await getProviderModelSlugs(provider);
-
-    for (const model of models) {
-      paths.push({ params: { provider, model } });
-    }
-  }
-
-  return paths;
+  return slugs.map(({ provider, model }) => ({ params: { provider, model } }));
 }
 
 const provider = Astro.params.provider ?? "";
 const model = Astro.params.model ?? "";
-const currentRecord = await getCurrentModel(provider, model);
+const detail = await getModelDetail(provider, model);
 
-if (!currentRecord) {
+if (!detail) {
   return Astro.redirect("/providers");
 }
 
-const history = await getModelHistory(provider, model);
+const { currentRecord, history, isHistoricalOnly } = detail;
 ---
 
 <BaseLayout
@@ -45,34 +34,48 @@ const history = await getModelHistory(provider, model);
   headerTitle=""
   mainGap="56px"
 >
-  <PageIntro title={model} lead={`${text.modelPageDescriptionPrefix} ${provider}.`} noWrapTitle={true} />
+  <PageIntro
+    title={model}
+    lead={`${isHistoricalOnly ? text.historicalModelPageDescriptionPrefix : text.modelPageDescriptionPrefix} ${provider}.`}
+    noWrapTitle={true}
+  />
 
   <section class="model-page">
-    <SectionHeading title={text.currentSnapshot} lead={`${text.providerColumn}: ${provider}`} />
+    {currentRecord ? (
+      <>
+        <SectionHeading title={text.currentSnapshot} lead={`${text.providerColumn}: ${provider}`} />
 
-    <div class="current-grid">
-      <div class="current-cell current-cell-wide">
-        <p class="current-label">{text.modelColumn}</p>
-        <p class="current-value">{model}</p>
+        <div class="current-grid">
+          <div class="current-cell current-cell-wide">
+            <p class="current-label">{text.modelColumn}</p>
+            <p class="current-value">{model}</p>
+          </div>
+
+          <div class="current-cell">
+            <p class="current-label">{text.inputColumn}</p>
+            <p class="current-value">{formatPrice(currentRecord.pricing.input)}</p>
+          </div>
+
+          <div class="current-cell">
+            <p class="current-label">{text.cachedInputColumn}</p>
+            <p class="current-value">{formatPrice(currentRecord.pricing.cached_input)}</p>
+          </div>
+
+          <div class="current-cell">
+            <p class="current-label">{text.outputColumn}</p>
+            <p class="current-value">{formatPrice(currentRecord.pricing.output)}</p>
+          </div>
+        </div>
+
+        {currentRecord.cachedInputNote && <p class="model-note">{currentRecord.cachedInputNote}</p>}
+      </>
+    ) : (
+      <div class="historical-panel">
+        <p class="historical-kicker">{text.notInCurrentSnapshot}</p>
+        <h2>{text.historicalModel}</h2>
+        <p>{text.historicalModelDescription}</p>
       </div>
-
-      <div class="current-cell">
-        <p class="current-label">{text.inputColumn}</p>
-        <p class="current-value">{formatPrice(currentRecord.pricing.input)}</p>
-      </div>
-
-      <div class="current-cell">
-        <p class="current-label">{text.cachedInputColumn}</p>
-        <p class="current-value">{formatPrice(currentRecord.pricing.cached_input)}</p>
-      </div>
-
-      <div class="current-cell">
-        <p class="current-label">{text.outputColumn}</p>
-        <p class="current-value">{formatPrice(currentRecord.pricing.output)}</p>
-      </div>
-    </div>
-
-    {currentRecord.cachedInputNote && <p class="model-note">{currentRecord.cachedInputNote}</p>}
+    )}
   </section>
 
   <section class="model-page">
@@ -158,6 +161,34 @@ const history = await getModelHistory(provider, model);
     color: var(--muted);
     font-size: 0.92rem;
     line-height: 1.5;
+  }
+
+  .historical-panel {
+    display: grid;
+    gap: 10px;
+    padding: 24px 0 22px;
+    border-top: 1px solid var(--line-strong);
+    border-bottom: 1px solid var(--line);
+  }
+
+  .historical-panel h2 {
+    margin: 0;
+    font-size: clamp(1.42rem, 2.8vw, 2rem);
+    line-height: 0.98;
+  }
+
+  .historical-panel p {
+    margin: 0;
+    max-width: 46rem;
+    color: var(--muted);
+    line-height: 1.5;
+  }
+
+  .historical-kicker {
+    color: var(--accent) !important;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    font-size: 0.72rem;
   }
 
   .history-list {

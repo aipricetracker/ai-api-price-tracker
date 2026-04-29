@@ -25,6 +25,9 @@
   - providers / history への入口
 - Home は情報を全部載せる場所ではない。全体の読み筋を作る場所と考える。
 - Hero は marketing の宣伝欄ではなく、紙面の題字 + brief lead に近い扱いにする。
+- Home の Recent Changes は current snapshot への入口として扱う。
+- そのため、current snapshot に存在しない history-only model は Home の Recent Changes には出さない。
+- current model の non-initial change がない場合は、過剰な warning ではなく静かな empty state と `/changes` への導線で扱う。
 - Home の確定文法は以下を基準にする。
   - sticky header の直下に、紙面の題字として Hero を置く
   - Hero 内には brief lead と、`Discover / Compare / Monitor / Archive` のような小さな情報帯を含める
@@ -38,6 +41,8 @@
 - Changes は速報面、または更新台帳の一覧面である。
 - サイト内で最も event-driven に見えるページにする。
 - 主役は change event の連なりであり、各 event が「何がどう変わったか」をすぐ読めることを重視する。
+- Changes は append-only history archive の一覧面でもある。
+- current snapshot に存在しない history-only model も、visible history に change event があるなら Changes には表示してよい。
 - このページでは prose を増やしすぎず、summary と diff の反復でテンポを作る。
 - Home より密度を上げてよいが、同じカード反復に見えて単調にならないよう、見出し・日付・差分の階層を明確に分ける。
 - page の導入は、header 内 title ではなく本文先頭の page intro で行う。`h1 + short lead` を置き、その下に section heading と event list を続ける。
@@ -63,6 +68,9 @@
 - 読み順としては、まず現在値を確認し、その後に履歴をたどり、最後に caveat や補足を読む流れが自然である。
 - page は `PageIntro -> Current Snapshot summary -> Pricing History rows` の順で構成する。current summary は導入であり、history rows が主役である。
 - initial record には通常の before/after 記法をそのまま当てない。前値がないことを素直に見せ、不要な記号は足さない。
+- current snapshot に存在しないが visible history に存在する model は、history-only detail として扱う。
+- history-only detail では通常の current summary を出さず、`Historical model` / `Not in current snapshot` 相当の静かな表示で current snapshot にないことを明示する。
+- source から確定できない限り、history-only model を廃止済み・提供終了とは断定しない。
 
 ## Intensity & Emphasis
 
@@ -85,6 +93,7 @@
   - 比較しやすい列構造
   - 次ページへ渡す素直な導線
 - Home の Recent Changes は、Changes ページの簡易版ではなく「最新の実データへの入口」である。1件でも複数件でも、recorded date / item title / summary / diff が同じリズムで読めることを優先する。
+- Home の Recent Changes と Changes page は selector の役割が異なる。Home は current snapshot に存在する model の変更、Changes は visible history archive の変更を扱う。
 - page 内の独立導線は、テキストリンクとして浮かせず、再利用可能な button grammar に乗せる。
 - ただし、一覧 row の内部導線は別扱いにする。比較の走査を壊さないよう、row 内では text link grammar を使う。
 - 詳細ページは「たどる」ためのテンポを持たせる。

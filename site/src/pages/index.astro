@@ -7,13 +7,13 @@ import {
   formatDateShort,
   formatRecentChangeDate,
   getProviderOverviewList,
-  getRecentChanges,
+  getRecentCurrentChanges,
   summarizeChangedFields,
 } from "../lib/data";
 import { text } from "../lib/ui-text";
 
 const providers = await getProviderOverviewList();
-const recentChanges = await getRecentChanges(3);
+const recentChanges = await getRecentCurrentChanges(3);
 const title = text.siteName;
 ---
 
@@ -132,6 +132,16 @@ const title = text.siteName;
       .changes-grid {
         display: grid;
         gap: 0;
+      }
+
+      .empty-change-note {
+        margin: 0;
+        padding: 22px 0;
+        border-top: 1px solid var(--line-strong);
+        border-bottom: 1px solid var(--line);
+        color: var(--muted);
+        font-size: 1rem;
+        line-height: 1.5;
       }
 
       .change-row {
@@ -424,30 +434,34 @@ const title = text.siteName;
   <div class="home-sections">
     <section class="section-block">
       <SectionHeading title={text.recentChanges} lead={text.recentChangesDescription} />
-      <div class="changes-grid">
-        {recentChanges.map((entry) => (
-          <article class="change-row">
-            <div class="change-row-head">
-              <p class="change-row-meta">{formatRecentChangeDate(entry.record.recorded_at, entry.record.effective_date)}</p>
-              <h2 class="change-row-title">
-                <a href={`/providers/${entry.record.provider}/${entry.record.model}`}>
-                  {entry.record.provider} / {entry.record.model}
-                </a>
-              </h2>
-              <p class="change-row-summary">{summarizeChangedFields(entry.changedFields)}</p>
-            </div>
-            <div class="change-diffs">
-              {entry.fieldDiffs.map((diff) => (
-                <div class="change-diff">
-                  <p class="change-diff-label">{diff.label}</p>
-                  <p class="change-diff-value">{diff.before} → {diff.after}</p>
-                  {diff.changeRate && <p class="change-diff-rate">{diff.changeRate}</p>}
-                </div>
-              ))}
-            </div>
-          </article>
-        ))}
-      </div>
+      {recentChanges.length > 0 ? (
+        <div class="changes-grid">
+          {recentChanges.map((entry) => (
+            <article class="change-row">
+              <div class="change-row-head">
+                <p class="change-row-meta">{formatRecentChangeDate(entry.record.recorded_at, entry.record.effective_date)}</p>
+                <h2 class="change-row-title">
+                  <a href={`/providers/${entry.record.provider}/${entry.record.model}`}>
+                    {entry.record.provider} / {entry.record.model}
+                  </a>
+                </h2>
+                <p class="change-row-summary">{summarizeChangedFields(entry.changedFields)}</p>
+              </div>
+              <div class="change-diffs">
+                {entry.fieldDiffs.map((diff) => (
+                  <div class="change-diff">
+                    <p class="change-diff-label">{diff.label}</p>
+                    <p class="change-diff-value">{diff.before} → {diff.after}</p>
+                    {diff.changeRate && <p class="change-diff-rate">{diff.changeRate}</p>}
+                  </div>
+                ))}
+              </div>
+            </article>
+          ))}
+        </div>
+      ) : (
+        <p class="empty-change-note">{text.noRecentCurrentChanges}</p>
+      )}
       <div class="home-link-row">
         <ButtonLink href="/changes">{text.homeRecentChangesLink}</ButtonLink>
       </div>

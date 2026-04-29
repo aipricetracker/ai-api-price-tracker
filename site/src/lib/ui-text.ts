@@ -36,6 +36,8 @@ export const text = {
   recentChanges: "Recent Changes",
   recentChangesDescription:
     "Latest visible pricing changes from the append-only history log. PoC seed records are excluded here.",
+  noRecentCurrentChanges:
+    "No current-snapshot model changes are available yet. Open the full change log for archived history.",
   pricingChangedFallback: "Pricing changed",
   recordedPrefix: "Recorded",
   effectivePrefix: "Effective",
@@ -76,12 +78,17 @@ export const text = {
   currentSnapshotMetaDescriptionPrefix: "Current pricing snapshot for",
   providerPageDescriptionPrefix: "Current pricing snapshot and model-level history for",
   modelPageDescriptionPrefix: "Current pricing snapshot and recorded change history for",
+  historicalModelPageDescriptionPrefix: "Recorded pricing history for",
   modelDetail: "Model Detail",
   pricingHistory: "Pricing History",
   forConnector: "for",
   historyTitleSuffix: "History",
   historyView: "View history",
   currentSnapshotCountSuffix: "models in the current snapshot.",
+  historicalModel: "Historical model",
+  historicalModelDescription:
+    "This model appears in pricing history but is not present in the current snapshot.",
+  notInCurrentSnapshot: "Not in current snapshot",
   cachedInputNoteAnthropic:
     "Cached input is shown as an approximate mapping of Anthropic Prompt caching read pricing.",
   pricingHistoryDescription:

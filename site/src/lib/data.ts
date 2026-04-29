@@ -3,6 +3,7 @@ import type {
   CurrentPricing,
   HistoryFieldDiff,
   HistoryEntry,
+  ModelDetail,
   PricingHistory,
   PricingRecord,
   ProviderModelSummary,
@@ -123,6 +124,16 @@ export async function getRecentChanges(limit = 8): Promise<HistoryEntry[]> {
   return entries.slice(0, limit);
 }
 
+export async function getRecentCurrentChanges(limit = 8): Promise<HistoryEntry[]> {
+  const current = await readCurrentPricing();
+  const history = await readPricingHistory();
+  const visibleCurrentHistory = history
+    .filter((record) => !isHiddenPocRecord(record))
+    .filter((record) => current[record.provider]?.[record.model]);
+
+  return buildChangeEntriesForDisplay(visibleCurrentHistory).slice(0, limit);
+}
+
 export async function getAllChanges(): Promise<HistoryEntry[]> {
   const history = await readPricingHistory();
   const visibleHistory = history.filter((record) => !isHiddenPocRecord(record));
@@ -140,9 +151,50 @@ export async function getProviderModelSlugs(provider: string): Promise<string[]>
   return models.map((model) => model.model);
 }
 
+export async function getModelDetailSlugs(): Promise<Array<{ provider: string; model: string }>> {
+  const current = await readCurrentPricing();
+  const history = await readPricingHistory();
+  const modelsByProvider = new Map<string, Set<string>>();
+
+  for (const [provider, models] of Object.entries(current)) {
+    for (const model of Object.keys(models)) {
+      addModelSlug(modelsByProvider, provider, model);
+    }
+  }
+
+  for (const record of history) {
+    if (!isHiddenPocRecord(record)) {
+      addModelSlug(modelsByProvider, record.provider, record.model);
+    }
+  }
+
+  return [...modelsByProvider.entries()]
+    .flatMap(([provider, models]) => [...models].map((model) => ({ provider, model })))
+    .sort((left, right) => `${left.provider}:${left.model}`.localeCompare(`${right.provider}:${right.model}`));
+}
+
 export async function getCurrentModel(provider: string, model: string): Promise<ProviderModelSummary | null> {
   const models = await getProviderModelList(provider);
   return models.find((record) => record.model === model) ?? null;
+}
+
+export async function getModelDetail(provider: string, model: string): Promise<ModelDetail | null> {
+  const [currentRecord, history] = await Promise.all([
+    getCurrentModel(provider, model),
+    getModelHistory(provider, model),
+  ]);
+
+  if (!currentRecord && history.length < 1) {
+    return null;
+  }
+
+  return {
+    provider,
+    model,
+    currentRecord,
+    history,
+    isHistoricalOnly: !currentRecord,
+  };
 }
 
 export function formatPrice(value: number | undefined): string {
@@ -199,6 +251,12 @@ async function readJsonFile<T>(path: URL, fallback: T): Promise<T> {
   } catch {
     return fallback;
   }
+}
+
+function addModelSlug(modelsByProvider: Map<string, Set<string>>, provider: string, model: string): void {
+  const models = modelsByProvider.get(provider) ?? new Set<string>();
+  models.add(model);
+  modelsByProvider.set(provider, models);
 }
 
 function getChangedFields(previous: PricingRecord | undefined, next: PricingRecord): string[] {

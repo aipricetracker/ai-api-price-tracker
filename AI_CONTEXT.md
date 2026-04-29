@@ -134,6 +134,11 @@ Astro により静的サイトを生成します。
   - `SectionHeading` / `PageIntro` / `ButtonLink` / `TextLink` / `SummaryIcon` など、Home / `/changes` / `/providers` / `provider detail` / `model history` で確定した紙面文法を下層へ展開するための部品
 - `src/lib/data.ts`
   - JSON 読み込みと UI 向け selector / formatter
+  - current snapshot 用 selector と history archive 用 selector は分けて扱う
+  - Top の Recent Changes は current snapshot に存在する provider/model の変更だけを表示する
+  - `/changes` は visible pricing history 由来の append-only archive として扱い、current snapshot に存在しない history-only model も表示する
+  - model detail route は current snapshot と visible pricing history の provider/model union で生成する
+  - current に存在しないが history に存在する model は historical-only detail として生成し、current snapshot がないことを UI で明示する
 - `src/lib/ui-text.ts`
   - UI 文言定義
 - `src/lib/locale.ts`
@@ -221,6 +226,13 @@ data/pricing-history.json
 
 価格変更イベントの履歴を保持します。  
 このファイルは append-only です。
+
+補足:
+
+- `pricing-history.json` に存在する model が、常に `current-pricing.json` に存在するとは限らない
+- history にだけ存在する provider/model は、公開サイトでは history archive として detail page を生成する
+- ただし、current provider/model 一覧には混ぜない
+- source から確定できない限り、history-only model を廃止済み・提供終了とは断定しない
 
 基本イメージ：
 
