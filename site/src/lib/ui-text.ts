@@ -12,7 +12,8 @@ export const text = {
   homeLead:
     "A quiet record of pricing shifts across major AI API providers, built for checking what changed and where to look next.",
   homeRecentChangesLink: "Open the full change log",
-  homeProvidersLead: "Use providers as the first index for comparison, update activity, and model-level drill-down.",
+  homeProvidersLead:
+    "Use providers as the first index for current snapshot comparison, current-model activity, and drill-down.",
   homeAboutLead:
     "A static record for tracking AI API pricing changes without turning the site into a dashboard.",
   homeAboutSummaries: [
@@ -35,7 +36,7 @@ export const text = {
 
   recentChanges: "Recent Changes",
   recentChangesDescription:
-    "Latest visible pricing changes from the append-only history log. PoC seed records are excluded here.",
+    "Latest visible pricing changes for models still present in the current snapshot.",
   noRecentCurrentChanges:
     "No current-snapshot model changes are available yet. Open the full change log for archived history.",
   pricingChangedFallback: "Pricing changed",
@@ -46,10 +47,10 @@ export const text = {
   providers: "Providers",
   providersMetaDescription: "Provider-level view of current AI API pricing data.",
   providersPageDescription:
-    "Compare providers by tracked model count, update activity, and the latest visible change.",
+    "Compare providers by current model count, current-model change activity, and the latest current-model change.",
   providerIndex: "Provider Index",
   providerIndexDescription:
-    "Use providers as the first index for comparison, update activity, and model-level drill-down.",
+    "Use providers as the first index for current snapshot comparison, update activity, and model-level drill-down.",
   providerIndexColumnsDescription:
     "Rows are ordered for scanning first, then for choosing where to drill down.",
   providerColumn: "Provider",
