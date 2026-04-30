@@ -1,0 +1,128 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import PageIntro from "../components/PageIntro.astro";
+import SectionHeading from "../components/SectionHeading.astro";
+import TextLink from "../components/TextLink.astro";
+import { text } from "../lib/ui-text";
+
+const title = "About | AI API Price Tracker";
+const description =
+  "What AI API Price Tracker records, how current snapshots and pricing history are presented, and why official provider sources remain authoritative.";
+---
+
+<BaseLayout title={title} description={description} headerTitle="" mainGap="56px">
+  <PageIntro
+    title={text.aboutTitle}
+    lead="AI API Price Tracker is a static public archive for AI API pricing snapshots and pricing history."
+  />
+
+  <section class="info-page">
+    <SectionHeading title="What this site tracks" />
+    <div class="info-grid">
+      <article class="info-card">
+        <p class="info-kicker">Current snapshot</p>
+        <h2>Latest normalized pricing</h2>
+        <p>
+          Provider and model pages show the current pricing snapshot generated from the latest normalized data.
+          These pages are intended for quick comparison and drill-down.
+        </p>
+      </article>
+      <article class="info-card">
+        <p class="info-kicker">Append-only history</p>
+        <h2>Pricing changes over time</h2>
+        <p>
+          The change log and model detail pages preserve visible pricing history as an archive. A model can remain
+          visible in history even when it is not present in the current snapshot.
+        </p>
+      </article>
+      <article class="info-card">
+        <p class="info-kicker">Static archive</p>
+        <h2>Readable public record</h2>
+        <p>
+          The site is generated as static Astro pages. It is built to make pricing changes easier to review, not to
+          replace provider-owned pricing pages.
+        </p>
+      </article>
+    </div>
+  </section>
+
+  <section class="info-page">
+    <SectionHeading title="How to use it" />
+    <div class="info-copy">
+      <p>
+        Use Providers for the current snapshot view. Use Changes and model detail pages for historical pricing events.
+        Before making contractual, purchasing, or operational decisions, verify the latest official pricing with the
+        provider.
+      </p>
+      <TextLink href="/sources" arrow={true}>Read the source methodology</TextLink>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .info-page {
+    display: grid;
+    gap: 20px;
+  }
+
+  .info-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0;
+    border-top: 1px solid var(--line-strong);
+  }
+
+  .info-card {
+    display: grid;
+    gap: 10px;
+    padding: 20px 22px 22px;
+    border-right: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+  }
+
+  .info-card:last-child {
+    border-right: 0;
+  }
+
+  .info-kicker {
+    margin: 0;
+    color: var(--accent);
+    font-size: 0.72rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  .info-card h2 {
+    margin: 0;
+    font-size: clamp(1.25rem, 2.4vw, 1.72rem);
+    line-height: 1;
+  }
+
+  .info-card p,
+  .info-copy p {
+    margin: 0;
+    color: var(--muted);
+    line-height: 1.55;
+  }
+
+  .info-copy {
+    display: grid;
+    gap: 16px;
+    padding: 22px 0 0;
+    border-top: 1px solid var(--line-strong);
+  }
+
+  .info-copy p {
+    max-width: 58rem;
+  }
+
+  @media (max-width: 820px) {
+    .info-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .info-card {
+      border-right: 0;
+    }
+  }
+</style>

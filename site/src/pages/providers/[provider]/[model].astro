@@ -29,11 +29,14 @@ const { currentRecord, history, isHistoricalOnly } = detail;
 const newestFirstHistory = [...history].sort((left, right) =>
   right.record.recorded_at.localeCompare(left.record.recorded_at),
 );
+const modelDescription = isHistoricalOnly
+  ? `${text.historicalModelPageDescriptionPrefix} ${provider}/${model}. This model is not present in the current snapshot.`
+  : `${text.modelPageDescriptionPrefix} ${provider}/${model}.`;
 ---
 
 <BaseLayout
   title={`${model} ${text.historyTitleSuffix}`}
-  description={`${text.pricingHistory} ${text.forConnector} ${provider}/${model}.`}
+  description={modelDescription}
   headerTitle=""
   mainGap="56px"
 >

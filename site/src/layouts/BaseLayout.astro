@@ -1,5 +1,6 @@
 ---
 import { DEFAULT_LANG } from "../lib/locale";
+import { buildCanonicalUrl, DEFAULT_OG_TYPE, SITE_NAME, TWITTER_CARD } from "../lib/site-meta";
 import { text } from "../lib/ui-text";
 
 interface Props {
@@ -7,9 +8,21 @@ interface Props {
   description?: string;
   headerTitle?: string;
   mainGap?: string;
+  canonicalPath?: string;
+  ogType?: string;
+  noindex?: boolean;
 }
 
-const { title, description = text.defaultMetaDescription, headerTitle = title, mainGap = "28px" } = Astro.props;
+const {
+  title,
+  description = text.defaultMetaDescription,
+  headerTitle = title,
+  mainGap = "28px",
+  canonicalPath,
+  ogType = DEFAULT_OG_TYPE,
+  noindex = false,
+} = Astro.props;
+const canonicalUrl = buildCanonicalUrl(canonicalPath ?? Astro.url.pathname);
 ---
 
 <html lang={DEFAULT_LANG}>
@@ -18,6 +31,16 @@ const { title, description = text.defaultMetaDescription, headerTitle = title, m
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{title}</title>
     <meta name="description" content={description} />
+    {noindex && <meta name="robots" content="noindex, follow" />}
+    <link rel="canonical" href={canonicalUrl} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content={ogType} />
+    <meta property="og:url" content={canonicalUrl} />
+    <meta property="og:site_name" content={SITE_NAME} />
+    <meta name="twitter:card" content={TWITTER_CARD} />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
     <style>
       :root {
         color-scheme: light;
@@ -213,6 +236,15 @@ const { title, description = text.defaultMetaDescription, headerTitle = title, m
         margin-bottom: 0;
       }
 
+      .site-logo-link {
+        color: var(--accent);
+        text-decoration: none;
+      }
+
+      .site-logo-link:hover {
+        text-decoration: none;
+      }
+
       h1,
       h2,
       h3,
@@ -332,11 +364,14 @@ const { title, description = text.defaultMetaDescription, headerTitle = title, m
       <div class="shell site-header-shell">
         <header>
           <div class="masthead-top">
-            <p class="eyebrow">{text.siteName}</p>
+            <p class="eyebrow">
+              <a class="site-logo-link" href="/">{text.siteName}</a>
+            </p>
             <nav>
               <a href="/">{text.home}</a>
               <a href="/changes">{text.changes}</a>
               <a href="/providers">{text.providers}</a>
+              <a href="/about">{text.aboutTitle}</a>
             </nav>
           </div>
           <div class="masthead-heading">
@@ -355,6 +390,10 @@ const { title, description = text.defaultMetaDescription, headerTitle = title, m
           <a href="/">{text.home}</a>
           <a href="/changes">{text.changes}</a>
           <a href="/providers">{text.providers}</a>
+          <a href="/about">{text.aboutTitle}</a>
+          <a href="/sources">{text.sources}</a>
+          <a href="/disclaimer">{text.disclaimer}</a>
+          <a href="/privacy">{text.privacy}</a>
         </nav>
         <p class="footer-copy">{text.footerCopyright}</p>
       </footer>

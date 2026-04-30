@@ -129,6 +129,7 @@ Astro により静的サイトを生成します。
 
 - `src/layouts/`
   - 共通 `BaseLayout`
+  - page-level `title` / `description` / canonical / OGP / Twitter card の基礎 meta を管理する
 - `src/components/`
   - 共通 UI component
   - `SectionHeading` / `PageIntro` / `ButtonLink` / `TextLink` / `SummaryIcon` など、Home / `/changes` / `/providers` / `provider detail` / `model history` で確定した紙面文法を下層へ展開するための部品
@@ -141,10 +142,16 @@ Astro により静的サイトを生成します。
   - current に存在しないが history に存在する model は historical-only detail として生成し、current snapshot がないことを UI で明示する
 - `src/lib/ui-text.ts`
   - UI 文言定義
+- `src/lib/site-meta.ts`
+  - public site URL / canonical URL / OGP defaults の管理
+  - `PUBLIC_SITE_URL` が未設定の場合は Cloudflare Pages 用の仮 URL を fallback として使う
 - `src/lib/locale.ts`
   - デフォルト `lang` / `locale`
 - `src/pages/`
   - 静的ページ本体
+  - `/about` / `/sources` / `/disclaimer` / `/privacy` は公開サイト向けの信頼性説明ページとして扱う
+  - `/sitemap.xml` / `/robots.txt` は Astro endpoint として生成する
+  - `/404` は静かな迷子ページとして扱い、history-only model detail と混同しない
 
 
 ## Repository Structure

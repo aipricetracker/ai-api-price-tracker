@@ -15,6 +15,18 @@
 
 ## Page Families
 
+### Public Info Pages
+
+- About / Sources / Disclaimer / Privacy は、主導線ではなく公開サイトとしての信頼性説明を支える補助面である。
+- Header の主導線は `Home / Changes / Providers / About` に留め、Sources / Disclaimer / Privacy は Footer 側の secondary navigation として扱う。
+- About は、このサイトが current snapshot と append-only history を公開する static archive であることを短く説明する。
+- Sources は、official source 優先、HTML parsing は最後の手段、challenge / CAPTCHA / login bypass はしない、という source policy の公開向け要約に留める。
+- Disclaimer は、価格情報の正確性を保証せず、最終確認は provider official source で行うべきことを明示する。
+- Privacy は、現時点では accounts / forms / analytics / user tracking を持たない static site として最小限に説明する。
+- これらのページは marketing prose に寄せず、`PageIntro -> SectionHeading -> row / summary prose` の低温な紙面文法で扱う。
+- 本文上の罫線は content block の全幅に通し、本文の可読幅は段落側で制御する。
+- 404 は大きなエラー演出ではなく、中央揃えの静かな迷子ページとして扱い、Home / Changes / Providers への導線を置く。
+
 ### Home
 
 - Home は表紙であり、最初の要約面である。
@@ -133,6 +145,8 @@
 - 回遊導線は控えめでよいが、途切れさせない。一覧から詳細へ、詳細から比較や変更一覧へ静かに戻れることを優先する。
 - Header は常時の目次、Footer は読み終わり後の目次として扱う。Header は左 logo / 右 nav、Footer は中央 logo / links / copyright で役割を分ける。
 - Header / Footer の罫線は共通フレームとして効く。header 下部と footer 上部は viewport 全幅に貫く線で、ページ本文の content-width 線とは区別する。
+- Header の logo は Home へのリンクとして扱うが、装飾的な underline は出さない。
+- Footer は Home / Changes / Providers に加えて、About / Sources / Disclaimer / Privacy への secondary links を持つ。
 
 ## Repetition and Variation
 

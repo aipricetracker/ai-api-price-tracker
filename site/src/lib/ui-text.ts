@@ -2,6 +2,9 @@ export const text = {
   siteName: "AI API Price Tracker",
   home: "Home",
   changes: "Changes",
+  sources: "Sources",
+  disclaimer: "Disclaimer",
+  privacy: "Privacy",
   defaultMetaDescription: "Static pricing tracker for AI API models.",
   homepageMetaDescription:
     "Static pricing views generated from current-pricing.json and pricing-history.json.",
