@@ -26,6 +26,9 @@ if (!detail) {
 }
 
 const { currentRecord, history, isHistoricalOnly } = detail;
+const newestFirstHistory = [...history].sort((left, right) =>
+  right.record.recorded_at.localeCompare(left.record.recorded_at),
+);
 ---
 
 <BaseLayout
@@ -79,11 +82,17 @@ const { currentRecord, history, isHistoricalOnly } = detail;
   </section>
 
   <section class="model-page">
-    <SectionHeading title={text.pricingHistory} />
+    <div class="history-heading">
+      <h2>{text.pricingHistory}</h2>
+      <div class="history-sort" aria-label="Sort pricing history">
+        <button type="button" data-history-sort="desc" aria-pressed="true">Newest</button>
+        <button type="button" data-history-sort="asc" aria-pressed="false">Oldest</button>
+      </div>
+    </div>
 
     <div class="history-timeline">
-      {history.map((entry) => (
-        <article class="timeline-event">
+      {newestFirstHistory.map((entry) => (
+        <article class="timeline-event" data-recorded-at={entry.record.recorded_at}>
           <div class="timeline-date" aria-label={`${text.recordedPrefix}: ${entry.record.recorded_at.slice(0, 10)}`}>
             <span>{formatDateShort(entry.record.recorded_at)}</span>
           </div>
@@ -111,6 +120,39 @@ const { currentRecord, history, isHistoricalOnly } = detail;
     </div>
   </section>
 </BaseLayout>
+
+<script>
+  const timeline = document.querySelector<HTMLElement>(".history-timeline");
+  const sortButtons = document.querySelectorAll<HTMLButtonElement>("[data-history-sort]");
+
+  function sortHistory(direction: "asc" | "desc") {
+    if (!timeline) {
+      return;
+    }
+
+    const events = Array.from(timeline.querySelectorAll<HTMLElement>(".timeline-event"));
+
+    events
+      .sort((left, right) => {
+        const leftDate = left.dataset.recordedAt ?? "";
+        const rightDate = right.dataset.recordedAt ?? "";
+        return direction === "asc" ? leftDate.localeCompare(rightDate) : rightDate.localeCompare(leftDate);
+      })
+      .forEach((event) => timeline.append(event));
+
+    sortButtons.forEach((button) => {
+      const isActive = button.dataset.historySort === direction;
+      button.setAttribute("aria-pressed", String(isActive));
+    });
+  }
+
+  sortButtons.forEach((button) => {
+    button.addEventListener("click", () => {
+      const direction = button.dataset.historySort === "asc" ? "asc" : "desc";
+      sortHistory(direction);
+    });
+  });
+</script>
 
 <style>
   .model-page {
@@ -189,6 +231,57 @@ const { currentRecord, history, isHistoricalOnly } = detail;
     text-transform: uppercase;
     letter-spacing: 0.12em;
     font-size: 0.72rem;
+  }
+
+  :global(.history-heading) {
+    display: flex;
+    gap: 18px;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: 24px;
+    padding-bottom: 8px;
+    border-top: 2px solid var(--ink);
+  }
+
+  :global(.history-heading h2) {
+    margin: 0;
+    font-size: clamp(0.9rem, 1.8vw, 1.5rem);
+    line-height: 0.98;
+    letter-spacing: -0.035em;
+  }
+
+  :global(.history-sort) {
+    display: inline-flex;
+    border: 1px solid var(--accent);
+  }
+
+  :global(.history-sort button) {
+    appearance: none;
+    border: 0;
+    border-radius: 0;
+    padding: 7px 12px 6px;
+    background: transparent;
+    color: var(--accent);
+    font: inherit;
+    font-size: 0.7rem;
+    letter-spacing: 0.12em;
+    line-height: 1;
+    text-transform: uppercase;
+    cursor: pointer;
+  }
+
+  :global(.history-sort button + button) {
+    border-left: 1px solid var(--accent);
+  }
+
+  :global(.history-sort button[aria-pressed="true"]) {
+    background: var(--accent);
+    color: var(--paper);
+  }
+
+  :global(.history-sort button:focus-visible) {
+    outline: 2px solid var(--ink);
+    outline-offset: 2px;
   }
 
   .history-timeline {
@@ -360,6 +453,11 @@ const { currentRecord, history, isHistoricalOnly } = detail;
   }
 
   @media (max-width: 560px) {
+    :global(.history-heading) {
+      align-items: start;
+      flex-direction: column;
+    }
+
     .current-grid {
       grid-template-columns: 1fr;
     }
