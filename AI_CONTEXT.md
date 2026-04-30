@@ -379,7 +379,9 @@ model 履歴ページ：
 /providers/{provider-slug}/{model-slug}
 ```
 
-- `PageIntro + Current Snapshot summary + Pricing History rows` を基本文法とする
+- `PageIntro + Current Snapshot summary + Pricing History timeline` を基本文法とする
+- Pricing History は左に Recorded date axis、右に罫線付き event block を置く
+- event block 内は見出し、Effective date、changed fields をまとめ、Recorded at の重複表示は避ける
 - 開発用の一時説明は visible UI に残さず、ユーザーに必要な注釈だけを短く見せる
 
 変更一覧ページ：

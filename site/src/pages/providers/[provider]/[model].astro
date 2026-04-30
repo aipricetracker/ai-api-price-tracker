@@ -3,8 +3,8 @@ import BaseLayout from "../../../layouts/BaseLayout.astro";
 import PageIntro from "../../../components/PageIntro.astro";
 import SectionHeading from "../../../components/SectionHeading.astro";
 import {
+  formatDateShort,
   formatPrice,
-  formatRecentChangeDate,
   getModelDetail,
   getModelDetailSlugs,
   summarizeChangedFields,
@@ -81,30 +81,30 @@ const { currentRecord, history, isHistoricalOnly } = detail;
   <section class="model-page">
     <SectionHeading title={text.pricingHistory} />
 
-    <div class="history-list">
+    <div class="history-timeline">
       {history.map((entry) => (
-        <article class="history-row">
-          <div class="history-main">
-            <p class="history-meta">
-              {formatRecentChangeDate(entry.record.recorded_at, entry.record.effective_date)}
-            </p>
-            <h2 class="history-title">{summarizeChangedFields(entry.changedFields)}</h2>
-            <p class="history-submeta">
-              <span>{text.recordedAt}: {entry.record.recorded_at.slice(0, 10)}</span>
-              <span>{text.effectiveDate}: {entry.record.effective_date}</span>
-            </p>
+        <article class="timeline-event">
+          <div class="timeline-date" aria-label={`${text.recordedPrefix}: ${entry.record.recorded_at.slice(0, 10)}`}>
+            <span>{formatDateShort(entry.record.recorded_at)}</span>
           </div>
 
-          <div class="history-diffs">
-            {entry.fieldDiffs.map((diff) => (
-              <div class="history-diff">
-                <p class="history-diff-label">{diff.label}</p>
-                <p class="history-diff-value">
-                  {diff.field === "initial_record" ? diff.after : `${diff.before} → ${diff.after}`}
-                </p>
-                {diff.changeRate && <p class="history-diff-rate">{diff.changeRate}</p>}
-              </div>
-            ))}
+          <div class="timeline-card">
+            <div class="timeline-card-head">
+              <h2 class="history-title">{summarizeChangedFields(entry.changedFields)}</h2>
+              <p class="history-submeta">{text.effectiveDate}: {formatDateShort(entry.record.effective_date)}</p>
+            </div>
+
+            <div class="history-diffs">
+              {entry.fieldDiffs.map((diff) => (
+                <div class="history-diff">
+                  <p class="history-diff-label">{diff.label}</p>
+                  <p class="history-diff-value">
+                    {diff.field === "initial_record" ? diff.after : `${diff.before} → ${diff.after}`}
+                  </p>
+                  {diff.changeRate && <p class="history-diff-rate">{diff.changeRate}</p>}
+                </div>
+              ))}
+            </div>
           </div>
         </article>
       ))}
@@ -191,29 +191,77 @@ const { currentRecord, history, isHistoricalOnly } = detail;
     font-size: 0.72rem;
   }
 
-  .history-list {
+  .history-timeline {
     display: grid;
     gap: 0;
+    position: relative;
   }
 
-  .history-row {
+  .history-timeline::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 8rem;
+    width: 1px;
+    background: var(--line-strong);
+  }
+
+  .timeline-event {
     display: grid;
-    grid-template-columns: minmax(0, 1.28fr) minmax(0, 1fr);
-    gap: 22px;
-    padding: 22px 0;
-    border-top: 1px solid var(--line-strong);
+    grid-template-columns: 8rem minmax(0, 1fr);
+    gap: 34px;
+    position: relative;
+    padding: 0 0 24px;
   }
 
-  .history-row:last-child {
+  .timeline-event::before {
+    content: "";
+    position: absolute;
+    top: 19px;
+    left: calc(8rem - 4px);
+    width: 9px;
+    height: 9px;
+    border: 1px solid var(--line-strong);
+    background: var(--paper);
+    transform: rotate(45deg);
+  }
+
+  .timeline-event:last-child {
+    padding-bottom: 0;
+  }
+
+  .timeline-date {
+    padding-top: 18px;
+    color: var(--accent);
+    font-size: 0.72rem;
+    letter-spacing: 0.12em;
+    line-height: 1.2;
+    text-transform: uppercase;
+  }
+
+  .timeline-date span {
+    display: block;
+    max-width: 6.4rem;
+  }
+
+  .timeline-card {
+    display: grid;
+    gap: 10px;
+    padding: 16px 20px 18px;
+    border: 1px solid var(--line-strong);
+    background:
+      linear-gradient(180deg, color-mix(in srgb, var(--paper) 88%, white), var(--paper));
+  }
+
+  .timeline-card-head {
+    display: grid;
+    gap: 7px;
+    padding-bottom: 12px;
     border-bottom: 1px solid var(--line);
   }
 
-  .history-main {
-    display: grid;
-    gap: 10px;
-  }
-
-  .history-meta {
+  .history-submeta {
     margin: 0;
     color: var(--accent);
     font-size: 0.72rem;
@@ -223,37 +271,26 @@ const { currentRecord, history, isHistoricalOnly } = detail;
 
   .history-title {
     margin: 0;
-    font-size: clamp(1.28rem, 2.4vw, 1.8rem);
-    line-height: 0.98;
-  }
-
-  .history-submeta {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px 16px;
-    margin: 0;
-    color: var(--muted);
-    font-size: 0.95rem;
-    line-height: 1.45;
+    font-size: clamp(1.1rem, 1.85vw, 1.42rem);
+    line-height: 1.02;
   }
 
   .history-diffs {
     display: grid;
-    gap: 14px;
-    padding-left: 40px;
-    border-left: 1px solid color-mix(in srgb, var(--line-strong) 82%, white);
+    gap: 0;
   }
 
   .history-diff {
     display: grid;
-    gap: 6px;
-    padding: 2px 0 10px;
+    grid-template-columns: minmax(6.5rem, 0.34fr) minmax(0, 1fr);
+    gap: 16px;
+    padding: 14px 4px;
     border-bottom: 1px solid color-mix(in srgb, var(--line) 76%, white);
   }
 
   .history-diff:last-child {
-    padding-bottom: 0;
     border-bottom: 0;
+    padding-bottom: 0;
   }
 
   .history-diff-label {
@@ -266,14 +303,15 @@ const { currentRecord, history, isHistoricalOnly } = detail;
 
   .history-diff-value {
     margin: 0;
-    font-size: 1.18rem;
-    line-height: 1.08;
+    font-size: 1.04rem;
+    line-height: 1.12;
   }
 
   .history-diff-rate {
-    margin: 0;
+    grid-column: 2;
+    margin: -8px 0 0;
     color: var(--muted);
-    font-size: 0.96rem;
+    font-size: 0.86rem;
   }
 
   @media (max-width: 900px) {
@@ -295,14 +333,29 @@ const { currentRecord, history, isHistoricalOnly } = detail;
       grid-column: 1 / -1;
     }
 
-    .history-row {
-      grid-template-columns: 1fr;
-      gap: 18px;
+    .history-timeline::before {
+      left: 6.8rem;
     }
 
-    .history-diffs {
-      padding-left: 0;
-      border-left: 0;
+    .timeline-event {
+      grid-template-columns: 6.8rem minmax(0, 1fr);
+      gap: 30px;
+    }
+
+    .timeline-event::before {
+      left: calc(6.8rem - 4px);
+    }
+
+    .timeline-date {
+      font-size: 0.68rem;
+    }
+
+    .timeline-date span {
+      max-width: 5.8rem;
+    }
+
+    .timeline-card {
+      padding: 15px 17px 17px;
     }
   }
 
@@ -321,6 +374,39 @@ const { currentRecord, history, isHistoricalOnly } = detail;
 
     .current-cell:last-child {
       border-bottom: 0;
+    }
+
+    .history-timeline::before {
+      left: 0.28rem;
+    }
+
+    .timeline-event {
+      grid-template-columns: 1fr;
+      gap: 10px;
+      padding-left: 22px;
+    }
+
+    .timeline-event::before {
+      top: 6px;
+      left: 0;
+    }
+
+    .timeline-date {
+      padding-top: 0;
+    }
+
+    .timeline-date span {
+      max-width: none;
+    }
+
+    .history-diff {
+      grid-template-columns: 1fr;
+      gap: 6px;
+    }
+
+    .history-diff-rate {
+      grid-column: auto;
+      margin-top: -2px;
     }
   }
 </style>
