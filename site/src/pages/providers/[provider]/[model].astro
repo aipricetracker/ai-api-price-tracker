@@ -43,7 +43,6 @@ const modelDescription = isHistoricalOnly
   <PageIntro
     title={model}
     lead={`${isHistoricalOnly ? text.historicalModelPageDescriptionPrefix : text.modelPageDescriptionPrefix} ${provider}.`}
-    noWrapTitle={true}
   />
 
   <section class="model-page">
@@ -343,6 +342,7 @@ const modelDescription = isHistoricalOnly
 
   .timeline-card {
     display: grid;
+    min-width: 0;
     gap: 10px;
     padding: 16px 20px 18px;
     border: 1px solid var(--line-strong);
@@ -426,7 +426,7 @@ const modelDescription = isHistoricalOnly
     }
 
     .current-cell-wide {
-      grid-column: 1 / -1;
+      grid-column: auto;
     }
 
     .history-timeline::before {
@@ -457,8 +457,13 @@ const modelDescription = isHistoricalOnly
 
   @media (max-width: 560px) {
     :global(.history-heading) {
-      align-items: start;
+      gap: 24px;
+      align-items: stretch;
       flex-direction: column;
+    }
+
+    :global(.history-sort) {
+      align-self: start;
     }
 
     .current-grid {
@@ -484,7 +489,8 @@ const modelDescription = isHistoricalOnly
     .timeline-event {
       grid-template-columns: 1fr;
       gap: 10px;
-      padding-left: 22px;
+      padding-left: 20px;
+      padding-bottom: 20px;
     }
 
     .timeline-event::before {
@@ -502,7 +508,8 @@ const modelDescription = isHistoricalOnly
 
     .history-diff {
       grid-template-columns: 1fr;
-      gap: 6px;
+      gap: 5px;
+      padding: 12px 2px;
     }
 
     .history-diff-rate {

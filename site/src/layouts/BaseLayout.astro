@@ -70,10 +70,14 @@ const canonicalUrl = buildCanonicalUrl(canonicalPath ?? Astro.url.pathname);
         color: var(--ink);
       }
 
+      body.nav-open {
+        overflow: hidden;
+      }
+
       .site-header {
         position: sticky;
         top: 0;
-        z-index: 30;
+        z-index: 80;
         background:
           linear-gradient(180deg, rgba(255, 252, 246, 0.96), rgba(248, 241, 230, 0.94));
         backdrop-filter: blur(10px);
@@ -107,9 +111,8 @@ const canonicalUrl = buildCanonicalUrl(canonicalPath ?? Astro.url.pathname);
       .masthead-top {
         display: flex;
         width: 100%;
-        flex-wrap: wrap;
         gap: 8px 20px;
-        align-items: baseline;
+        align-items: center;
         justify-content: space-between;
       }
 
@@ -123,19 +126,60 @@ const canonicalUrl = buildCanonicalUrl(canonicalPath ?? Astro.url.pathname);
         display: none;
       }
 
-      nav {
+      .site-nav {
         display: flex;
         gap: 18px;
         align-items: center;
         font-size: 0.9rem;
       }
 
-      nav a {
+      .site-nav a,
+      .footer-nav a {
         text-decoration: none;
       }
 
-      nav a:hover {
+      .site-nav a:hover {
         text-decoration: underline;
+      }
+
+      .menu-toggle {
+        display: none;
+        align-items: center;
+        justify-content: center;
+        width: 34px;
+        height: 34px;
+        border: 1px solid var(--accent);
+        border-radius: 999px;
+        background: transparent;
+        color: var(--accent);
+        cursor: pointer;
+      }
+
+      .menu-toggle-lines {
+        display: grid;
+        gap: 4px;
+        width: 15px;
+      }
+
+      .menu-toggle-lines span {
+        display: block;
+        height: 1px;
+        background: currentColor;
+        transition:
+          transform 0.16s ease,
+          opacity 0.16s ease;
+      }
+
+      .menu-toggle[aria-expanded="true"] .menu-toggle-lines span:first-child {
+        transform: translateY(5px) rotate(45deg);
+      }
+
+      .menu-toggle[aria-expanded="true"] .menu-toggle-lines span:nth-child(2) {
+        opacity: 0;
+      }
+
+      .menu-toggle[aria-expanded="true"] .menu-toggle-lines span:last-child {
+        transform: translateY(-5px) rotate(-45deg);
       }
 
       main {
@@ -200,7 +244,6 @@ const canonicalUrl = buildCanonicalUrl(canonicalPath ?? Astro.url.pathname);
 
       .footer-nav a {
         color: var(--ink);
-        text-decoration: none;
       }
 
       .footer-nav a:hover {
@@ -309,6 +352,10 @@ const canonicalUrl = buildCanonicalUrl(canonicalPath ?? Astro.url.pathname);
       }
 
       @media (max-width: 720px) {
+        .site-header {
+          backdrop-filter: none;
+        }
+
         .shell {
           width: min(100% - 24px, 1040px);
           padding-top: 24px;
@@ -327,9 +374,61 @@ const canonicalUrl = buildCanonicalUrl(canonicalPath ?? Astro.url.pathname);
           margin-top: 14px;
         }
 
-        nav {
-          gap: 12px;
-          flex-wrap: wrap;
+        .menu-toggle {
+          display: inline-flex;
+          position: relative;
+          z-index: 100;
+        }
+
+        .site-nav {
+          position: fixed;
+          inset: 0;
+          z-index: 90;
+          display: grid;
+          align-content: center;
+          justify-items: center;
+          gap: 34px;
+          padding: 92px 24px 36px;
+          background:
+            radial-gradient(circle at top left, rgba(226, 210, 172, 0.34), transparent 34%),
+            linear-gradient(180deg, rgba(251, 247, 239, 0.98), rgba(244, 239, 228, 0.98));
+          transform: translateX(100%);
+          visibility: hidden;
+          opacity: 0;
+          transition:
+            transform 0.2s ease,
+            opacity 0.2s ease,
+            visibility 0.2s ease;
+        }
+
+        .site-nav[data-open="true"] {
+          transform: translateX(0);
+          visibility: visible;
+          opacity: 1;
+        }
+
+        .site-nav a {
+          color: var(--ink);
+          font-size: clamp(1.45rem, 8vw, 2.6rem);
+          line-height: 1;
+          letter-spacing: -0.025em;
+          text-decoration: none;
+        }
+
+        .site-nav a:hover,
+        .site-nav a:focus-visible {
+          color: var(--accent);
+          text-decoration: none;
+        }
+
+        .footer-nav {
+          display: grid;
+          grid-template-columns: 1fr;
+          justify-content: center;
+          gap: 10px;
+          font-size: 0.86rem;
+          margin-top: 6px;
+          margin-bottom: 14px;
         }
 
         table,
@@ -367,7 +466,14 @@ const canonicalUrl = buildCanonicalUrl(canonicalPath ?? Astro.url.pathname);
             <p class="eyebrow">
               <a class="site-logo-link" href="/">{text.siteName}</a>
             </p>
-            <nav>
+            <button class="menu-toggle" type="button" aria-controls="site-nav" aria-expanded="false" aria-label="Open navigation">
+              <span class="menu-toggle-lines" aria-hidden="true">
+                <span></span>
+                <span></span>
+                <span></span>
+              </span>
+            </button>
+            <nav class="site-nav" id="site-nav" data-open="false" aria-label="Primary navigation">
               <a href="/">{text.home}</a>
               <a href="/changes">{text.changes}</a>
               <a href="/providers">{text.providers}</a>
@@ -398,5 +504,41 @@ const canonicalUrl = buildCanonicalUrl(canonicalPath ?? Astro.url.pathname);
         <p class="footer-copy">{text.footerCopyright}</p>
       </footer>
     </div>
+    <script>
+      const menuToggle = document.querySelector<HTMLButtonElement>(".menu-toggle");
+      const siteNav = document.querySelector<HTMLElement>("#site-nav");
+      const navLinks = siteNav?.querySelectorAll("a") ?? [];
+
+      function setNavigationOpen(isOpen: boolean) {
+        if (!menuToggle || !siteNav) {
+          return;
+        }
+
+        menuToggle.setAttribute("aria-expanded", String(isOpen));
+        menuToggle.setAttribute("aria-label", isOpen ? "Close navigation" : "Open navigation");
+        siteNav.dataset.open = String(isOpen);
+        document.body.classList.toggle("nav-open", isOpen);
+      }
+
+      menuToggle?.addEventListener("click", () => {
+        setNavigationOpen(menuToggle.getAttribute("aria-expanded") !== "true");
+      });
+
+      navLinks.forEach((link) => {
+        link.addEventListener("click", () => setNavigationOpen(false));
+      });
+
+      document.addEventListener("keydown", (event) => {
+        if (event.key === "Escape") {
+          setNavigationOpen(false);
+        }
+      });
+
+      window.addEventListener("resize", () => {
+        if (window.matchMedia("(min-width: 721px)").matches) {
+          setNavigationOpen(false);
+        }
+      });
+    </script>
   </body>
 </html>

@@ -59,4 +59,25 @@ const { title, lead, eyebrow, compact = false } = Astro.props;
     font-size: 1.02rem;
     line-height: 1.55;
   }
+
+  @media (max-width: 720px) {
+    .section-heading {
+      gap: 8px;
+      padding-bottom: 4px;
+    }
+
+    .section-heading-divider {
+      padding-top: 18px;
+    }
+
+    .section-heading-title {
+      font-size: clamp(1rem, 5vw, 1.35rem);
+    }
+
+    .section-heading-lead {
+      margin-top: 14px;
+      font-size: 0.96rem;
+      line-height: 1.5;
+    }
+  }
 </style>

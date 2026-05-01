@@ -172,13 +172,34 @@ const providers = await getProviderOverviewList();
   @media (max-width: 640px) {
     .provider-row {
       grid-template-columns: 1fr;
-      gap: 14px;
-      padding: 18px 0 20px;
+      gap: 12px;
+      padding: 16px 12px 18px;
     }
 
     .provider-name,
     .provider-action {
       grid-column: auto;
+    }
+
+    .provider-name {
+      margin-bottom: 8px;
+    }
+
+    .provider-cell {
+      gap: 2px;
+    }
+
+    .provider-cell-label {
+      font-size: 0.58rem;
+      letter-spacing: 0.14em;
+    }
+
+    .provider-cell-value {
+      font-size: 1rem;
+    }
+
+    .provider-action {
+      padding-top: 2px;
     }
   }
 </style>

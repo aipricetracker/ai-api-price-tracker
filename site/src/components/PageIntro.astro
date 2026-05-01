@@ -40,4 +40,22 @@ const { title, lead, noWrapTitle = false } = Astro.props;
     font-size: clamp(1rem, 1.7vw, 1.18rem);
     line-height: 1.5;
   }
+
+  @media (max-width: 720px) {
+    .page-intro {
+      gap: 16px;
+      padding: 30px 0 2px;
+    }
+
+    .page-intro-title {
+      max-width: none;
+      font-size: clamp(1.8rem, 9vw, 2.45rem);
+      line-height: 0.94;
+    }
+
+    .page-intro-lead {
+      font-size: 1rem;
+      line-height: 1.48;
+    }
+  }
 </style>

@@ -198,17 +198,32 @@ const cachedInputNote = models.find((model) => model.cachedInputNote)?.cachedInp
   @media (max-width: 560px) {
     .model-row {
       grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 12px 16px;
-      padding: 24px 12px;
+      gap: 10px 14px;
+      padding: 18px 12px;
     }
 
     .model-name {
       grid-column: 1 / -1;
+      margin-bottom: 8px;
     }
 
     .model-action {
       grid-column: 1 / -1;
       justify-content: flex-end;
+      padding-top: 0;
+    }
+
+    .model-cell {
+      gap: 2px;
+    }
+
+    .model-cell-label {
+      font-size: 0.58rem;
+      letter-spacing: 0.14em;
+    }
+
+    .model-cell-value {
+      font-size: 0.94rem;
     }
   }
 </style>

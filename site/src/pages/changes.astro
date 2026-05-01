@@ -126,15 +126,28 @@ const changes = await getAllChanges();
       @media (max-width: 560px) {
         .change-item {
           gap: 14px;
-          padding: 22px 0 20px;
+          padding: 20px 0 18px;
         }
 
         .change-title {
           font-size: clamp(1.45rem, 7vw, 2rem);
         }
 
+        .change-diffs {
+          gap: 10px;
+        }
+
+        .change-diff {
+          gap: 4px;
+          padding-bottom: 8px;
+        }
+
         .change-diff-value {
           font-size: 1.15rem;
+        }
+
+        .change-diff-rate {
+          font-size: 0.88rem;
         }
       }
     </style>
