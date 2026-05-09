@@ -1,0 +1,83 @@
+---
+interface Props {
+  title: string;
+  lead?: string;
+  eyebrow?: string;
+  compact?: boolean;
+}
+
+const { title, lead, eyebrow, compact = false } = Astro.props;
+---
+
+<div class:list={["section-heading", compact && "section-heading-compact"]}>
+  {eyebrow && <p class="section-heading-eyebrow">{eyebrow}</p>}
+  <div class="section-heading-divider">
+    <h2 class="section-heading-title">{title}</h2>
+  </div>
+  {lead && <p class="section-heading-lead">{lead}</p>}
+</div>
+
+<style>
+  .section-heading {
+    display: grid;
+    gap: 10px;
+    padding-bottom: 8px;
+  }
+
+  .section-heading-compact {
+    gap: 8px;
+    padding-bottom: 6px;
+  }
+
+  .section-heading-eyebrow {
+    margin: 0;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    font-size: 0.72rem;
+  }
+
+  .section-heading-divider {
+    display: inline-grid;
+    justify-items: start;
+    padding-top: 24px;
+    padding-bottom: 0;
+    border-top: 2px solid var(--ink);
+  }
+
+  .section-heading-title {
+    margin: 0;
+    font-size: clamp(0.9rem, 1.8vw, 1.5rem);
+    line-height: 0.98;
+    letter-spacing: -0.035em;
+  }
+
+  .section-heading-lead {
+    margin: 22px 0 0;
+    max-width: 52rem;
+    color: var(--muted);
+    font-size: 1.02rem;
+    line-height: 1.55;
+  }
+
+  @media (max-width: 720px) {
+    .section-heading {
+      gap: 8px;
+      padding-bottom: 4px;
+    }
+
+    .section-heading-divider {
+      padding-top: 18px;
+    }
+
+    .section-heading-title {
+      font-size: clamp(1rem, 5vw, 1.35rem);
+    }
+
+    .section-heading-lead {
+      margin-top: 14px;
+      font-size: 0.96rem;
+      line-height: 1.5;
+    }
+  }
+</style>

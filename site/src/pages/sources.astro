@@ -1,0 +1,183 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import PageIntro from "../components/PageIntro.astro";
+import SectionHeading from "../components/SectionHeading.astro";
+
+const title = "Sources & Methodology | AI API Price Tracker";
+const description =
+  "How AI API Price Tracker prioritizes official pricing sources, handles cautious collection, and normalizes visible pricing history.";
+---
+
+<BaseLayout title={title} description={description} headerTitle="" mainGap="56px">
+  <PageIntro
+    title="Sources & Methodology"
+    lead="The tracker favors official, narrow, and low-frequency sources. HTML parsing is treated as a cautious fallback, not a default contract."
+  />
+
+  <section class="source-page">
+    <SectionHeading title="Source priority" />
+    <div class="source-list">
+      <article class="source-row">
+        <p class="source-rank">01</p>
+        <div>
+          <h2>Official API or machine-readable source</h2>
+          <p>Structured provider-owned pricing sources are preferred when available.</p>
+        </div>
+      </article>
+      <article class="source-row">
+        <p class="source-rank">02</p>
+        <div>
+          <h2>Official docs, changelog, or pricing page</h2>
+          <p>Provider documentation and official pricing pages are used when structured sources are not available.</p>
+        </div>
+      </article>
+      <article class="source-row">
+        <p class="source-rank">03</p>
+        <div>
+          <h2>Human-facing HTML parsing</h2>
+          <p>HTML parsing is a last resort and is kept narrow, low-frequency, and conservative.</p>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <section class="source-page">
+    <SectionHeading title="Collection boundaries" />
+    <div class="note-grid">
+      <p>No broad crawling.</p>
+      <p>No login-required content.</p>
+      <p>No challenge, CAPTCHA, authentication, or rate-limit bypass.</p>
+      <p>No claim that robots.txt alone makes a source appropriate.</p>
+    </div>
+  </section>
+
+  <section class="source-page">
+    <SectionHeading title="Current source status" />
+    <div class="source-copy">
+      <p>
+        OpenAI and Anthropic are currently treated as caution-level official pricing page sources. That means the
+        pricing pages are useful official references, but they are not treated as stable machine-readable interfaces.
+      </p>
+      <p>
+        Provider-specific pricing concepts may require normalization. For example, Anthropic prompt caching read
+        pricing is displayed with a cached input caveat where relevant.
+      </p>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .source-page {
+    display: grid;
+    gap: 20px;
+  }
+
+  .source-list {
+    display: grid;
+    gap: 0;
+    border-top: 1px solid var(--line-strong);
+  }
+
+  .source-row {
+    display: grid;
+    grid-template-columns: max-content minmax(0, 1fr);
+    gap: 40px;
+    padding: 22px 0;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .source-rank {
+    margin: 0;
+    color: var(--accent);
+    font-size: 0.96rem;
+    letter-spacing: 0.16em;
+    line-height: 1;
+  }
+
+  .source-row h2 {
+    margin: 0 0 8px;
+    font-size: clamp(1.25rem, 2.3vw, 1.7rem);
+  }
+
+  .source-row p,
+  .source-copy p {
+    margin: 0;
+    color: var(--muted);
+    line-height: 1.55;
+  }
+
+  .note-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 0;
+    border-top: 1px solid var(--line-strong);
+    border-bottom: 1px solid var(--line);
+  }
+
+  .note-grid p {
+    margin: 0;
+    padding: 18px 16px;
+    border-right: 1px solid var(--line);
+    color: var(--muted);
+    line-height: 1.45;
+  }
+
+  .note-grid p:last-child {
+    border-right: 0;
+  }
+
+  .source-copy {
+    display: grid;
+    gap: 12px;
+    padding-top: 22px;
+    border-top: 1px solid var(--line-strong);
+  }
+
+  .source-copy p {
+    max-width: 58rem;
+  }
+
+  @media (max-width: 820px) {
+    .note-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .note-grid p:nth-child(2) {
+      border-right: 0;
+    }
+  }
+
+  @media (max-width: 560px) {
+    .source-row {
+      grid-template-columns: 1fr;
+      gap: 8px;
+      padding: 18px 0;
+    }
+
+    .source-rank {
+      font-size: 0.84rem;
+    }
+
+    .source-row h2 {
+      margin-bottom: 6px;
+    }
+
+    .note-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .note-grid p {
+      padding: 14px 0;
+      border-right: 0;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .note-grid p:last-child {
+      border-bottom: 0;
+    }
+
+    .source-copy {
+      padding-top: 18px;
+    }
+  }
+</style>

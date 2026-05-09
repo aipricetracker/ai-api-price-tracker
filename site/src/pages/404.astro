@@ -1,0 +1,75 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import ButtonLink from "../components/ButtonLink.astro";
+
+const title = "Page not found | AI API Price Tracker";
+const description = "The requested AI API Price Tracker page could not be found.";
+---
+
+<BaseLayout title={title} description={description} headerTitle="" mainGap="56px" canonicalPath="/404" noindex={true}>
+  <section class="not-found">
+    <p class="not-found-kicker">404</p>
+    <h1>Page not found</h1>
+    <p>
+      This route is not part of the generated archive. Historical models with visible pricing history have their own
+      detail pages; this page is only for routes that do not exist.
+    </p>
+    <div class="not-found-actions">
+      <ButtonLink href="/">Home</ButtonLink>
+      <ButtonLink href="/changes">Changes</ButtonLink>
+      <ButtonLink href="/providers">Providers</ButtonLink>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .not-found {
+    display: grid;
+    justify-items: center;
+    gap: 18px;
+    max-width: 50rem;
+    margin: 0 auto;
+    padding: 44px 0 42px;
+    border-bottom: 1px solid var(--line);
+    text-align: center;
+  }
+
+  .not-found-kicker {
+    margin: 0;
+    color: var(--accent);
+    font-size: 0.78rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+  }
+
+  .not-found h1 {
+    margin: 0;
+    font-size: clamp(2.4rem, 6vw, 4.8rem);
+  }
+
+  .not-found p {
+    margin: 0;
+    max-width: 46rem;
+    color: var(--muted);
+    line-height: 1.55;
+  }
+
+  .not-found-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    justify-content: center;
+    margin-top: 12px;
+  }
+
+  @media (max-width: 560px) {
+    .not-found {
+      gap: 14px;
+      padding: 34px 0 34px;
+    }
+
+    .not-found h1 {
+      font-size: clamp(2.1rem, 12vw, 3.6rem);
+    }
+  }
+</style>

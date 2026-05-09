@@ -34,6 +34,14 @@ export interface ProviderModelSummary extends PricingRecord {
   cachedInputNote?: string;
 }
 
+export interface ModelDetail {
+  provider: string;
+  model: string;
+  currentRecord: ProviderModelSummary | null;
+  history: HistoryEntry[];
+  isHistoricalOnly: boolean;
+}
+
 export interface HistoryEntry {
   record: PricingRecord;
   changedFields: string[];

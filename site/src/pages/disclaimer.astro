@@ -1,0 +1,81 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import PageIntro from "../components/PageIntro.astro";
+import SectionHeading from "../components/SectionHeading.astro";
+
+const title = "Disclaimer | AI API Price Tracker";
+const description =
+  "Important limitations for AI API Price Tracker pricing data, history records, normalization, and provider-specific caveats.";
+---
+
+<BaseLayout title={title} description={description} headerTitle="" mainGap="56px">
+  <PageIntro
+    title="Disclaimer"
+    lead="This site is a pricing archive and tracker. It is not a substitute for official provider pricing sources."
+  />
+
+  <section class="disclaimer-page">
+    <SectionHeading title="Limitations" />
+    <div class="disclaimer-list">
+      <article>
+        <h2>No accuracy guarantee</h2>
+        <p>Pricing records may contain delays, parser errors, normalization differences, or interpretation gaps.</p>
+      </article>
+      <article>
+        <h2>Official sources are authoritative</h2>
+        <p>Always confirm current and contractual pricing with the provider's official pricing page, documentation, or agreement.</p>
+      </article>
+      <article>
+        <h2>Provider-specific mappings</h2>
+        <p>Some concepts are normalized into shared fields. Anthropic prompt caching read pricing, for example, is shown with a cached input caveat where relevant.</p>
+      </article>
+      <article>
+        <h2>Not a sole decision basis</h2>
+        <p>Do not use this site as the only basis for investment, purchasing, contract, or production architecture decisions.</p>
+      </article>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .disclaimer-page {
+    display: grid;
+    gap: 20px;
+  }
+
+  .disclaimer-list {
+    display: grid;
+    gap: 0;
+    border-top: 1px solid var(--line-strong);
+  }
+
+  .disclaimer-list article {
+    display: grid;
+    grid-template-columns: minmax(12rem, 0.55fr) minmax(0, 1fr);
+    gap: 24px;
+    padding: 22px 0;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .disclaimer-list h2,
+  .disclaimer-list p {
+    margin: 0;
+  }
+
+  .disclaimer-list h2 {
+    font-size: clamp(1.16rem, 2.2vw, 1.55rem);
+  }
+
+  .disclaimer-list p {
+    color: var(--muted);
+    line-height: 1.55;
+  }
+
+  @media (max-width: 680px) {
+    .disclaimer-list article {
+      grid-template-columns: 1fr;
+      gap: 7px;
+      padding: 18px 0;
+    }
+  }
+</style>

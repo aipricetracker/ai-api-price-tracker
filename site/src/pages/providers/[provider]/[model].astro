@@ -1,121 +1,520 @@
 ---
 import BaseLayout from "../../../layouts/BaseLayout.astro";
-import { formatPrice, getCurrentModel, getModelHistory, getProviderModelSlugs, getProviderSlugs } from "../../../lib/data";
+import PageIntro from "../../../components/PageIntro.astro";
+import SectionHeading from "../../../components/SectionHeading.astro";
+import {
+  formatDateShort,
+  formatPrice,
+  getModelDetail,
+  getModelDetailSlugs,
+  summarizeChangedFields,
+} from "../../../lib/data";
 import { text } from "../../../lib/ui-text";
 
 export async function getStaticPaths() {
-  const providers = await getProviderSlugs();
-  const paths = [];
+  const slugs = await getModelDetailSlugs();
 
-  for (const provider of providers) {
-    const models = await getProviderModelSlugs(provider);
-
-    for (const model of models) {
-      paths.push({ params: { provider, model } });
-    }
-  }
-
-  return paths;
+  return slugs.map(({ provider, model }) => ({ params: { provider, model } }));
 }
 
 const provider = Astro.params.provider ?? "";
 const model = Astro.params.model ?? "";
-const currentRecord = await getCurrentModel(provider, model);
+const detail = await getModelDetail(provider, model);
 
-if (!currentRecord) {
+if (!detail) {
   return Astro.redirect("/providers");
 }
 
-const history = await getModelHistory(provider, model);
+const { currentRecord, history, isHistoricalOnly } = detail;
+const newestFirstHistory = [...history].sort((left, right) =>
+  right.record.recorded_at.localeCompare(left.record.recorded_at),
+);
+const modelDescription = isHistoricalOnly
+  ? `${text.historicalModelPageDescriptionPrefix} ${provider}/${model}. This model is not present in the current snapshot.`
+  : `${text.modelPageDescriptionPrefix} ${provider}/${model}.`;
 ---
 
 <BaseLayout
   title={`${model} ${text.historyTitleSuffix}`}
-  description={`${text.pricingHistory} ${text.forConnector} ${provider}/${model}.`}
+  description={modelDescription}
+  headerTitle=""
+  mainGap="56px"
 >
-  <section class="card">
-    <p class="eyebrow">{text.modelDetail}</p>
-    <p><strong>{text.providerColumn}:</strong> {provider}</p>
-    <p><strong>{text.modelColumn}:</strong> {model}</p>
-    <p><strong>{text.currentInput}:</strong> {formatPrice(currentRecord.pricing.input)}</p>
-    <p><strong>{text.currentCachedInput}:</strong> {formatPrice(currentRecord.pricing.cached_input)}</p>
-    <p><strong>{text.currentOutput}:</strong> {formatPrice(currentRecord.pricing.output)}</p>
-    {currentRecord.cachedInputNote && <p class="note">{currentRecord.cachedInputNote}</p>}
-  </section>
+  <PageIntro
+    title={model}
+    lead={`${isHistoricalOnly ? text.historicalModelPageDescriptionPrefix : text.modelPageDescriptionPrefix} ${provider}.`}
+  />
 
-  <section class="card">
-    <style>
-      .history-list {
-        display: grid;
-        gap: 16px;
-      }
+  <section class="model-page">
+    {currentRecord ? (
+      <>
+        <SectionHeading title={text.currentSnapshot} lead={`${text.providerColumn}: ${provider}`} />
 
-      .history-item {
-        border: 1px solid var(--line);
-        border-radius: 16px;
-        padding: 16px;
-        background: rgba(255, 253, 248, 0.78);
-      }
-
-      .history-meta {
-        display: grid;
-        gap: 4px;
-        margin-bottom: 14px;
-      }
-
-      .diff-list {
-        display: grid;
-        gap: 12px;
-      }
-
-      .diff-item {
-        padding: 12px 14px;
-        border-radius: 14px;
-        border: 1px solid color-mix(in srgb, var(--accent) 18%, var(--line));
-        background: color-mix(in srgb, var(--accent-soft) 42%, white);
-      }
-
-      .diff-label {
-        margin: 0 0 4px;
-        font-size: 0.8rem;
-        color: var(--muted);
-        text-transform: uppercase;
-        letter-spacing: 0.04em;
-      }
-
-      .diff-value {
-        margin: 0;
-        font-size: 1.05rem;
-      }
-
-      .diff-rate {
-        margin: 6px 0 0;
-        color: var(--accent);
-        font-size: 0.92rem;
-      }
-    </style>
-    <p class="eyebrow">{text.pricingHistory}</p>
-    <p class="muted">{text.pricingHistoryDescription}</p>
-    <div class="history-list">
-      {history.map((entry) => (
-        <article class="history-item">
-          <div class="history-meta">
-            <div><strong>{text.recordedAt}:</strong> {entry.record.recorded_at}</div>
-            <div><strong>{text.effectiveDate}:</strong> {entry.record.effective_date}</div>
-            <div><strong>{text.changedFields}:</strong> {entry.changedFields.join(", ")}</div>
+        <div class="current-grid">
+          <div class="current-cell current-cell-wide">
+            <p class="current-label">{text.modelColumn}</p>
+            <p class="current-value">{model}</p>
           </div>
 
-          <div class="diff-list">
-            {entry.fieldDiffs.map((diff) => (
-              <div class="diff-item">
-                <p class="diff-label">{diff.label}</p>
-                <p class="diff-value">{diff.before} → {diff.after}</p>
-                {diff.changeRate && <p class="diff-rate">{diff.changeRate}</p>}
-              </div>
-            ))}
+          <div class="current-cell">
+            <p class="current-label">{text.inputColumn}</p>
+            <p class="current-value">{formatPrice(currentRecord.pricing.input)}</p>
+          </div>
+
+          <div class="current-cell">
+            <p class="current-label">{text.cachedInputColumn}</p>
+            <p class="current-value">{formatPrice(currentRecord.pricing.cached_input)}</p>
+          </div>
+
+          <div class="current-cell">
+            <p class="current-label">{text.outputColumn}</p>
+            <p class="current-value">{formatPrice(currentRecord.pricing.output)}</p>
+          </div>
+        </div>
+
+        {currentRecord.cachedInputNote && <p class="model-note">{currentRecord.cachedInputNote}</p>}
+      </>
+    ) : (
+      <div class="historical-panel">
+        <p class="historical-kicker">{text.notInCurrentSnapshot}</p>
+        <h2>{text.historicalModel}</h2>
+        <p>{text.historicalModelDescription}</p>
+      </div>
+    )}
+  </section>
+
+  <section class="model-page">
+    <div class="history-heading">
+      <h2>{text.pricingHistory}</h2>
+      <div class="history-sort" aria-label="Sort pricing history">
+        <button type="button" data-history-sort="desc" aria-pressed="true">Newest</button>
+        <button type="button" data-history-sort="asc" aria-pressed="false">Oldest</button>
+      </div>
+    </div>
+
+    <div class="history-timeline">
+      {newestFirstHistory.map((entry) => (
+        <article class="timeline-event" data-recorded-at={entry.record.recorded_at}>
+          <div class="timeline-date" aria-label={`${text.recordedPrefix}: ${entry.record.recorded_at.slice(0, 10)}`}>
+            <span>{formatDateShort(entry.record.recorded_at)}</span>
+          </div>
+
+          <div class="timeline-card">
+            <div class="timeline-card-head">
+              <h2 class="history-title">{summarizeChangedFields(entry.changedFields)}</h2>
+              <p class="history-submeta">{text.effectiveDate}: {formatDateShort(entry.record.effective_date)}</p>
+            </div>
+
+            <div class="history-diffs">
+              {entry.fieldDiffs.map((diff) => (
+                <div class="history-diff">
+                  <p class="history-diff-label">{diff.label}</p>
+                  <p class="history-diff-value">
+                    {diff.field === "initial_record" ? diff.after : `${diff.before} → ${diff.after}`}
+                  </p>
+                  {diff.changeRate && <p class="history-diff-rate">{diff.changeRate}</p>}
+                </div>
+              ))}
+            </div>
           </div>
         </article>
       ))}
     </div>
   </section>
 </BaseLayout>
+
+<script>
+  const timeline = document.querySelector<HTMLElement>(".history-timeline");
+  const sortButtons = document.querySelectorAll<HTMLButtonElement>("[data-history-sort]");
+
+  function sortHistory(direction: "asc" | "desc") {
+    if (!timeline) {
+      return;
+    }
+
+    const events = Array.from(timeline.querySelectorAll<HTMLElement>(".timeline-event"));
+
+    events
+      .sort((left, right) => {
+        const leftDate = left.dataset.recordedAt ?? "";
+        const rightDate = right.dataset.recordedAt ?? "";
+        return direction === "asc" ? leftDate.localeCompare(rightDate) : rightDate.localeCompare(leftDate);
+      })
+      .forEach((event) => timeline.append(event));
+
+    sortButtons.forEach((button) => {
+      const isActive = button.dataset.historySort === direction;
+      button.setAttribute("aria-pressed", String(isActive));
+    });
+  }
+
+  sortButtons.forEach((button) => {
+    button.addEventListener("click", () => {
+      const direction = button.dataset.historySort === "asc" ? "asc" : "desc";
+      sortHistory(direction);
+    });
+  });
+</script>
+
+<style>
+  .model-page {
+    display: grid;
+    gap: 20px;
+  }
+
+  .current-grid {
+    display: grid;
+    grid-template-columns: minmax(13rem, 1.2fr) repeat(3, minmax(8rem, 0.72fr));
+    gap: 0;
+    border-top: 1px solid var(--line-strong);
+    border-bottom: 1px solid var(--line);
+  }
+
+  .current-cell {
+    display: grid;
+    gap: 6px;
+    padding: 18px 20px 20px;
+    border-right: 1px solid var(--line);
+  }
+
+  .current-cell:last-child {
+    border-right: 0;
+  }
+
+  .current-cell-wide {
+    padding-left: 0;
+  }
+
+  .current-label {
+    margin: 0;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    font-size: 0.68rem;
+  }
+
+  .current-value {
+    margin: 0;
+    font-size: 1.08rem;
+    line-height: 1.16;
+  }
+
+  .model-note {
+    margin: 0;
+    max-width: 52rem;
+    color: var(--muted);
+    font-size: 0.92rem;
+    line-height: 1.5;
+  }
+
+  .historical-panel {
+    display: grid;
+    gap: 10px;
+    padding: 24px 0 22px;
+    border-top: 1px solid var(--line-strong);
+    border-bottom: 1px solid var(--line);
+  }
+
+  .historical-panel h2 {
+    margin: 0;
+    font-size: clamp(1.42rem, 2.8vw, 2rem);
+    line-height: 0.98;
+  }
+
+  .historical-panel p {
+    margin: 0;
+    max-width: 46rem;
+    color: var(--muted);
+    line-height: 1.5;
+  }
+
+  .historical-kicker {
+    color: var(--accent) !important;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    font-size: 0.72rem;
+  }
+
+  :global(.history-heading) {
+    display: flex;
+    gap: 18px;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: 24px;
+    padding-bottom: 8px;
+    border-top: 2px solid var(--ink);
+  }
+
+  :global(.history-heading h2) {
+    margin: 0;
+    font-size: clamp(0.9rem, 1.8vw, 1.5rem);
+    line-height: 0.98;
+    letter-spacing: -0.035em;
+  }
+
+  :global(.history-sort) {
+    display: inline-flex;
+    border: 1px solid var(--accent);
+  }
+
+  :global(.history-sort button) {
+    appearance: none;
+    border: 0;
+    border-radius: 0;
+    padding: 7px 12px 6px;
+    background: transparent;
+    color: var(--accent);
+    font: inherit;
+    font-size: 0.7rem;
+    letter-spacing: 0.12em;
+    line-height: 1;
+    text-transform: uppercase;
+    cursor: pointer;
+  }
+
+  :global(.history-sort button + button) {
+    border-left: 1px solid var(--accent);
+  }
+
+  :global(.history-sort button[aria-pressed="true"]) {
+    background: var(--accent);
+    color: var(--paper);
+  }
+
+  :global(.history-sort button:focus-visible) {
+    outline: 2px solid var(--ink);
+    outline-offset: 2px;
+  }
+
+  .history-timeline {
+    display: grid;
+    gap: 0;
+    position: relative;
+  }
+
+  .history-timeline::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 8rem;
+    width: 1px;
+    background: var(--line-strong);
+  }
+
+  .timeline-event {
+    display: grid;
+    grid-template-columns: 8rem minmax(0, 1fr);
+    gap: 34px;
+    position: relative;
+    padding: 0 0 24px;
+  }
+
+  .timeline-event::before {
+    content: "";
+    position: absolute;
+    top: 19px;
+    left: calc(8rem - 4px);
+    width: 9px;
+    height: 9px;
+    border: 1px solid var(--line-strong);
+    background: var(--paper);
+    transform: rotate(45deg);
+  }
+
+  .timeline-event:last-child {
+    padding-bottom: 0;
+  }
+
+  .timeline-date {
+    padding-top: 18px;
+    color: var(--accent);
+    font-size: 0.72rem;
+    letter-spacing: 0.12em;
+    line-height: 1.2;
+    text-transform: uppercase;
+  }
+
+  .timeline-date span {
+    display: block;
+    max-width: 6.4rem;
+  }
+
+  .timeline-card {
+    display: grid;
+    min-width: 0;
+    gap: 10px;
+    padding: 16px 20px 18px;
+    border: 1px solid var(--line-strong);
+    background:
+      linear-gradient(180deg, color-mix(in srgb, var(--paper) 88%, white), var(--paper));
+  }
+
+  .timeline-card-head {
+    display: grid;
+    gap: 7px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .history-submeta {
+    margin: 0;
+    color: var(--accent);
+    font-size: 0.72rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  .history-title {
+    margin: 0;
+    font-size: clamp(1.1rem, 1.85vw, 1.42rem);
+    line-height: 1.02;
+  }
+
+  .history-diffs {
+    display: grid;
+    gap: 0;
+  }
+
+  .history-diff {
+    display: grid;
+    grid-template-columns: minmax(6.5rem, 0.34fr) minmax(0, 1fr);
+    gap: 16px;
+    padding: 14px 4px;
+    border-bottom: 1px solid color-mix(in srgb, var(--line) 76%, white);
+  }
+
+  .history-diff:last-child {
+    border-bottom: 0;
+    padding-bottom: 0;
+  }
+
+  .history-diff-label {
+    margin: 0;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    font-size: 0.72rem;
+  }
+
+  .history-diff-value {
+    margin: 0;
+    font-size: 1.04rem;
+    line-height: 1.12;
+  }
+
+  .history-diff-rate {
+    grid-column: 2;
+    margin: -8px 0 0;
+    color: var(--muted);
+    font-size: 0.86rem;
+  }
+
+  @media (max-width: 900px) {
+    .current-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .current-cell {
+      border-right: 0;
+      border-bottom: 1px solid var(--line);
+      padding: 16px 0 18px;
+    }
+
+    .current-cell:nth-last-child(-n + 2) {
+      border-bottom: 0;
+    }
+
+    .current-cell-wide {
+      grid-column: auto;
+    }
+
+    .history-timeline::before {
+      left: 6.8rem;
+    }
+
+    .timeline-event {
+      grid-template-columns: 6.8rem minmax(0, 1fr);
+      gap: 30px;
+    }
+
+    .timeline-event::before {
+      left: calc(6.8rem - 4px);
+    }
+
+    .timeline-date {
+      font-size: 0.68rem;
+    }
+
+    .timeline-date span {
+      max-width: 5.8rem;
+    }
+
+    .timeline-card {
+      padding: 15px 17px 17px;
+    }
+  }
+
+  @media (max-width: 560px) {
+    :global(.history-heading) {
+      gap: 24px;
+      align-items: stretch;
+      flex-direction: column;
+    }
+
+    :global(.history-sort) {
+      align-self: start;
+    }
+
+    .current-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .current-cell {
+      border-bottom: 1px solid var(--line);
+    }
+
+    .current-cell:nth-last-child(-n + 2) {
+      border-bottom: 1px solid var(--line);
+    }
+
+    .current-cell:last-child {
+      border-bottom: 0;
+    }
+
+    .history-timeline::before {
+      left: 0.28rem;
+    }
+
+    .timeline-event {
+      grid-template-columns: 1fr;
+      gap: 10px;
+      padding-left: 20px;
+      padding-bottom: 20px;
+    }
+
+    .timeline-event::before {
+      top: 6px;
+      left: 0;
+    }
+
+    .timeline-date {
+      padding-top: 0;
+    }
+
+    .timeline-date span {
+      max-width: none;
+    }
+
+    .history-diff {
+      grid-template-columns: 1fr;
+      gap: 5px;
+      padding: 12px 2px;
+    }
+
+    .history-diff-rate {
+      grid-column: auto;
+      margin-top: -2px;
+    }
+  }
+</style>

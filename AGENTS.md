@@ -18,6 +18,13 @@
 
 - `PROJECT_SPEC.md`
 
+## Design Policy
+
+site の UI / UX / 情報設計 / デザイン収束を行う場合は、以下も参照してください。
+
+- `DESIGN.md`
+- `SITE_SCORE.md`
+
 ## Operational Policy
 
 - `docs/provider-source-policy.md`

@@ -31,6 +31,15 @@ source 選定と取得運用の判断基準は以下を参照します。
   - GitHub を正本とする更新単位
   - 失敗時の扱い
 
+site のデザイン収束や UI 表現の判断基準は以下を参照します。
+
+- `DESIGN.md`
+  - visual theme / color / typography / component styling / layout principles
+  - 古い英字新聞風、エディトリアル寄り、データアーカイブ風の審美ルール
+- `SITE_SCORE.md`
+  - Home / Changes / Providers / Model History の構成譜
+  - ページごとの強弱、反復、変奏、下層ページへの展開方針
+
 
 ## Tech Stack
 
@@ -120,14 +129,29 @@ Astro により静的サイトを生成します。
 
 - `src/layouts/`
   - 共通 `BaseLayout`
+  - page-level `title` / `description` / canonical / OGP / Twitter card の基礎 meta を管理する
+- `src/components/`
+  - 共通 UI component
+  - `SectionHeading` / `PageIntro` / `ButtonLink` / `TextLink` / `SummaryIcon` など、Home / `/changes` / `/providers` / `provider detail` / `model history` で確定した紙面文法を下層へ展開するための部品
 - `src/lib/data.ts`
   - JSON 読み込みと UI 向け selector / formatter
+  - current snapshot 用 selector と history archive 用 selector は分けて扱う
+  - Top の Recent Changes は current snapshot に存在する provider/model の変更だけを表示する
+  - `/changes` は visible pricing history 由来の append-only archive として扱い、current snapshot に存在しない history-only model も表示する
+  - model detail route は current snapshot と visible pricing history の provider/model union で生成する
+  - current に存在しないが history に存在する model は historical-only detail として生成し、current snapshot がないことを UI で明示する
 - `src/lib/ui-text.ts`
   - UI 文言定義
+- `src/lib/site-meta.ts`
+  - public site URL / canonical URL / OGP defaults の管理
+  - `PUBLIC_SITE_URL` が未設定の場合は Cloudflare Pages 用の仮 URL を fallback として使う
 - `src/lib/locale.ts`
   - デフォルト `lang` / `locale`
 - `src/pages/`
   - 静的ページ本体
+  - `/about` / `/sources` / `/disclaimer` / `/privacy` は公開サイト向けの信頼性説明ページとして扱う
+  - `/sitemap.xml` / `/robots.txt` は Astro endpoint として生成する
+  - `/404` は静かな迷子ページとして扱い、history-only model detail と混同しない
 
 
 ## Repository Structure
@@ -140,6 +164,9 @@ repo root
 ├─ worker/            # Cloudflare Worker
 │
 ├─ site/              # Astro site
+│
+├─ DESIGN.md          # site design principles
+├─ SITE_SCORE.md      # site-level visual score
 │
 ├─ data/
 │   ├─ current-pricing.json
@@ -206,6 +233,13 @@ data/pricing-history.json
 
 価格変更イベントの履歴を保持します。  
 このファイルは append-only です。
+
+補足:
+
+- `pricing-history.json` に存在する model が、常に `current-pricing.json` に存在するとは限らない
+- history にだけ存在する provider/model は、公開サイトでは history archive として detail page を生成する
+- ただし、current provider/model 一覧には混ぜない
+- source から確定できない限り、history-only model を廃止済み・提供終了とは断定しない
 
 基本イメージ：
 
@@ -342,11 +376,20 @@ provider ページ：
 /providers/{provider-slug}
 ```
 
+- `/providers` index は `PageIntro + SectionHeading + provider comparison rows` を基本文法とする
+- provider ごとの比較軸は列見出しを 1 回だけ置き、row 内の詳細導線は `TextLink` で静かに渡す
+- `/providers/{provider}` detail は `PageIntro + Current Snapshot rows + short caveat` を基本文法とする
+
 model 履歴ページ：
 
 ```text
 /providers/{provider-slug}/{model-slug}
 ```
+
+- `PageIntro + Current Snapshot summary + Pricing History timeline` を基本文法とする
+- Pricing History は左に Recorded date axis、右に罫線付き event block を置く
+- event block 内は見出し、Effective date、changed fields をまとめ、Recorded at の重複表示は避ける
+- 開発用の一時説明は visible UI に残さず、ユーザーに必要な注釈だけを短く見せる
 
 変更一覧ページ：
 

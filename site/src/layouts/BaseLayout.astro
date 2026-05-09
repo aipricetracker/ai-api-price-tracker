@@ -1,13 +1,28 @@
 ---
 import { DEFAULT_LANG } from "../lib/locale";
+import { buildCanonicalUrl, DEFAULT_OG_TYPE, SITE_NAME, TWITTER_CARD } from "../lib/site-meta";
 import { text } from "../lib/ui-text";
 
 interface Props {
   title: string;
   description?: string;
+  headerTitle?: string;
+  mainGap?: string;
+  canonicalPath?: string;
+  ogType?: string;
+  noindex?: boolean;
 }
 
-const { title, description = text.defaultMetaDescription } = Astro.props;
+const {
+  title,
+  description = text.defaultMetaDescription,
+  headerTitle = title,
+  mainGap = "28px",
+  canonicalPath,
+  ogType = DEFAULT_OG_TYPE,
+  noindex = false,
+} = Astro.props;
+const canonicalUrl = buildCanonicalUrl(canonicalPath ?? Astro.url.pathname);
 ---
 
 <html lang={DEFAULT_LANG}>
@@ -16,16 +31,30 @@ const { title, description = text.defaultMetaDescription } = Astro.props;
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{title}</title>
     <meta name="description" content={description} />
+    {noindex && <meta name="robots" content="noindex, follow" />}
+    <link rel="canonical" href={canonicalUrl} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content={ogType} />
+    <meta property="og:url" content={canonicalUrl} />
+    <meta property="og:site_name" content={SITE_NAME} />
+    <meta name="twitter:card" content={TWITTER_CARD} />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
     <style>
       :root {
         color-scheme: light;
-        --bg: #f6f4ee;
-        --panel: #fffdf8;
-        --ink: #1c1a16;
-        --muted: #6d665b;
-        --line: #d8d0c4;
-        --accent: #1f6d52;
-        --accent-soft: #dff0e8;
+        --bg: #f4efe4;
+        --paper: #fbf7ef;
+        --paper-strong: #f7f1e5;
+        --panel: rgba(251, 247, 239, 0.82);
+        --ink: #191612;
+        --muted: #73695d;
+        --line: #cbbfae;
+        --line-strong: #9d8e79;
+        --accent: #8f2d1f;
+        --accent-soft: rgba(143, 45, 31, 0.08);
+        --main-gap: 28px;
       }
 
       * {
@@ -36,62 +65,227 @@ const { title, description = text.defaultMetaDescription } = Astro.props;
         margin: 0;
         font-family: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", serif;
         background:
-          radial-gradient(circle at top left, #f3ead0 0, transparent 32%),
-          linear-gradient(180deg, #f9f5eb 0%, var(--bg) 100%);
+          radial-gradient(circle at top left, rgba(226, 210, 172, 0.32) 0, transparent 28%),
+          linear-gradient(180deg, #faf6ee 0%, var(--bg) 100%);
         color: var(--ink);
+      }
+
+      body.nav-open {
+        overflow: hidden;
+      }
+
+      .site-header {
+        position: sticky;
+        top: 0;
+        z-index: 80;
+        background:
+          linear-gradient(180deg, rgba(255, 252, 246, 0.96), rgba(248, 241, 230, 0.94));
+        backdrop-filter: blur(10px);
+        border-bottom: 1px solid color-mix(in srgb, var(--line-strong) 88%, white);
       }
 
       a {
         color: var(--accent);
+        text-decoration-thickness: 1px;
+        text-underline-offset: 0.12em;
       }
 
       .shell {
-        width: min(1040px, calc(100% - 32px));
+        width: min(1120px, calc(100% - 32px));
         margin: 0 auto;
-        padding: 32px 0 56px;
+        padding: 28px 0 56px;
+      }
+
+      .site-header-shell {
+        padding-top: 0;
+        padding-bottom: 0;
       }
 
       header {
+        min-height: 68px;
+        padding: 0;
         display: flex;
-        flex-wrap: wrap;
-        gap: 12px 20px;
-        align-items: baseline;
-        justify-content: space-between;
-        margin-bottom: 24px;
+        align-items: center;
       }
 
-      nav {
+      .masthead-top {
         display: flex;
-        gap: 14px;
+        width: 100%;
+        gap: 8px 20px;
+        align-items: center;
+        justify-content: space-between;
+      }
+
+      .masthead-heading {
+        display: grid;
+        gap: 10px;
+        margin-top: 18px;
+      }
+
+      .masthead-heading:empty {
+        display: none;
+      }
+
+      .site-nav {
+        display: flex;
+        gap: 18px;
+        align-items: center;
+        font-size: 0.9rem;
+      }
+
+      .site-nav a,
+      .footer-nav a {
+        text-decoration: none;
+      }
+
+      .site-nav a:hover {
+        text-decoration: underline;
+      }
+
+      .menu-toggle {
+        display: none;
+        align-items: center;
+        justify-content: center;
+        width: 34px;
+        height: 34px;
+        border: 1px solid var(--accent);
+        border-radius: 999px;
+        background: transparent;
+        color: var(--accent);
+        cursor: pointer;
+      }
+
+      .menu-toggle-lines {
+        display: grid;
+        gap: 4px;
+        width: 15px;
+      }
+
+      .menu-toggle-lines span {
+        display: block;
+        height: 1px;
+        background: currentColor;
+        transition:
+          transform 0.16s ease,
+          opacity 0.16s ease;
+      }
+
+      .menu-toggle[aria-expanded="true"] .menu-toggle-lines span:first-child {
+        transform: translateY(5px) rotate(45deg);
+      }
+
+      .menu-toggle[aria-expanded="true"] .menu-toggle-lines span:nth-child(2) {
+        opacity: 0;
+      }
+
+      .menu-toggle[aria-expanded="true"] .menu-toggle-lines span:last-child {
+        transform: translateY(-5px) rotate(-45deg);
       }
 
       main {
         display: grid;
-        gap: 16px;
+        gap: var(--main-gap);
       }
 
       footer {
-        margin-top: 28px;
-        padding-top: 18px;
-        border-top: 1px solid var(--line);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 14px;
+        margin-top: 72px;
+        margin-left: calc(50% - 50vw);
+        margin-right: calc(50% - 50vw);
+        padding: 38px max(calc(50vw - 560px), 16px) 8px;
+        position: relative;
         color: var(--muted);
         font-size: 0.92rem;
+        text-align: center;
+      }
+
+      footer::before,
+      footer::after {
+        content: "";
+        position: absolute;
+        left: 0;
+        right: 0;
+      }
+
+      footer::before {
+        top: 0;
+        height: 3px;
+        background: var(--ink);
+      }
+
+      footer::after {
+        top: 7px;
+        height: 1px;
+        background: var(--line-strong);
+      }
+
+      .footer-logo {
+        margin: 0;
+        color: var(--accent);
+        font-size: 0.78rem;
+        font-weight: 700;
+        letter-spacing: 0.14em;
+        line-height: 1.2;
+        text-transform: uppercase;
+      }
+
+      .footer-nav {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px 18px;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.95rem;
+        margin-bottom: 18px;
+      }
+
+      .footer-nav a {
+        color: var(--ink);
+      }
+
+      .footer-nav a:hover {
+        color: var(--accent);
+        text-decoration: underline;
+      }
+
+      .footer-copy {
+        width: calc(100% + max(calc(100vw - 1120px), 32px));
+        margin: 0;
+        padding-top: 24px;
+        border-top: 1px solid var(--line);
+        color: var(--muted);
+        font-size: 12px;
       }
 
       .card {
-        background: color-mix(in srgb, var(--panel) 92%, white);
+        background: var(--panel);
         border: 1px solid var(--line);
-        border-radius: 18px;
+        border-radius: 14px;
         padding: 20px;
-        box-shadow: 0 10px 30px rgba(28, 26, 22, 0.05);
       }
 
       .eyebrow {
         margin: 0 0 8px;
-        color: var(--muted);
+        color: var(--accent);
         text-transform: uppercase;
-        letter-spacing: 0.08em;
-        font-size: 0.78rem;
+        letter-spacing: 0.14em;
+        font-size: 0.72rem;
+      }
+
+      .masthead-top .eyebrow {
+        margin-bottom: 0;
+      }
+
+      .site-logo-link {
+        color: var(--accent);
+        text-decoration: none;
+      }
+
+      .site-logo-link:hover {
+        text-decoration: none;
       }
 
       h1,
@@ -99,6 +293,19 @@ const { title, description = text.defaultMetaDescription } = Astro.props;
       h3,
       p {
         margin-top: 0;
+      }
+
+      h1 {
+        font-size: clamp(2.2rem, 6vw, 4.8rem);
+        line-height: 0.95;
+        letter-spacing: -0.04em;
+        margin-bottom: 0;
+      }
+
+      h2 {
+        font-size: clamp(1.4rem, 2.8vw, 2.2rem);
+        line-height: 1.02;
+        letter-spacing: -0.03em;
       }
 
       ul {
@@ -121,18 +328,107 @@ const { title, description = text.defaultMetaDescription } = Astro.props;
 
       .note {
         padding: 12px 14px;
-        border-radius: 14px;
+        border-radius: 12px;
         background: var(--accent-soft);
+        border: 1px solid color-mix(in srgb, var(--accent) 16%, var(--line));
       }
 
       .muted {
         color: var(--muted);
       }
 
+      .divider-title {
+        display: grid;
+        grid-template-columns: 1fr auto 1fr;
+        gap: 14px;
+        align-items: center;
+      }
+
+      .divider-title::before,
+      .divider-title::after {
+        content: "";
+        height: 1px;
+        background: var(--line-strong);
+      }
+
       @media (max-width: 720px) {
+        .site-header {
+          backdrop-filter: none;
+        }
+
         .shell {
           width: min(100% - 24px, 1040px);
           padding-top: 24px;
+        }
+
+        .site-header-shell {
+          padding-top: 0;
+          padding-bottom: 0;
+        }
+
+        header {
+          min-height: 64px;
+        }
+
+        .masthead-heading {
+          margin-top: 14px;
+        }
+
+        .menu-toggle {
+          display: inline-flex;
+          position: relative;
+          z-index: 100;
+        }
+
+        .site-nav {
+          position: fixed;
+          inset: 0;
+          z-index: 90;
+          display: grid;
+          align-content: center;
+          justify-items: center;
+          gap: 34px;
+          padding: 92px 24px 36px;
+          background:
+            radial-gradient(circle at top left, rgba(226, 210, 172, 0.34), transparent 34%),
+            linear-gradient(180deg, rgba(251, 247, 239, 0.98), rgba(244, 239, 228, 0.98));
+          transform: translateX(100%);
+          visibility: hidden;
+          opacity: 0;
+          transition:
+            transform 0.2s ease,
+            opacity 0.2s ease,
+            visibility 0.2s ease;
+        }
+
+        .site-nav[data-open="true"] {
+          transform: translateX(0);
+          visibility: visible;
+          opacity: 1;
+        }
+
+        .site-nav a {
+          color: var(--ink);
+          font-size: clamp(1.45rem, 8vw, 2.6rem);
+          line-height: 1;
+          letter-spacing: -0.025em;
+          text-decoration: none;
+        }
+
+        .site-nav a:hover,
+        .site-nav a:focus-visible {
+          color: var(--accent);
+          text-decoration: none;
+        }
+
+        .footer-nav {
+          display: grid;
+          grid-template-columns: 1fr;
+          justify-content: center;
+          gap: 10px;
+          font-size: 0.86rem;
+          margin-top: 6px;
+          margin-bottom: 14px;
         }
 
         table,
@@ -163,24 +459,86 @@ const { title, description = text.defaultMetaDescription } = Astro.props;
     </style>
   </head>
   <body>
+    <div class="site-header">
+      <div class="shell site-header-shell">
+        <header>
+          <div class="masthead-top">
+            <p class="eyebrow">
+              <a class="site-logo-link" href="/">{text.siteName}</a>
+            </p>
+            <button class="menu-toggle" type="button" aria-controls="site-nav" aria-expanded="false" aria-label="Open navigation">
+              <span class="menu-toggle-lines" aria-hidden="true">
+                <span></span>
+                <span></span>
+                <span></span>
+              </span>
+            </button>
+            <nav class="site-nav" id="site-nav" data-open="false" aria-label="Primary navigation">
+              <a href="/">{text.home}</a>
+              <a href="/changes">{text.changes}</a>
+              <a href="/providers">{text.providers}</a>
+              <a href="/about">{text.aboutTitle}</a>
+            </nav>
+          </div>
+          <div class="masthead-heading">
+            {headerTitle && <h1>{headerTitle}</h1>}
+          </div>
+        </header>
+      </div>
+    </div>
     <div class="shell">
-      <header>
-        <div>
-          <p class="eyebrow">{text.siteName}</p>
-          <h1>{title}</h1>
-        </div>
-        <nav>
-          <a href="/">{text.home}</a>
-          <a href="/changes">{text.changes}</a>
-          <a href="/providers">{text.providers}</a>
-        </nav>
-      </header>
-      <main>
+      <main style={`gap: ${mainGap};`}>
         <slot />
       </main>
       <footer>
-        <p>{text.footerText}</p>
+        <p class="footer-logo">{text.siteName}</p>
+        <nav class="footer-nav" aria-label="Footer navigation">
+          <a href="/">{text.home}</a>
+          <a href="/changes">{text.changes}</a>
+          <a href="/providers">{text.providers}</a>
+          <a href="/about">{text.aboutTitle}</a>
+          <a href="/sources">{text.sources}</a>
+          <a href="/disclaimer">{text.disclaimer}</a>
+          <a href="/privacy">{text.privacy}</a>
+        </nav>
+        <p class="footer-copy">{text.footerCopyright}</p>
       </footer>
     </div>
+    <script>
+      const menuToggle = document.querySelector<HTMLButtonElement>(".menu-toggle");
+      const siteNav = document.querySelector<HTMLElement>("#site-nav");
+      const navLinks = siteNav?.querySelectorAll("a") ?? [];
+
+      function setNavigationOpen(isOpen: boolean) {
+        if (!menuToggle || !siteNav) {
+          return;
+        }
+
+        menuToggle.setAttribute("aria-expanded", String(isOpen));
+        menuToggle.setAttribute("aria-label", isOpen ? "Close navigation" : "Open navigation");
+        siteNav.dataset.open = String(isOpen);
+        document.body.classList.toggle("nav-open", isOpen);
+      }
+
+      menuToggle?.addEventListener("click", () => {
+        setNavigationOpen(menuToggle.getAttribute("aria-expanded") !== "true");
+      });
+
+      navLinks.forEach((link) => {
+        link.addEventListener("click", () => setNavigationOpen(false));
+      });
+
+      document.addEventListener("keydown", (event) => {
+        if (event.key === "Escape") {
+          setNavigationOpen(false);
+        }
+      });
+
+      window.addEventListener("resize", () => {
+        if (window.matchMedia("(min-width: 721px)").matches) {
+          setNavigationOpen(false);
+        }
+      });
+    </script>
   </body>
 </html>

@@ -3,6 +3,7 @@ import type {
   CurrentPricing,
   HistoryFieldDiff,
   HistoryEntry,
+  ModelDetail,
   PricingHistory,
   PricingRecord,
   ProviderModelSummary,
@@ -23,18 +24,64 @@ const POC_HISTORY_SIGNATURES = new Set([
   "anthropic:claude-3-7-sonnet:1K tokens",
 ]);
 
+const DEV_MODEL_HISTORY_FIXTURES: Record<string, PricingRecord[]> = {
+  "openai:gpt-5.4-mini": [
+    {
+      provider: "openai",
+      model: "gpt-5.4-mini",
+      pricing: {
+        input: 0.3,
+        cached_input: 0.03,
+        output: 1.2,
+      },
+      currency: "USD",
+      unit: "1M tokens",
+      source_url: "https://openai.com/api/pricing/",
+      effective_date: "2026-03-18",
+      recorded_at: "2026-03-18T09:00:00Z",
+    },
+    {
+      provider: "openai",
+      model: "gpt-5.4-mini",
+      pricing: {
+        input: 0.35,
+        cached_input: 0.035,
+        output: 1.4,
+      },
+      currency: "USD",
+      unit: "1M tokens",
+      source_url: "https://openai.com/api/pricing/",
+      effective_date: "2026-04-03",
+      recorded_at: "2026-04-03T09:00:00Z",
+    },
+    {
+      provider: "openai",
+      model: "gpt-5.4-mini",
+      pricing: {
+        input: 0.4,
+        cached_input: 0.04,
+        output: 1.6,
+      },
+      currency: "USD",
+      unit: "1M tokens",
+      source_url: "https://openai.com/api/pricing/",
+      effective_date: "2026-04-18",
+      recorded_at: "2026-04-18T09:00:00Z",
+    },
+  ],
+};
+
 export async function getProviderOverviewList(): Promise<ProviderOverview[]> {
   const current = await readCurrentPricing();
   const history = await readPricingHistory();
-  const visibleHistory = history.filter((record) => !isHiddenPocRecord(record));
-  const changeEventCounts = countProviderChangeEvents(visibleHistory);
+  const currentChangeEntries = buildCurrentChangeEntries(current, history);
 
   return Object.entries(current)
     .map(([provider, models]) => {
       const modelNames = Object.keys(models).sort();
-      const providerHistory = visibleHistory.filter((record) => record.provider === provider);
-      const latestUpdate = providerHistory
-        .map((record) => record.recorded_at)
+      const providerChangeEntries = currentChangeEntries.filter((entry) => entry.record.provider === provider);
+      const latestUpdate = providerChangeEntries
+        .map((entry) => entry.record.recorded_at)
         .sort((left, right) => right.localeCompare(left))[0];
 
       return {
@@ -43,7 +90,7 @@ export async function getProviderOverviewList(): Promise<ProviderOverview[]> {
         models: modelNames,
         cachedInputNote: PROVIDER_NOTES[provider],
         latestUpdate,
-        recentChangeCount: changeEventCounts.get(provider) ?? 0,
+        recentChangeCount: providerChangeEntries.length,
       };
     })
     .sort((left, right) => left.provider.localeCompare(right.provider));
@@ -68,12 +115,19 @@ export async function getModelHistory(provider: string, model: string): Promise<
     .filter((record) => !isHiddenPocRecord(record))
     .sort((left, right) => left.recorded_at.localeCompare(right.recorded_at));
 
-  return buildHistoryEntries(visibleHistory);
+  return buildHistoryEntries(applyDevHistoryFixture(provider, model, visibleHistory));
 }
 
 export async function getRecentChanges(limit = 8): Promise<HistoryEntry[]> {
   const entries = await getAllChanges();
   return entries.slice(0, limit);
+}
+
+export async function getRecentCurrentChanges(limit = 8): Promise<HistoryEntry[]> {
+  const current = await readCurrentPricing();
+  const history = await readPricingHistory();
+
+  return buildCurrentChangeEntries(current, history).slice(0, limit);
 }
 
 export async function getAllChanges(): Promise<HistoryEntry[]> {
@@ -93,9 +147,50 @@ export async function getProviderModelSlugs(provider: string): Promise<string[]>
   return models.map((model) => model.model);
 }
 
+export async function getModelDetailSlugs(): Promise<Array<{ provider: string; model: string }>> {
+  const current = await readCurrentPricing();
+  const history = await readPricingHistory();
+  const modelsByProvider = new Map<string, Set<string>>();
+
+  for (const [provider, models] of Object.entries(current)) {
+    for (const model of Object.keys(models)) {
+      addModelSlug(modelsByProvider, provider, model);
+    }
+  }
+
+  for (const record of history) {
+    if (!isHiddenPocRecord(record)) {
+      addModelSlug(modelsByProvider, record.provider, record.model);
+    }
+  }
+
+  return [...modelsByProvider.entries()]
+    .flatMap(([provider, models]) => [...models].map((model) => ({ provider, model })))
+    .sort((left, right) => `${left.provider}:${left.model}`.localeCompare(`${right.provider}:${right.model}`));
+}
+
 export async function getCurrentModel(provider: string, model: string): Promise<ProviderModelSummary | null> {
   const models = await getProviderModelList(provider);
   return models.find((record) => record.model === model) ?? null;
+}
+
+export async function getModelDetail(provider: string, model: string): Promise<ModelDetail | null> {
+  const [currentRecord, history] = await Promise.all([
+    getCurrentModel(provider, model),
+    getModelHistory(provider, model),
+  ]);
+
+  if (!currentRecord && history.length < 1) {
+    return null;
+  }
+
+  return {
+    provider,
+    model,
+    currentRecord,
+    history,
+    isHistoricalOnly: !currentRecord,
+  };
 }
 
 export function formatPrice(value: number | undefined): string {
@@ -154,6 +249,12 @@ async function readJsonFile<T>(path: URL, fallback: T): Promise<T> {
   }
 }
 
+function addModelSlug(modelsByProvider: Map<string, Set<string>>, provider: string, model: string): void {
+  const models = modelsByProvider.get(provider) ?? new Set<string>();
+  models.add(model);
+  modelsByProvider.set(provider, models);
+}
+
 function getChangedFields(previous: PricingRecord | undefined, next: PricingRecord): string[] {
   if (!previous) {
     return ["initial_record"];
@@ -188,33 +289,12 @@ function buildHistoryEntries(records: PricingRecord[]): HistoryEntry[] {
   }));
 }
 
-function countProviderChangeEvents(records: PricingRecord[]): Map<string, number> {
-  const groupedRecords = new Map<string, PricingRecord[]>();
+function buildCurrentChangeEntries(current: CurrentPricing, history: PricingHistory): HistoryEntry[] {
+  const visibleCurrentHistory = history
+    .filter((record) => !isHiddenPocRecord(record))
+    .filter((record) => current[record.provider]?.[record.model]);
 
-  for (const record of records) {
-    const key = `${record.provider}:${record.model}`;
-    const modelHistory = groupedRecords.get(key) ?? [];
-    modelHistory.push(record);
-    groupedRecords.set(key, modelHistory);
-  }
-
-  const counts = new Map<string, number>();
-
-  for (const modelHistory of groupedRecords.values()) {
-    const entries = buildHistoryEntries(
-      modelHistory.sort((left, right) => left.recorded_at.localeCompare(right.recorded_at)),
-    );
-
-    for (const entry of entries) {
-      if (entry.changedFields.includes("initial_record")) {
-        continue;
-      }
-
-      counts.set(entry.record.provider, (counts.get(entry.record.provider) ?? 0) + 1);
-    }
-  }
-
-  return counts;
+  return buildChangeEntriesForDisplay(visibleCurrentHistory);
 }
 
 function buildChangeEntriesForDisplay(records: PricingRecord[]): HistoryEntry[] {
@@ -287,6 +367,21 @@ function isHiddenPocRecord(record: PricingRecord): boolean {
   // Temporary UI-only suppression for known PoC seed history.
   // The append-only history file stays untouched; the UI hides legacy sample noise until real history fully replaces it.
   return POC_HISTORY_SIGNATURES.has(`${record.provider}:${record.model}:${record.unit}`);
+}
+
+function applyDevHistoryFixture(provider: string, model: string, records: PricingRecord[]): PricingRecord[] {
+  if (!import.meta.env.DEV) {
+    return records;
+  }
+
+  const key = `${provider}:${model}`;
+  const fixture = DEV_MODEL_HISTORY_FIXTURES[key];
+
+  if (!fixture || records.length > 1) {
+    return records;
+  }
+
+  return fixture;
 }
 
 function trimTrailingZeros(value: number): string {

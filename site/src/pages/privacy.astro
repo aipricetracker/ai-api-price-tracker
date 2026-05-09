@@ -1,0 +1,62 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import PageIntro from "../components/PageIntro.astro";
+import SectionHeading from "../components/SectionHeading.astro";
+
+const title = "Privacy | AI API Price Tracker";
+const description =
+  "Minimal privacy note for AI API Price Tracker, a static site without accounts, forms, analytics, or user-submitted pricing data.";
+---
+
+<BaseLayout title={title} description={description} headerTitle="" mainGap="56px">
+  <PageIntro
+    title="Privacy"
+    lead="This is a static public site. It does not currently provide accounts, forms, comments, or analytics."
+  />
+
+  <section class="privacy-page">
+    <SectionHeading title="Current privacy posture" />
+    <div class="privacy-copy">
+      <p>
+        AI API Price Tracker does not ask visitors to submit personal information and does not currently include
+        analytics scripts or user tracking features.
+      </p>
+      <p>
+        The site is intended to be hosted on Cloudflare Pages. Hosting providers may process standard access logs,
+        such as request metadata, for security and operational purposes.
+      </p>
+      <p>
+        If analytics, forms, login, or other user-facing collection features are added later, this page should be
+        updated before public use of those features.
+      </p>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .privacy-page {
+    display: grid;
+    gap: 20px;
+  }
+
+  .privacy-copy {
+    display: grid;
+    gap: 14px;
+    padding-top: 22px;
+    border-top: 1px solid var(--line-strong);
+  }
+
+  .privacy-copy p {
+    margin: 0;
+    max-width: 58rem;
+    color: var(--muted);
+    line-height: 1.55;
+  }
+
+  @media (max-width: 560px) {
+    .privacy-copy {
+      gap: 12px;
+      padding-top: 18px;
+    }
+  }
+</style>

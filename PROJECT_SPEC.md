@@ -22,6 +22,8 @@ AI API Price Tracker は、主要な AI API provider の価格情報を監視し
 
 source 選定と collector 運用判断の基準は `docs/provider-source-policy.md` を参照します。
 collector 本番更新フロー v1 は `docs/collector-production-flow-v1.md` を参照します。
+site のデザイン原則は `DESIGN.md`、ページ群の構成譜は `SITE_SCORE.md` を参照します。
+公開サイトとしての説明ページ、SEO meta、sitemap、robots、404 は `site/` の静的生成対象として扱います。
 
 
 ---
@@ -115,10 +117,15 @@ repo root
 ├─ worker/                 # Cloudflare Worker
 │
 ├─ site/                   # Astro static site
+│   ├─ public/              # Cloudflare Pages static files such as _headers
 │   └─ src/
 │       ├─ layouts/        # BaseLayout
-│       ├─ lib/            # UI selectors / text / locale
+│       ├─ components/     # reusable UI components
+│       ├─ lib/            # UI selectors / text / locale / site meta
 │       └─ pages/          # static pages
+│
+├─ DESIGN.md               # site design principles
+├─ SITE_SCORE.md           # site-level visual score
 │
 ├─ data/
 │   ├─ current-pricing.json
