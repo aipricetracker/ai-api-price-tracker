@@ -194,5 +194,33 @@
     "source_url": "https://openai.com/api/pricing/",
     "effective_date": "2026-04-13",
     "recorded_at": "2026-04-13T18:29:57.087Z"
+  },
+  {
+    "provider": "openai",
+    "model": "gpt-5.5",
+    "pricing": {
+      "input": 5,
+      "cached_input": 0.5,
+      "output": 30
+    },
+    "currency": "USD",
+    "unit": "1M tokens",
+    "source_url": "https://openai.com/api/pricing/",
+    "effective_date": "2026-05-13",
+    "recorded_at": "2026-05-13T17:15:37.395Z"
+  },
+  {
+    "provider": "anthropic",
+    "model": "claude-opus-4.7",
+    "pricing": {
+      "input": 5,
+      "output": 25,
+      "cached_input": 0.5
+    },
+    "currency": "USD",
+    "unit": "1M tokens",
+    "source_url": "https://claude.com/pricing",
+    "effective_date": "2026-05-13",
+    "recorded_at": "2026-05-13T17:15:37.932Z"
   }
 ]
