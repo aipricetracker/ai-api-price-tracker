@@ -5,29 +5,33 @@ import SectionHeading from "../components/SectionHeading.astro";
 
 const title = "Privacy | AI API Price Tracker";
 const description =
-  "Minimal privacy note for AI API Price Tracker, a static site without accounts, forms, analytics, or user-submitted pricing data.";
+  "Minimal privacy note for AI API Price Tracker, a static site without accounts, forms, login, or advertising tags, with basic analytics possible through Google Tag Manager.";
 ---
 
 <BaseLayout title={title} description={description} headerTitle="" mainGap="56px">
   <PageIntro
     title="Privacy"
-    lead="This is a static public site. It does not currently provide accounts, forms, comments, or analytics."
+    lead="This is a static public site. It does not provide accounts, forms, comments, or login, and it may use basic analytics for site operations and improvement."
   />
 
   <section class="privacy-page">
     <SectionHeading title="Current privacy posture" />
     <div class="privacy-copy">
       <p>
-        AI API Price Tracker does not ask visitors to submit personal information and does not currently include
-        analytics scripts or user tracking features.
+        AI API Price Tracker does not ask visitors to submit personal information and does not provide account,
+        form, or login features.
       </p>
       <p>
-        The site is intended to be hosted on Cloudflare Pages. Hosting providers may process standard access logs,
-        such as request metadata, for security and operational purposes.
+        The site may use Google Tag Manager and Google Analytics 4 to measure basic usage such as page views. This
+        information is used to understand site usage and improve the site.
       </p>
       <p>
-        If analytics, forms, login, or other user-facing collection features are added later, this page should be
-        updated before public use of those features.
+        The site is intended to be hosted on Cloudflare Pages. Hosting providers may also process standard access
+        logs, such as request metadata, for security and operational purposes.
+      </p>
+      <p>
+        Advertising or remarketing tags are not intended to be used in this phase. If analytics, tags, forms,
+        login, or other user-facing collection features change later, this page should be updated accordingly.
       </p>
     </div>
   </section>
