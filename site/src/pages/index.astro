@@ -6,6 +6,7 @@ import SummaryIcon from "../components/SummaryIcon.astro";
 import {
   formatDateShort,
   formatRecentChangeDate,
+  getLatestCurrentSnapshotRecordedAt,
   getProviderOverviewList,
   getRecentCurrentChanges,
   summarizeChangedFields,
@@ -14,6 +15,7 @@ import { text } from "../lib/ui-text";
 
 const providers = await getProviderOverviewList();
 const recentChanges = await getRecentCurrentChanges(3);
+const latestSnapshotRecordedAt = await getLatestCurrentSnapshotRecordedAt();
 const title = text.siteName;
 ---
 
@@ -543,7 +545,7 @@ const title = text.siteName;
     <div class="hero-rule">
       <strong class="hero-rule-start">Discover</strong>
       <span class="hero-rule-center">Compare / Monitor / Archive</span>
-      <strong class="hero-rule-end">{formatDateShort(new Date().toISOString())}</strong>
+      <strong class="hero-rule-end">{formatDateShort(latestSnapshotRecordedAt)}</strong>
     </div>
   </section>
 

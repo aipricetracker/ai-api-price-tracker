@@ -10,10 +10,10 @@ export const text = {
     "Static pricing views generated from current-pricing.json and pricing-history.json.",
 
   heroTitle: "AI API Pricing Snapshot",
-  heroSubtitle: "Track pricing changes across major AI API providers.",
+  heroSubtitle: "Track pricing changes across tracked AI API providers.",
   homeKicker: "The AI API Archive",
   homeLead:
-    "A quiet record of pricing shifts across major AI API providers, built for checking what changed and where to look next.",
+    "A quiet record of pricing shifts across tracked AI API providers, built for checking what changed and where to look next.",
   homeRecentChangesLink: "Open the full change log",
   homeProvidersLead:
     "Use providers as the first index for current snapshot comparison, current-model activity, and drill-down.",
@@ -58,7 +58,7 @@ export const text = {
     "Rows are ordered for scanning first, then for choosing where to drill down.",
   providerColumn: "Provider",
   modelsColumn: "Models",
-  totalChangesColumn: "Total Changes",
+  totalChangesColumn: "Current Changes",
   latestChangeColumn: "Latest Change",
   detailColumn: "Detail",
   viewProvider: "View provider",
@@ -95,8 +95,6 @@ export const text = {
   notInCurrentSnapshot: "Not in current snapshot",
   cachedInputNoteAnthropic:
     "Cached input is shown as an approximate mapping of Anthropic Prompt caching read pricing.",
-  pricingHistoryDescription:
-    "PoC seed records are temporarily hidden in the UI to avoid noise while keeping the underlying history append-only.",
   recordedAt: "Recorded at",
   effectiveDate: "Effective date",
   changedFields: "Changed fields",
