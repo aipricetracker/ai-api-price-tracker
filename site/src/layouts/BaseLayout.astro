@@ -1,6 +1,15 @@
 ---
 import { DEFAULT_LANG } from "../lib/locale";
-import { buildCanonicalUrl, DEFAULT_OG_TYPE, SITE_NAME, TWITTER_CARD } from "../lib/site-meta";
+import {
+  APPLE_TOUCH_ICON_PATH,
+  buildCanonicalUrl,
+  buildSiteAssetUrl,
+  DEFAULT_OG_TYPE,
+  FAVICON_PATH,
+  OG_IMAGE_PATH,
+  SITE_NAME,
+  TWITTER_CARD,
+} from "../lib/site-meta";
 import { text } from "../lib/ui-text";
 
 interface Props {
@@ -23,6 +32,9 @@ const {
   noindex = false,
 } = Astro.props;
 const canonicalUrl = buildCanonicalUrl(canonicalPath ?? Astro.url.pathname);
+const ogImageUrl = buildSiteAssetUrl(OG_IMAGE_PATH);
+const faviconUrl = buildSiteAssetUrl(FAVICON_PATH);
+const appleTouchIconUrl = buildSiteAssetUrl(APPLE_TOUCH_ICON_PATH);
 ---
 
 <html lang={DEFAULT_LANG}>
@@ -33,14 +45,18 @@ const canonicalUrl = buildCanonicalUrl(canonicalPath ?? Astro.url.pathname);
     <meta name="description" content={description} />
     {noindex && <meta name="robots" content="noindex, follow" />}
     <link rel="canonical" href={canonicalUrl} />
+    <link rel="icon" href={faviconUrl} sizes="any" />
+    <link rel="apple-touch-icon" href={appleTouchIconUrl} />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:type" content={ogType} />
     <meta property="og:url" content={canonicalUrl} />
     <meta property="og:site_name" content={SITE_NAME} />
+    <meta property="og:image" content={ogImageUrl} />
     <meta name="twitter:card" content={TWITTER_CARD} />
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImageUrl} />
     <style>
       :root {
         color-scheme: light;
