@@ -5,6 +5,7 @@ import {
   validatePricingRecord,
 } from "./pricing";
 import { collectAnthropicTextModelPricing } from "./providers/anthropic";
+import { collectGeminiTextModelPricing } from "./providers/gemini";
 import { collectOpenAiTextModelPricing } from "./providers/openai";
 import { createFilePricingStore, createNodeFilePricingStoreIO } from "./storage";
 import type { CurrentPricing, PricingHistory, PricingRecord } from "./types";
@@ -152,6 +153,10 @@ function providerCollectors(): ProviderCollector[] {
     {
       provider: "anthropic",
       collect: () => collectAnthropicTextModelPricing(),
+    },
+    {
+      provider: "gemini",
+      collect: () => collectGeminiTextModelPricing(),
     },
   ];
 }
