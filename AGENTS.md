@@ -14,6 +14,8 @@
 - `.codex/rules/security.md`
 - `.codex/rules/change-policy.md`
 
+特に branch 運用、`main` 反映条件、`data/` の扱いは `.codex/rules/change-policy.md` を読むこと。
+
 ## Project Specification
 
 - `PROJECT_SPEC.md`
