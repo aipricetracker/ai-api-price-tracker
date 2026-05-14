@@ -82,7 +82,7 @@ export async function runCollector(env: Env): Promise<CollectorResult> {
     const changedRecords: PricingRecord[] = [];
 
     for (const collector of providerCollectors()) {
-      const records = await collector.collect();
+      const records = await collectProviderPricing(collector);
       const validationErrors = validatePricingRecords(records);
 
       if (validationErrors.length > 0) {
@@ -127,6 +127,15 @@ export async function runCollector(env: Env): Promise<CollectorResult> {
       ok: false,
       errors: [error instanceof Error ? error.message : "collector run failed"],
     };
+  }
+}
+
+async function collectProviderPricing(collector: ProviderCollector): Promise<PricingRecord[]> {
+  try {
+    return await collector.collect();
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "collector failed";
+    throw new Error(`${collector.provider} collector failed: ${message}`);
   }
 }
 
