@@ -243,13 +243,14 @@ data/pricing-history.json
 
 ## Provider List
 
-初期対象 provider:
+現在の collector 登録 provider:
 
 - OpenAI
 - Anthropic
-- Groq
-- Replicate
-- Together AI
+- Gemini
+
+候補 provider の追加可否は、実装前に `docs/provider-source-policy.md` の source review で判断する。
+Groq のように Terms / source suitability 上の懸念が強い provider は collector 登録に進めない。
 
 
 ---
@@ -343,8 +344,9 @@ Worker の責務分割方針:
 PoC では storage abstraction を維持しつつ、ローカル確認では file-based storage を使って
 `data/current-pricing.json` と `data/pricing-history.json` の更新を確認できる構成とします。
 
-また、provider parser は fixture HTML と unit test を持ち、
-pricing page の DOM 変更で静かに壊れないようにします。
+また、provider parser は最小 synthetic fixture と unit test を持ち、
+pricing source の構造変更で静かに壊れないようにします。
+fixture は実ページ全文コピーではなく、parser に必要な構造だけを残します。
 
 
 ---

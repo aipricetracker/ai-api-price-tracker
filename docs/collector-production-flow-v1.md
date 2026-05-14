@@ -23,13 +23,13 @@
 
 現時点の前提は以下です。
 
-- `worker/` には OpenAI / Anthropic の collector 実装がある
+- `worker/` には OpenAI / Anthropic / Gemini の collector 実装がある
 - ローカルでは `DATA_DIR` 前提の file-based store で動作確認済み
 - `current-pricing.json` は current snapshot
 - `pricing-history.json` は append-only history
 - parser は fixture / unit test を持つ
 - source policy は `docs/provider-source-policy.md` を基準にする
-- OpenAI / Anthropic の source classification は現時点でどちらも `caution`
+- OpenAI / Anthropic / Gemini の source classification は現時点でいずれも `caution`
 
 重要な前提:
 
@@ -181,11 +181,19 @@ v1 では **GitHub repository を正本**とし、
 manual run により、以下は確認済みです。
 
 - collector job は GitHub Actions 上で成功する
+- OpenAI / Anthropic / Gemini の同時 collector 実行が成功する
+- Gemini は公式 docs の `pricing.md.txt` を primary source として取得する
 - 差分がある run では `github-actions[bot]` により `data/` 更新 commit が作成される
 - `data/current-pricing.json` と `data/pricing-history.json` は同じ workflow 経路で更新可能
 - 差分がない run では `commit / push` job は skip される
 - `recorded_at` だけの no-op current 更新は commit しないよう修正済み
 - Node 20 deprecation warning は、workflow action version 更新により解消済み
+
+Gemini 追加時の確認事項:
+
+- GitHub Actions の rerun は古い commit を再実行するため、collector 修正後の確認では新規 workflow run を使う
+- provider fetch 失敗時は provider 名付き error を返し、`fetch failed` 単独では原因を隠さない
+- Gemini `pricing.md.txt` は Chrome 風 `user-agent` header で redirect loop になるケースがあるため、Gemini fetch は `accept` / `accept-language` のみにする
 
 ### v1 の権限分離
 
@@ -351,7 +359,7 @@ GitHub 更新にはまず `GITHUB_TOKEN` を使い、
 
 ### 必須
 
-- OpenAI / Anthropic の source review が最新である
+- OpenAI / Anthropic / Gemini の source review が最新である
 - `docs/provider-source-policy.md` が更新されている
 - parser unit test が通る
 - collector の dry-run または smoke run が通る
@@ -379,18 +387,13 @@ GitHub 更新にはまず `GITHUB_TOKEN` を使い、
 
 ---
 
-## 今後の実装タスク候補
+## 今後の運用タスク候補
 
-1. collector を GitHub Actions から呼べる実行入口を明確化する
-   - 例: `worker` 側に CLI entrypoint を追加
-2. GitHub Actions workflow を追加する
-   - manual dispatch
-   - schedule
-3. 差分がない場合は commit しないフローを追加する
-4. failure / success のログ出力方針を決める
-5. provider ごとの source review 状態を code / docs のどちらで持つか整理する
-6. 初回 unattended 運用前に OpenAI / Anthropic の terms / policy を再確認する
-7. partial failure を将来許容するかは v2 以降で再検討する
+1. schedule を有効化するか、当面 manual dispatch のままにするか決める
+2. 初回数回の manual run を監視し、provider fetch / parser failure の傾向を確認する
+3. OpenAI / Anthropic / Gemini の terms / policy を定期的に再確認する
+4. provider ごとの source review 状態を code / docs のどちらで持つか整理する
+5. partial failure を将来許容するかは v2 以降で再検討する
 
 ---
 
